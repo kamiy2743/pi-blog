@@ -7,15 +7,9 @@ import (
 
 	"blog/internal/handler"
 	"blog/internal/model"
-
-	"github.com/joho/godotenv"
 )
 
 func main() {
-	if err := godotenv.Load(); err != nil {
-		log.Fatalf(".env の読み込みに失敗しました: %v", err)
-	}
-
 	mux := http.NewServeMux()
 	setupRootRoutes(mux)
 	setupArticleRoutes(mux)
