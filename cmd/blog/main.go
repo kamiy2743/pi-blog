@@ -32,29 +32,38 @@ func main() {
 }
 
 func setupRootRoutes(mux *http.ServeMux) {
-	mux.HandleFunc("GET /", handler.Top)
+	mux.HandleFunc("GET /", func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.Path != "/" {
+			http.NotFound(w, r)
+			return
+		}
+		handler.ShowTop(w, r)
+	})
 	mux.HandleFunc("GET /health", handler.Health)
 }
 
 func setupArticleRoutes(mux *http.ServeMux) {
+	mux.HandleFunc("GET /article", handler.ShowArticleList)
+	mux.HandleFunc("GET /article/", handler.ShowArticleList)
 	mux.HandleFunc("GET /article/{articleId}", func(w http.ResponseWriter, r *http.Request) {
 		articleID, err := model.ParseArticleID(r.PathValue("articleId"))
 		if err != nil {
-			handler.Top(w, r)
+			http.NotFound(w, r)
 			return
 		}
-		handler.Article(w, r, articleID)
+		handler.ShowArticle(w, r, articleID)
 	})
 }
 
 func setupAdminRoutes(mux *http.ServeMux) {
 	mux.HandleFunc("GET /admin", handler.ShowAdmin)
+	mux.HandleFunc("GET /admin/", handler.ShowAdmin)
 	mux.HandleFunc("GET /admin/article/new", handler.CreateArticle)
 	mux.HandleFunc("POST /admin/article/new", handler.StoreArticle)
 	mux.HandleFunc("GET /admin/article/edit/{articleId}", func(w http.ResponseWriter, r *http.Request) {
 		articleID, err := model.ParseArticleID(r.PathValue("articleId"))
 		if err != nil {
-			handler.ShowAdmin(w, r)
+			http.NotFound(w, r)
 			return
 		}
 		handler.EditArticle(w, r, articleID)
@@ -62,7 +71,7 @@ func setupAdminRoutes(mux *http.ServeMux) {
 	mux.HandleFunc("POST /admin/article/edit/{articleId}", func(w http.ResponseWriter, r *http.Request) {
 		articleID, err := model.ParseArticleID(r.PathValue("articleId"))
 		if err != nil {
-			handler.ShowAdmin(w, r)
+			http.NotFound(w, r)
 			return
 		}
 		handler.UpdateArticle(w, r, articleID)
@@ -70,7 +79,7 @@ func setupAdminRoutes(mux *http.ServeMux) {
 	mux.HandleFunc("POST /admin/article/publish/{articleId}", func(w http.ResponseWriter, r *http.Request) {
 		articleID, err := model.ParseArticleID(r.PathValue("articleId"))
 		if err != nil {
-			handler.ShowAdmin(w, r)
+			http.NotFound(w, r)
 			return
 		}
 		handler.UpdatePublishSetting(w, r, articleID)

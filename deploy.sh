@@ -12,3 +12,4 @@ sudo rsync -av --delete $SERVICE_SRC $SERVICE_DST
 sudo chmod 644 $SERVICE_DST
 
 sudo systemctl daemon-reload
+sudo systemctl restart blog

@@ -7,10 +7,10 @@ import (
 	"blog/internal/model"
 )
 
-func Top(w http.ResponseWriter, r *http.Request) {
+func ShowTop(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/plain; charset=utf-8")
 	w.WriteHeader(http.StatusOK)
-	_, _ = w.Write([]byte("home (stub)"))
+	_, _ = w.Write([]byte("top (stub)"))
 }
 
 func Health(w http.ResponseWriter, r *http.Request) {
@@ -19,7 +19,13 @@ func Health(w http.ResponseWriter, r *http.Request) {
 	_, _ = w.Write([]byte("ok"))
 }
 
-func Article(w http.ResponseWriter, r *http.Request, articleID model.ArticleID) {
+func ShowArticleList(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "text/plain; charset=utf-8")
+	w.WriteHeader(http.StatusOK)
+	_, _ = w.Write([]byte("article list (stub)"))
+}
+
+func ShowArticle(w http.ResponseWriter, r *http.Request, articleID model.ArticleID) {
 	w.Header().Set("Content-Type", "text/plain; charset=utf-8")
 	w.WriteHeader(http.StatusOK)
 	_, _ = w.Write([]byte(fmt.Sprintf("article %s (stub)", string(articleID))))
