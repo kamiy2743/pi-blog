@@ -1,0 +1,16 @@
+{
+  "name": "blog-front",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "vite build && vite build --ssr src/blog-front.ts --config vite.ssr.config.js"
+  },
+  "dependencies": {
+    "@sveltejs/vite-plugin-svelte": "^3.1.2",
+    "@types/node": "^22.10.2",
+    "@inertiajs/svelte": "^2.1.6",
+    "svelte": "^4.2.19",
+    "typescript": "^5.6.3",
+    "vite": "^5.4.3"
+  }
+}

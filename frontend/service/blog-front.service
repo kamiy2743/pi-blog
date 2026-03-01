@@ -1,0 +1,14 @@
+[Unit]
+Description=Blog frontend (Inertia SSR) service
+After=network.target
+
+[Service]
+Type=simple
+User=kamiy2743
+WorkingDirectory=/home/kamiy2743/workspace/blog/frontend/server
+EnvironmentFile=/home/kamiy2743/workspace/blog/frontend/.env
+ExecStart=/home/kamiy2743/.nvm/versions/node/v24.14.0/bin/node /home/kamiy2743/workspace/blog/frontend/server/blog-front.js
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
