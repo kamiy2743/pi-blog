@@ -3,24 +3,68 @@ services:
     build:
       context: ./
       dockerfile: ./nginx/Dockerfile
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    read_only: true
+    tmpfs:
+      - /tmp/
+      - /run/:rw,uid=101,gid=101,mode=0755
+      - /var/cache/nginx/:rw,uid=101,gid=101,mode=0755
+    networks:
+      - private
+    restart: unless-stopped
+  cloudflared:
+    image: cloudflare/cloudflared:2026.2.0
+    volumes:
+      - ./cloudflared/:/etc/cloudflared/:ro
+    command: tunnel --no-autoupdate --config /etc/cloudflared/config.yml run
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    read_only: true
+    tmpfs:
+      - /tmp/
+    networks:
+      - private
+      - egress
+    depends_on:
+      - nginx
     restart: unless-stopped
   go:
     build:
       context: ./backend/
       dockerfile: ./Dockerfile
     env_file: ./backend/.env
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    read_only: true
+    tmpfs:
+      - /tmp/
+    networks:
+      - private
     restart: unless-stopped
   node:
     build:
       context: ./frontend/
       dockerfile: ./Dockerfile
     env_file: ./frontend/.env
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    read_only: true
+    tmpfs:
+      - /tmp/
+    networks:
+      - private
     restart: unless-stopped
-  cloudflared:
-    image: cloudflare/cloudflared:latest
-    volumes:
-      - ./cloudflared/:/etc/cloudflared/:ro
-    command: tunnel --no-autoupdate --config /etc/cloudflared/config.yml run
-    depends_on:
-      - nginx
-    restart: unless-stopped
+
+networks:
+  private:
+    internal: true
+  egress:

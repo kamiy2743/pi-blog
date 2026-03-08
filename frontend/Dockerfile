@@ -21,4 +21,6 @@ WORKDIR /app
 COPY --from=builder /app/dist/server/ ./dist/server/
 COPY --from=builder /app/node_modules/ ./node_modules/
 
+USER node:node
+
 CMD ["node", "dist/server/entry-server.js"]

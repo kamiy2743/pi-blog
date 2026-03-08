@@ -18,3 +18,5 @@ FROM nginx:1.27-alpine
 
 COPY ./nginx/blog.conf /etc/nginx/conf.d/default.conf
 COPY --from=builder /app/dist/client/ /usr/share/nginx/html/dist/client/
+
+USER nginx:nginx
