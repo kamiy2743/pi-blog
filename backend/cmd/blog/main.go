@@ -12,10 +12,6 @@ import (
 )
 
 func main() {
-	host := os.Getenv("HOST")
-	if host == "" {
-		log.Fatal(".env に HOST が未設定です。")
-	}
 	port := os.Getenv("PORT")
 	if port == "" {
 		log.Fatal(".env に PORT が未設定です。")
@@ -28,10 +24,6 @@ func main() {
 	if rootTemplate == "" {
 		log.Fatal(".env に INERTIA_ROOT_TEMPLATE が未設定です。")
 	}
-	buildDir := os.Getenv("BUILD_DIR")
-	if buildDir == "" {
-		log.Fatal(".env に BUILD_DIR が未設定です。")
-	}
 
 	inertiaOptions := []inertia.Option{
 		inertia.WithSSR(frontURL),
@@ -41,9 +33,8 @@ func main() {
 		log.Fatalf("Inertia のテンプレート読み込みに失敗しました: %v", err)
 	}
 
-	addr := host + ":" + port
+	addr := ":" + port
 	mux := http.NewServeMux()
-	setupStaticRoutes(mux, buildDir)
 	setupRootRoutes(mux, inertiaApp)
 	setupArticleRoutes(mux, inertiaApp)
 	setupAdminRoutes(mux, inertiaApp)
@@ -52,12 +43,6 @@ func main() {
 	if err := http.ListenAndServe(addr, mux); err != nil {
 		log.Fatalf("サーバー起動に失敗しました: %v", err)
 	}
-}
-
-func setupStaticRoutes(mux *http.ServeMux, buildDir string) {
-	fileServer := http.FileServer(http.Dir(buildDir))
-	mux.Handle("GET /build/", http.StripPrefix("/build/", fileServer))
-	mux.Handle("HEAD /build/", http.StripPrefix("/build/", fileServer))
 }
 
 func setupRootRoutes(mux *http.ServeMux, inertiaApp *inertia.Inertia) {

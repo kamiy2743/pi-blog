@@ -3,12 +3,13 @@ import { svelte } from '@sveltejs/vite-plugin-svelte'
 
 export default defineConfig({
   plugins: [svelte()],
+  publicDir: false,
   build: {
-    outDir: './server',
+    outDir: './dist/server',
     emptyOutDir: true,
     rollupOptions: {
       output: {
-        entryFileNames: 'blog-front.js'
+        entryFileNames: 'entry-server.js'
       }
     }
   }

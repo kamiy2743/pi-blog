@@ -3,7 +3,8 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "build": "vite build && vite build --ssr src/blog-front.ts --config vite.ssr.config.js"
+    "build:client": "vite build --config vite.client.config.js",
+    "build:server": "vite build --ssr src/entry-server.ts --config vite.server.config.js"
   },
   "dependencies": {
     "@sveltejs/vite-plugin-svelte": "^3.1.2",

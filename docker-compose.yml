@@ -1,0 +1,26 @@
+services:
+  nginx:
+    build:
+      context: ./
+      dockerfile: ./nginx/Dockerfile
+    restart: unless-stopped
+  go:
+    build:
+      context: ./backend/
+      dockerfile: ./Dockerfile
+    env_file: ./backend/.env
+    restart: unless-stopped
+  node:
+    build:
+      context: ./frontend/
+      dockerfile: ./Dockerfile
+    env_file: ./frontend/.env
+    restart: unless-stopped
+  cloudflared:
+    image: cloudflare/cloudflared:latest
+    volumes:
+      - ./cloudflared/:/etc/cloudflared/:ro
+    command: tunnel --no-autoupdate --config /etc/cloudflared/config.yml run
+    depends_on:
+      - nginx
+    restart: unless-stopped

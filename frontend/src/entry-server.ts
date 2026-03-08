@@ -3,8 +3,6 @@ import { createInertiaApp } from '@inertiajs/svelte'
 import type { Page, PageProps } from '@inertiajs/core'
 import type { ComponentType } from 'svelte'
 
-process.title = 'blog-front'
-
 type PageModule = {
   default: ComponentType
 }
@@ -27,11 +25,6 @@ type JsonObject = Record<string, unknown>
 type RouteHandler = (request: IncomingMessage) => Promise<JsonObject>
 
 const pages = import.meta.glob<PageModule>('./pages/**/*.svelte', { eager: true })
-
-const host = process.env.HOST
-if (!host) {
-  throw new Error('.env に HOST が未設定です')
-}
 
 const portRaw = process.env.PORT
 if (!portRaw) {
@@ -113,6 +106,6 @@ createServer(async (request: IncomingMessage, response: ServerResponse) => {
     response.writeHead(500, { 'Content-Type': 'application/json' })
     response.end(JSON.stringify({ status: 'エラー', message: String(err) }))
   }
-}).listen(port, host, () => {
-  console.log(`Inertia SSR listening on ${host}:${port}`)
+}).listen(port, () => {
+  console.log(`Inertia SSR listening on :${port}`)
 })
