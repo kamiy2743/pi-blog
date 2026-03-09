@@ -40,8 +40,8 @@
 
 ## セキュリティ方針
 - `/admin` は Cloudflare Access で保護する（Google ログイン）。
-- Basic Auth はアプリ側の追加防御として実装を検討する（現時点では未実装）。
+- `/admin` はアプリ側でも Basic Auth で保護する。
 - Markdown -> HTML は保存時にサニタイズする。
-- CSRF 対策 (トークン + SameSite Cookie) を導入する。
+- CSRF 対策として `http.NewCrossOriginProtection()` をサーバー全体に適用する。
 - 非公開記事は `404` を返して存在を隠す。
 - SQL はプレースホルダを使う。
