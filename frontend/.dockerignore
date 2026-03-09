@@ -1,1 +1,9 @@
-node_modules/
+**
+!public/
+!src/
+!Dockerfile
+!package.json
+!package-lock.json
+!svelte.config.js
+!tsconfig.json
+!vite.server.config.js
