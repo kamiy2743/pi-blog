@@ -25,14 +25,6 @@ func main() {
 	if rootTemplate == "" {
 		log.Fatal(".env に INERTIA_ROOT_TEMPLATE が未設定です。")
 	}
-	adminBasicAuthUser := os.Getenv("ADMIN_BASIC_AUTH_USER")
-	if adminBasicAuthUser == "" {
-		log.Fatal(".env に ADMIN_BASIC_AUTH_USER が未設定です。")
-	}
-	adminBasicAuthPass := os.Getenv("ADMIN_BASIC_AUTH_PASS")
-	if adminBasicAuthPass == "" {
-		log.Fatal(".env に ADMIN_BASIC_AUTH_PASS が未設定です。")
-	}
 
 	inertiaOptions := []inertia.Option{
 		inertia.WithSSR(frontURL),
@@ -44,14 +36,16 @@ func main() {
 
 	addr := ":" + port
 	mux := http.NewServeMux()
+	handler := http.NewCrossOriginProtection().Handler(mux)
 	setupRootRoutes(mux, inertiaApp)
 	setupArticleRoutes(mux, inertiaApp)
-	setupAdminRoutes(mux, inertiaApp, adminBasicAuthUser, adminBasicAuthPass)
+	setupAdminRoutes(mux, inertiaApp)
 
-	log.Printf("listening on %s", addr)
-	if err := http.ListenAndServe(addr, mux); err != nil {
+	if err := http.ListenAndServe(addr, handler); err != nil {
 		log.Fatalf("サーバー起動に失敗しました: %v", err)
+		return
 	}
+	log.Printf("listening on %s", addr)
 }
 
 func setupRootRoutes(mux *http.ServeMux, inertiaApp *inertia.Inertia) {
@@ -80,7 +74,16 @@ func setupArticleRoutes(mux *http.ServeMux, inertiaApp *inertia.Inertia) {
 	})))
 }
 
-func setupAdminRoutes(mux *http.ServeMux, inertiaApp *inertia.Inertia, authUser, authPass string) {
+func setupAdminRoutes(mux *http.ServeMux, inertiaApp *inertia.Inertia) {
+	authUser := os.Getenv("ADMIN_BASIC_AUTH_USER")
+	if authUser == "" {
+		log.Fatal(".env に ADMIN_BASIC_AUTH_USER が未設定です。")
+	}
+	authPass := os.Getenv("ADMIN_BASIC_AUTH_PASS")
+	if authPass == "" {
+		log.Fatal(".env に ADMIN_BASIC_AUTH_PASS が未設定です。")
+	}
+
 	basicAuth := middleware.BasicAuth("blog-admin", authUser, authPass)
 	handleAdmin := middleware.HandleWith(mux, basicAuth)
 
