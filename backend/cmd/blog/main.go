@@ -6,6 +6,7 @@ import (
 	"os"
 
 	"blog/internal/handler"
+	"blog/internal/middleware"
 	"blog/internal/model"
 
 	inertia "github.com/romsar/gonertia/v2"
@@ -24,6 +25,14 @@ func main() {
 	if rootTemplate == "" {
 		log.Fatal(".env に INERTIA_ROOT_TEMPLATE が未設定です。")
 	}
+	adminBasicAuthUser := os.Getenv("ADMIN_BASIC_AUTH_USER")
+	if adminBasicAuthUser == "" {
+		log.Fatal(".env に ADMIN_BASIC_AUTH_USER が未設定です。")
+	}
+	adminBasicAuthPass := os.Getenv("ADMIN_BASIC_AUTH_PASS")
+	if adminBasicAuthPass == "" {
+		log.Fatal(".env に ADMIN_BASIC_AUTH_PASS が未設定です。")
+	}
 
 	inertiaOptions := []inertia.Option{
 		inertia.WithSSR(frontURL),
@@ -37,7 +46,7 @@ func main() {
 	mux := http.NewServeMux()
 	setupRootRoutes(mux, inertiaApp)
 	setupArticleRoutes(mux, inertiaApp)
-	setupAdminRoutes(mux, inertiaApp)
+	setupAdminRoutes(mux, inertiaApp, adminBasicAuthUser, adminBasicAuthPass)
 
 	log.Printf("listening on %s", addr)
 	if err := http.ListenAndServe(addr, mux); err != nil {
@@ -71,14 +80,17 @@ func setupArticleRoutes(mux *http.ServeMux, inertiaApp *inertia.Inertia) {
 	})))
 }
 
-func setupAdminRoutes(mux *http.ServeMux, inertiaApp *inertia.Inertia) {
-	mux.Handle("GET /admin", inertiaApp.Middleware(handler.ShowAdmin(inertiaApp)))
-	mux.Handle("GET /admin/", inertiaApp.Middleware(handler.ShowAdmin(inertiaApp)))
+func setupAdminRoutes(mux *http.ServeMux, inertiaApp *inertia.Inertia, authUser, authPass string) {
+	basicAuth := middleware.BasicAuth("blog-admin", authUser, authPass)
+	handleAdmin := middleware.HandleWith(mux, basicAuth)
 
-	mux.Handle("GET /admin/article/new", inertiaApp.Middleware(handler.CreateArticle(inertiaApp)))
-	mux.HandleFunc("POST /admin/article/new", handler.StoreArticle)
+	handleAdmin("GET /admin", inertiaApp.Middleware(handler.ShowAdmin(inertiaApp)))
+	handleAdmin("GET /admin/", inertiaApp.Middleware(handler.ShowAdmin(inertiaApp)))
 
-	mux.Handle("GET /admin/article/edit/{articleId}", inertiaApp.Middleware(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	handleAdmin("GET /admin/article/new", inertiaApp.Middleware(handler.CreateArticle(inertiaApp)))
+	handleAdmin("POST /admin/article/new", http.HandlerFunc(handler.StoreArticle))
+
+	handleAdmin("GET /admin/article/edit/{articleId}", inertiaApp.Middleware(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		articleID, err := model.ParseArticleID(r.PathValue("articleId"))
 		if err != nil {
 			http.NotFound(w, r)
@@ -86,21 +98,21 @@ func setupAdminRoutes(mux *http.ServeMux, inertiaApp *inertia.Inertia) {
 		}
 		handler.EditArticle(inertiaApp, articleID)(w, r)
 	})))
-	mux.HandleFunc("POST /admin/article/edit/{articleId}", func(w http.ResponseWriter, r *http.Request) {
+	handleAdmin("POST /admin/article/edit/{articleId}", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		articleID, err := model.ParseArticleID(r.PathValue("articleId"))
 		if err != nil {
 			http.NotFound(w, r)
 			return
 		}
 		handler.UpdateArticle(w, r, articleID)
-	})
+	}))
 
-	mux.HandleFunc("POST /admin/article/publish/{articleId}", func(w http.ResponseWriter, r *http.Request) {
+	handleAdmin("POST /admin/article/publish/{articleId}", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		articleID, err := model.ParseArticleID(r.PathValue("articleId"))
 		if err != nil {
 			http.NotFound(w, r)
 			return
 		}
 		handler.UpdatePublishSetting(w, r, articleID)
-	})
+	}))
 }
