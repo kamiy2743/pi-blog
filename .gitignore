@@ -1,3 +1,2 @@
 .env
-cloudflared/*
 node_modules/
