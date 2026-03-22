@@ -1,3 +1,7 @@
+<script lang="ts">
+  import { Link } from '@inertiajs/svelte'
+</script>
+
 <svelte:head>
   <title>管理 - 記事一覧</title>
 </svelte:head>
@@ -15,7 +19,7 @@
       <div class="card">
         <h3>新規作成</h3>
         <p class="muted">新しい記事を追加します。</p>
-        <a class="cta" href="/admin/article/new">新規作成へ →</a>
+        <Link class="cta" href="/admin/article/new">新規作成へ →</Link>
       </div>
     </div>
   </div>

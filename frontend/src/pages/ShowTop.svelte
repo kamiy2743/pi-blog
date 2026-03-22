@@ -3,6 +3,8 @@
 </svelte:head>
 
 <script lang="ts">
+  import { Link } from '@inertiajs/svelte'
+
   const latestArticles = [
     {
       title: 'Raspberry Pi 5 の常時稼働メモ',
@@ -61,7 +63,7 @@
 
         <div class="space-y-4">
           {#each latestArticles as article}
-            <a
+            <Link
               class="group block rounded-[1.5rem] border border-stone-200 bg-white px-6 py-6 transition duration-200 hover:-translate-y-0.5 hover:border-amber-200 hover:shadow-[0_16px_32px_rgba(120,53,15,0.08)]"
               href="/article"
             >
@@ -70,7 +72,7 @@
                 {article.title}
               </h3>
               <p class="mt-3 leading-8 text-stone-600">{article.summary}</p>
-            </a>
+            </Link>
           {/each}
         </div>
       </section>
@@ -80,13 +82,13 @@
           <p class="text-xs font-bold tracking-[0.24em] text-amber-800 uppercase">Navigation</p>
           <h2 class="mt-2 text-2xl font-semibold text-stone-900">記事一覧</h2>
           <p class="mt-3 leading-7 text-stone-600">公開済みの記事をまとめて確認できます。</p>
-          <a
+          <Link
             class="mt-5 inline-flex items-center gap-2 rounded-full bg-stone-900 px-5 py-3 text-sm font-semibold text-white transition hover:bg-amber-900"
             href="/article"
           >
             記事一覧へ
             <span aria-hidden="true">→</span>
-          </a>
+          </Link>
         </div>
 
         <div class="rounded-[1.5rem] border border-amber-100 bg-[#faf4ec] p-6">
@@ -94,12 +96,12 @@
           <h2 class="mt-2 text-2xl font-semibold text-stone-900">カテゴリ</h2>
           <div class="mt-5 space-y-3">
             {#each categoryLinks as category}
-              <a
+              <Link
                 class="block rounded-2xl border border-stone-200 bg-white px-4 py-3 font-semibold text-stone-700 transition hover:border-amber-200 hover:bg-amber-50 hover:text-amber-900"
                 href={category.href}
               >
                 {category.name}
-              </a>
+              </Link>
             {/each}
           </div>
         </div>
