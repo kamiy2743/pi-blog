@@ -3,12 +3,13 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <link rel="icon" type="image/jpeg" href="/dist/client/IMG_0282.JPG" />
-    <link rel="stylesheet" href="/dist/client/assets/app.css" />
+    <link rel="icon" type="image/jpeg" href="{{ .faviconHref }}" />
+    {{ if .cssHref }}<link rel="stylesheet" href="{{ .cssHref }}" />{{ end }}
     {{ .inertiaHead }}
   </head>
   <body>
     {{ .inertia }}
-    <script type="module" src="/dist/client/assets/app.js"></script>
+    {{ if .useViteClient }}<script type="module" src="/@vite/client"></script>{{ end }}
+    <script type="module" src="{{ .appScriptSrc }}"></script>
   </body>
 </html>

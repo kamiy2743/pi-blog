@@ -2,19 +2,22 @@ services:
   nginx:
     build:
       context: ./
-      dockerfile: ./nginx/Dockerfile
+      dockerfile: ./nginx/Dockerfile.prd
     cap_drop:
       - ALL
     security_opt:
       - no-new-privileges:true
     read_only: true
     tmpfs:
-      - /tmp/
       - /run/:rw,uid=101,gid=101,mode=0755
       - /var/cache/nginx/:rw,uid=101,gid=101,mode=0755
     networks:
       - private
+    depends_on:
+      - go
+      - ssr
     restart: unless-stopped
+
   cloudflared:
     image: cloudflare/cloudflared:2026.2.0
     volumes:
@@ -25,41 +28,37 @@ services:
     security_opt:
       - no-new-privileges:true
     read_only: true
-    tmpfs:
-      - /tmp/
     networks:
       - private
       - egress
     depends_on:
       - nginx
     restart: unless-stopped
+
   go:
     build:
       context: ./backend/
       dockerfile: ./Dockerfile
-    env_file: ./backend/.env
+    env_file: ./backend/.env.prd
     cap_drop:
       - ALL
     security_opt:
       - no-new-privileges:true
     read_only: true
-    tmpfs:
-      - /tmp/
     networks:
       - private
     restart: unless-stopped
-  node:
+
+  ssr:
     build:
       context: ./frontend/
-      dockerfile: ./Dockerfile
+      dockerfile: ./Dockerfile.ssr.prd
     env_file: ./frontend/.env
     cap_drop:
       - ALL
     security_opt:
       - no-new-privileges:true
     read_only: true
-    tmpfs:
-      - /tmp/
     networks:
       - private
     restart: unless-stopped

@@ -1,9 +1,11 @@
 **
 !public/
 !src/
-!Dockerfile
+!entrypoint.ssr.init.sh
+!entrypoint.ssr.watch.sh
+!Dockerfile*
 !package.json
 !package-lock.json
 !svelte.config.js
 !tsconfig.json
-!vite.server.config.js
+!vite.config.ssr.js

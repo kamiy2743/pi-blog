@@ -3,8 +3,10 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "build:client": "vite build --config vite.client.config.js",
-    "build:server": "vite build --ssr src/entry-server.ts --config vite.server.config.js"
+    "vite-dev": "vite --config vite.config.vite-dev.js",
+    "build:client": "vite build --config vite.config.client.js",
+    "build:ssr": "vite build --ssr src/ssr.ts --config vite.config.ssr.js",
+    "build:ssr:watch": "vite build --ssr src/ssr.ts --config vite.config.ssr.js --watch"
   },
   "dependencies": {
     "@inertiajs/svelte": "^2.1.6",

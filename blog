@@ -1,0 +1,76 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+usage() {
+  cat <<'EOF'
+usage:
+  ./blog {dev|prd} {up|down|restart|recreate} [docker compose args...]
+  ./blog {dev|prd} [docker compose args...]
+EOF
+}
+
+run_compose() {
+  local env="$1"
+  shift
+
+  local compose_file="$SCRIPT_DIR/docker-compose.${env}.yml"
+
+  if [[ ! -f "$compose_file" ]]; then
+    echo "compose file not found: $compose_file" >&2
+    exit 1
+  fi
+
+  docker compose -p "blog-${env}" -f "$compose_file" "$@"
+}
+
+main() {
+  if [[ $# -lt 1 ]]; then
+    usage
+    exit 1
+  fi
+
+  local command="$1"
+  shift
+
+  case "$command" in
+    dev|prd)
+      local env="$command"
+
+      if [[ $# -lt 1 ]]; then
+        usage
+        exit 1
+      fi
+
+      local action="$1"
+      shift
+
+      case "$action" in
+        up)
+          run_compose "$env" up -d --build "$@"
+          ;;
+        down)
+          run_compose "$env" down "$@"
+          ;;
+        restart)
+          run_compose "$env" restart "$@"
+          ;;
+        recreate)
+          run_compose "$env" down "$@"
+          run_compose "$env" up -d --build "$@"
+          ;;
+        *)
+          run_compose "$env" "$action" "$@"
+          ;;
+      esac
+      ;;
+    *)
+      usage
+      exit 1
+      ;;
+  esac
+}
+
+main "$@"

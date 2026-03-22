@@ -13,6 +13,14 @@ import (
 )
 
 func main() {
+	appEnvRaw := os.Getenv("APP_ENV")
+	if appEnvRaw == "" {
+		log.Fatal(".env に APP_ENV が未設定です。")
+	}
+	appEnv, err := model.ParseAppEnv(appEnvRaw)
+	if err != nil {
+		log.Fatal(err)
+	}
 	port := os.Getenv("PORT")
 	if port == "" {
 		log.Fatal(".env に PORT が未設定です。")
@@ -33,6 +41,7 @@ func main() {
 	if err != nil {
 		log.Fatalf("Inertia のテンプレート読み込みに失敗しました: %v", err)
 	}
+	configureTemplateAssets(appEnv, inertiaApp)
 
 	addr := ":" + port
 	mux := http.NewServeMux()
@@ -46,6 +55,26 @@ func main() {
 		return
 	}
 	log.Printf("listening on %s", addr)
+}
+
+func configureTemplateAssets(appEnv model.AppEnv, inertiaApp *inertia.Inertia) {
+	faviconHref := os.Getenv("TEMPLATE_FAVICON_HREF")
+	if faviconHref == "" {
+		log.Fatal(".env に TEMPLATE_FAVICON_HREF が未設定です。")
+	}
+	cssHref := os.Getenv("TEMPLATE_CSS_HREF")
+	if appEnv == model.AppEnvPrd && cssHref == "" {
+		log.Fatal(".env に TEMPLATE_CSS_HREF が未設定です。")
+	}
+	appScriptSrc := os.Getenv("TEMPLATE_APP_SCRIPT_SRC")
+	if appScriptSrc == "" {
+		log.Fatal(".env に TEMPLATE_APP_SCRIPT_SRC が未設定です。")
+	}
+
+	inertiaApp.ShareTemplateData("faviconHref", faviconHref)
+	inertiaApp.ShareTemplateData("cssHref", cssHref)
+	inertiaApp.ShareTemplateData("useViteClient", appEnv == model.AppEnvDev)
+	inertiaApp.ShareTemplateData("appScriptSrc", appScriptSrc)
 }
 
 func setupRootRoutes(mux *http.ServeMux, inertiaApp *inertia.Inertia) {

@@ -5,11 +5,11 @@ export default defineConfig({
   plugins: [svelte()],
   publicDir: false,
   build: {
-    outDir: './dist/server',
+    outDir: './dist/ssr/',
     emptyOutDir: true,
     rollupOptions: {
       output: {
-        entryFileNames: 'entry-server.js'
+        entryFileNames: 'ssr.js'
       }
     }
   }
