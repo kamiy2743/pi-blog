@@ -29,6 +29,9 @@ services:
       context: ./backend/
       dockerfile: ./Dockerfile
     env_file: ./backend/.env.dev
+    secrets:
+      - admin_basic_auth_user
+      - admin_basic_auth_pass
     cap_drop:
       - ALL
     security_opt:
@@ -76,3 +79,9 @@ networks:
 volumes:
   node_modules:
   ssr_dist:
+
+secrets:
+  admin_basic_auth_user:
+    file: ./secrets/admin_basic_auth_user
+  admin_basic_auth_pass:
+    file: ./secrets/admin_basic_auth_pass

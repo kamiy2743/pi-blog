@@ -22,7 +22,9 @@ services:
     image: cloudflare/cloudflared:2026.2.0
     volumes:
       - ./cloudflared/config.yml:/etc/cloudflared/config.yml:ro
-    command: tunnel --no-autoupdate --config /etc/cloudflared/config.yml run --token ${CLOUDFLARED_TUNNEL_TOKEN}
+    command: tunnel --no-autoupdate --config /etc/cloudflared/config.yml run --token-file /run/secrets/cloudflared_tunnel_token
+    secrets:
+      - cloudflared_tunnel_token
     cap_drop:
       - ALL
     security_opt:
@@ -40,6 +42,9 @@ services:
       context: ./backend/
       dockerfile: ./Dockerfile
     env_file: ./backend/.env.prd
+    secrets:
+      - admin_basic_auth_user
+      - admin_basic_auth_pass
     cap_drop:
       - ALL
     security_opt:
@@ -67,3 +72,11 @@ networks:
   private:
     internal: true
   egress:
+
+secrets:
+  cloudflared_tunnel_token:
+    file: ./secrets/cloudflared_tunnel_token
+  admin_basic_auth_user:
+    file: ./secrets/admin_basic_auth_user
+  admin_basic_auth_pass:
+    file: ./secrets/admin_basic_auth_pass

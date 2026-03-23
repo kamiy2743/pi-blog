@@ -4,6 +4,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strings"
 
 	"blog/internal/handler"
 	"blog/internal/middleware"
@@ -13,26 +14,14 @@ import (
 )
 
 func main() {
-	appEnvRaw := os.Getenv("APP_ENV")
-	if appEnvRaw == "" {
-		log.Fatal(".env に APP_ENV が未設定です。")
-	}
+	appEnvRaw := mustGetEnv("APP_ENV")
 	appEnv, err := model.ParseAppEnv(appEnvRaw)
 	if err != nil {
 		log.Fatal(err)
 	}
-	port := os.Getenv("PORT")
-	if port == "" {
-		log.Fatal(".env に PORT が未設定です。")
-	}
-	frontURL := os.Getenv("FRONT_URL")
-	if frontURL == "" {
-		log.Fatal(".env に FRONT_URL が未設定です。")
-	}
-	rootTemplate := os.Getenv("INERTIA_ROOT_TEMPLATE")
-	if rootTemplate == "" {
-		log.Fatal(".env に INERTIA_ROOT_TEMPLATE が未設定です。")
-	}
+	port := mustGetEnv("PORT")
+	frontURL := mustGetEnv("FRONT_URL")
+	rootTemplate := mustGetEnv("INERTIA_ROOT_TEMPLATE")
 
 	inertiaOptions := []inertia.Option{
 		inertia.WithSSR(frontURL),
@@ -62,18 +51,9 @@ func main() {
 }
 
 func configureTemplateAssets(appEnv model.AppEnv, inertiaApp *inertia.Inertia) {
-	faviconHref := os.Getenv("TEMPLATE_FAVICON_HREF")
-	if faviconHref == "" {
-		log.Fatal(".env に TEMPLATE_FAVICON_HREF が未設定です。")
-	}
-	cssHref := os.Getenv("TEMPLATE_CSS_HREF")
-	if appEnv == model.AppEnvPrd && cssHref == "" {
-		log.Fatal(".env に TEMPLATE_CSS_HREF が未設定です。")
-	}
-	appScriptSrc := os.Getenv("TEMPLATE_APP_SCRIPT_SRC")
-	if appScriptSrc == "" {
-		log.Fatal(".env に TEMPLATE_APP_SCRIPT_SRC が未設定です。")
-	}
+	faviconHref := mustGetEnv("TEMPLATE_FAVICON_HREF")
+	cssHref := mustGetEnv("TEMPLATE_CSS_HREF")
+	appScriptSrc := mustGetEnv("TEMPLATE_APP_SCRIPT_SRC")
 
 	inertiaApp.ShareTemplateData("faviconHref", faviconHref)
 	inertiaApp.ShareTemplateData("cssHref", cssHref)
@@ -107,14 +87,8 @@ func setupArticleRoutes(mux *http.ServeMux, inertiaApp *inertia.Inertia) {
 }
 
 func setupAdminRoutes(mux *http.ServeMux, inertiaApp *inertia.Inertia) {
-	authUser := os.Getenv("ADMIN_BASIC_AUTH_USER")
-	if authUser == "" {
-		log.Fatal(".env に ADMIN_BASIC_AUTH_USER が未設定です。")
-	}
-	authPass := os.Getenv("ADMIN_BASIC_AUTH_PASS")
-	if authPass == "" {
-		log.Fatal(".env に ADMIN_BASIC_AUTH_PASS が未設定です。")
-	}
+	authUser := mustGetSecret("ADMIN_BASIC_AUTH_USER_FILE")
+	authPass := mustGetSecret("ADMIN_BASIC_AUTH_PASS_FILE")
 
 	basicAuth := middleware.BasicAuth("blog-admin", authUser, authPass)
 	handleAdmin := middleware.HandleWith(mux, basicAuth)
@@ -149,4 +123,30 @@ func setupAdminRoutes(mux *http.ServeMux, inertiaApp *inertia.Inertia) {
 		}
 		handler.UpdatePublishSetting(w, r, articleID)
 	}))
+}
+
+func mustGetEnv(envName string) string {
+	value := os.Getenv(envName)
+	if value == "" {
+		log.Fatalf(".env に %s が未設定です。", envName)
+	}
+	return value
+}
+
+func mustGetSecret(envName string) string {
+	path := os.Getenv(envName)
+	if path == "" {
+		log.Fatalf(".env に %s が未設定です。", envName)
+	}
+
+	raw, err := os.ReadFile(path)
+	if err != nil {
+		log.Fatalf("%s の読み込みに失敗しました: %v", envName, err)
+	}
+
+	value := strings.TrimSpace(string(raw))
+	if value == "" {
+		log.Fatalf("%s の内容が空です。", envName)
+	}
+	return value
 }
