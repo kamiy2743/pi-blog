@@ -4,9 +4,8 @@ WORKDIR /app
 
 COPY ./package.json ./package.json
 COPY ./package-lock.json ./package-lock.json
-COPY ./entrypoint.ssr.init.sh /usr/local/bin/entrypoint.ssr.init.sh
-COPY ./entrypoint.ssr.watch.sh /usr/local/bin/entrypoint.ssr.watch.sh
+COPY ./docker-entrypoint.ssr.sh /usr/local/bin/docker-entrypoint.ssr.sh
 RUN mkdir -p /app/dist /app/node_modules
 RUN npm ci
 
-ENTRYPOINT ["entrypoint.ssr.init.sh"]
+ENTRYPOINT ["docker-entrypoint.ssr.sh"]

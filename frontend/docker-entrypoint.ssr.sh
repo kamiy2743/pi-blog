@@ -2,6 +2,8 @@
 
 set -euo pipefail
 
+rm -rf ./dist/*
+
 npm run build:ssr:watch &
 
 while [ ! -f ./dist/ssr/ssr.js ]; do

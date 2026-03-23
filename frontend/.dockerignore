@@ -1,8 +1,7 @@
 **
 !public/
 !src/
-!entrypoint.ssr.init.sh
-!entrypoint.ssr.watch.sh
+!docker-entrypoint.ssr.sh
 !Dockerfile*
 !package.json
 !package-lock.json
