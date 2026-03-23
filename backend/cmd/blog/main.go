@@ -45,7 +45,11 @@ func main() {
 
 	addr := ":" + port
 	mux := http.NewServeMux()
-	handler := http.NewCrossOriginProtection().Handler(mux)
+	handler := middleware.Chain(
+		http.NewCrossOriginProtection().Handler(mux),
+		middleware.NormalizePath(),
+	)
+
 	setupRootRoutes(mux, inertiaApp)
 	setupArticleRoutes(mux, inertiaApp)
 	setupAdminRoutes(mux, inertiaApp)
@@ -82,7 +86,7 @@ func setupRootRoutes(mux *http.ServeMux, inertiaApp *inertia.Inertia) {
 
 	mux.Handle("GET /", inertiaApp.Middleware(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.URL.Path != "/" {
-			http.NotFound(w, r)
+			handler.ShowNotFound(inertiaApp)(w, r)
 			return
 		}
 		handler.ShowTop(inertiaApp)(w, r)
@@ -91,12 +95,11 @@ func setupRootRoutes(mux *http.ServeMux, inertiaApp *inertia.Inertia) {
 
 func setupArticleRoutes(mux *http.ServeMux, inertiaApp *inertia.Inertia) {
 	mux.Handle("GET /article", inertiaApp.Middleware(handler.ShowArticleList(inertiaApp)))
-	mux.Handle("GET /article/", inertiaApp.Middleware(handler.ShowArticleList(inertiaApp)))
 
 	mux.Handle("GET /article/{articleId}", inertiaApp.Middleware(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		articleID, err := model.ParseArticleID(r.PathValue("articleId"))
 		if err != nil {
-			http.NotFound(w, r)
+			handler.ShowNotFound(inertiaApp)(w, r)
 			return
 		}
 		handler.ShowArticle(inertiaApp, articleID)(w, r)
@@ -117,7 +120,6 @@ func setupAdminRoutes(mux *http.ServeMux, inertiaApp *inertia.Inertia) {
 	handleAdmin := middleware.HandleWith(mux, basicAuth)
 
 	handleAdmin("GET /admin", inertiaApp.Middleware(handler.ShowAdmin(inertiaApp)))
-	handleAdmin("GET /admin/", inertiaApp.Middleware(handler.ShowAdmin(inertiaApp)))
 
 	handleAdmin("GET /admin/article/new", inertiaApp.Middleware(handler.CreateArticle(inertiaApp)))
 	handleAdmin("POST /admin/article/new", http.HandlerFunc(handler.StoreArticle))
@@ -125,7 +127,7 @@ func setupAdminRoutes(mux *http.ServeMux, inertiaApp *inertia.Inertia) {
 	handleAdmin("GET /admin/article/edit/{articleId}", inertiaApp.Middleware(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		articleID, err := model.ParseArticleID(r.PathValue("articleId"))
 		if err != nil {
-			http.NotFound(w, r)
+			handler.ShowNotFound(inertiaApp)(w, r)
 			return
 		}
 		handler.EditArticle(inertiaApp, articleID)(w, r)
