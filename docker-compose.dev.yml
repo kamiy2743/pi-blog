@@ -82,6 +82,6 @@ volumes:
 
 secrets:
   admin_basic_auth_user:
-    file: ./secrets/admin_basic_auth_user
+    file: ./secrets/dev/admin_basic_auth_user
   admin_basic_auth_pass:
-    file: ./secrets/admin_basic_auth_pass
+    file: ./secrets/dev/admin_basic_auth_pass

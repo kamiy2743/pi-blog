@@ -75,8 +75,8 @@ networks:
 
 secrets:
   cloudflared_tunnel_token:
-    file: ./secrets/cloudflared_tunnel_token
+    file: ./secrets/prd/cloudflared_tunnel_token
   admin_basic_auth_user:
-    file: ./secrets/admin_basic_auth_user
+    file: ./secrets/prd/admin_basic_auth_user
   admin_basic_auth_pass:
-    file: ./secrets/admin_basic_auth_pass
+    file: ./secrets/prd/admin_basic_auth_pass
