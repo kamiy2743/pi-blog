@@ -39,6 +39,27 @@ services:
     read_only: true
     networks:
       - private
+    depends_on:
+      - mysql
+    restart: unless-stopped
+
+  mysql:
+    image: mysql:8.4
+    environment:
+      MYSQL_ROOT_PASSWORD_FILE: /run/secrets/mysql_root_password
+      MYSQL_USER_FILE: /run/secrets/mysql_user
+      MYSQL_PASSWORD_FILE: /run/secrets/mysql_user_password
+    command: ["mysqld", "--character-set-server=utf8mb4", "--collation-server=utf8mb4_unicode_ci"]
+    secrets:
+      - mysql_root_password
+      - mysql_user
+      - mysql_user_password
+    security_opt:
+      - no-new-privileges:true
+    volumes:
+      - mysql_data:/var/lib/mysql/
+    networks:
+      - private
     restart: unless-stopped
 
   vite-dev:
@@ -77,6 +98,7 @@ networks:
   egress:
 
 volumes:
+  mysql_data:
   node_modules:
   ssr_dist:
 
@@ -85,3 +107,9 @@ secrets:
     file: ./secrets/dev/admin_basic_auth_user
   admin_basic_auth_pass:
     file: ./secrets/dev/admin_basic_auth_pass
+  mysql_root_password:
+    file: ./secrets/dev/mysql_root_password
+  mysql_user:
+    file: ./secrets/dev/mysql_user
+  mysql_user_password:
+    file: ./secrets/dev/mysql_user_password
