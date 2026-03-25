@@ -9,6 +9,7 @@ usage() {
 usage:
   ./blog {dev|prd} {up|down|restart|recreate} [docker compose args...]
   ./blog {dev|prd} [docker compose args...]
+  ./blog {dev|prd} migrate {up|down|fresh|status} [goose args...]
 EOF
 }
 
@@ -17,13 +18,51 @@ run_compose() {
   shift
 
   local compose_file="$SCRIPT_DIR/docker-compose.${env}.yml"
-
-  if [[ ! -f "$compose_file" ]]; then
-    echo "compose file not found: $compose_file" >&2
-    exit 1
-  fi
-
   docker compose -p "blog-${env}" -f "$compose_file" "$@"
+}
+
+get_secret_value() {
+  local env="$1"
+  local secret_name="$2"
+  tr -d '\r\n' <"$SCRIPT_DIR/secrets/$env/$secret_name"
+}
+
+run_goose() {
+  local env="$1"
+  shift
+
+  local db_user="$(get_secret_value "$env" mysql_user)"
+  local db_password="$(get_secret_value "$env" mysql_user_password)"
+
+  docker run --rm \
+    --entrypoint goose \
+    --network "blog-${env}_private" \
+    -v "$SCRIPT_DIR/backend/db/migrations/:/migrations/:ro" \
+    "ghcr.io/kukymbr/goose-docker:3.27.0" \
+    mysql \
+    "${db_user}:${db_password}@tcp(mysql:3306)/blog?parseTime=true" \
+    -dir /migrations \
+    "$@"
+}
+
+migrate() {
+  local env="$1"
+  local action="$2"
+  shift 2
+
+  case "$action" in
+    up|down|status)
+      run_goose "$env" "$action" "$@"
+      ;;
+    fresh)
+      run_goose "$env" reset "$@"
+      run_goose "$env" up
+      ;;
+    *)
+      echo "unsupported migrate action: $action" >&2
+      exit 1
+      ;;
+  esac
 }
 
 main() {
@@ -60,6 +99,13 @@ main() {
         recreate)
           run_compose "$env" down "$@"
           run_compose "$env" up -d --build "$@"
+          ;;
+        migrate)
+          if [[ $# -lt 1 ]]; then
+            usage
+            exit 1
+          fi
+          migrate "$env" "$@"
           ;;
         *)
           run_compose "$env" "$action" "$@"
