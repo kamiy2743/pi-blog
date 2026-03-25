@@ -11,6 +11,7 @@ usage:
   ./blog {dev|prd} [docker compose args...]
   ./blog {dev|prd} mysql [mysql args...]
   ./blog {dev|prd} migrate {up|down|fresh|status} [goose args...]
+  ./blog {dev|prd} seed <seed_name>
 EOF
 }
 
@@ -78,6 +79,23 @@ migrate() {
   esac
 }
 
+seed() {
+  local env="$1"
+  local db_user="$(get_secret_value "$env" mysql_user)"
+  local db_password="$(get_secret_value "$env" mysql_user_password)"
+  local seed="$2"
+  local seed_file="$SCRIPT_DIR/backend/db/seeds/$seed.sql"
+
+  if [[ ! -f "$seed_file" ]]; then
+    echo "seed file not found: $seed_file" >&2
+    exit 1
+  fi
+
+    run_compose "$env" exec -T mysql \
+      mysql "-u${db_user}" "-p${db_password}" \
+      blog < "$seed_file"
+}
+
 main() {
   if [[ $# -lt 1 ]]; then
     usage
@@ -122,6 +140,13 @@ main() {
             exit 1
           fi
           migrate "$env" "$@"
+          ;;
+        seed)
+          if [[ $# -lt 1 ]]; then
+            usage
+            exit 1
+          fi
+          seed "$env" "$1"
           ;;
         *)
           run_compose "$env" "$action" "$@"
