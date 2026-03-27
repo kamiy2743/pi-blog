@@ -12,6 +12,7 @@ usage:
   ./blog {dev|prd} mysql [mysql args...]
   ./blog {dev|prd} migrate {up|down|fresh|status} [goose args...]
   ./blog {dev|prd} seed <seed_name>
+  ./blog {dev|prd} sqlc [sqlc args...]
 EOF
 }
 
@@ -55,8 +56,32 @@ run_goose() {
     "ghcr.io/kukymbr/goose-docker:3.27.0" \
     mysql \
     "${db_user}:${db_password}@tcp(mysql:3306)/blog?parseTime=true" \
-    -dir /migrations \
+    -dir /migrations/ \
     "$@"
+}
+
+run_sqlc() {
+  local command="$1"
+  shift
+
+  local args=()
+
+  case "$command" in
+    generate)
+      args+=("$command")
+      ;;
+    *)
+      args+=("$command")
+      ;;
+  esac
+
+  args+=("$@")
+
+  docker run --rm \
+    -v "$SCRIPT_DIR/backend/:/src/" \
+    -w /src/ \
+    "sqlc/sqlc:latest" \
+    "${args[@]}"
 }
 
 migrate() {
@@ -147,6 +172,13 @@ main() {
             exit 1
           fi
           seed "$env" "$1"
+          ;;
+        sqlc)
+          if [[ $# -lt 1 ]]; then
+            usage
+            exit 1
+          fi
+          run_sqlc "$@"
           ;;
         *)
           run_compose "$env" "$action" "$@"
