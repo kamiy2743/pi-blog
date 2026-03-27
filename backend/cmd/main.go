@@ -3,9 +3,8 @@ package main
 import (
 	"log"
 	"net/http"
-	"os"
-	"strings"
 
+	"blog/internal/config"
 	"blog/internal/handler"
 	"blog/internal/middleware"
 	"blog/internal/model"
@@ -14,17 +13,13 @@ import (
 )
 
 func main() {
-	appEnvRaw := mustGetEnv("APP_ENV")
-	appEnv, err := model.ParseAppEnv(appEnvRaw)
-	if err != nil {
-		log.Fatal(err)
-	}
-	port := mustGetEnv("PORT")
-	frontURL := mustGetEnv("FRONT_URL")
-	rootTemplate := mustGetEnv("INERTIA_ROOT_TEMPLATE")
+	appEnv := config.MustGetAppEnv()
+	port := config.MustGetPort()
+	ssrURL := config.MustGetSSRURL()
+	rootTemplate := config.MustGetInertiaRootTemplate()
 
 	inertiaOptions := []inertia.Option{
-		inertia.WithSSR(frontURL),
+		inertia.WithSSR(ssrURL),
 	}
 	inertiaApp, err := inertia.NewFromFile(rootTemplate, inertiaOptions...)
 	if err != nil {
@@ -51,9 +46,9 @@ func main() {
 }
 
 func configureTemplateAssets(appEnv model.AppEnv, inertiaApp *inertia.Inertia) {
-	faviconHref := mustGetEnv("TEMPLATE_FAVICON_HREF")
-	cssHref := mustGetEnv("TEMPLATE_CSS_HREF")
-	appScriptSrc := mustGetEnv("TEMPLATE_APP_SCRIPT_SRC")
+	faviconHref := config.MustGetTemplateFaviconHref()
+	cssHref := config.MustGetTemplateCSSHref()
+	appScriptSrc := config.MustGetTemplateAppScriptSrc()
 
 	inertiaApp.ShareTemplateData("faviconHref", faviconHref)
 	inertiaApp.ShareTemplateData("cssHref", cssHref)
@@ -87,8 +82,8 @@ func setupArticleRoutes(mux *http.ServeMux, inertiaApp *inertia.Inertia) {
 }
 
 func setupAdminRoutes(mux *http.ServeMux, inertiaApp *inertia.Inertia) {
-	authUser := mustGetSecret("ADMIN_BASIC_AUTH_USER_FILE")
-	authPass := mustGetSecret("ADMIN_BASIC_AUTH_PASS_FILE")
+	authUser := config.MustGetAdminBasicAuthUser()
+	authPass := config.MustGetAdminBasicAuthPass()
 
 	basicAuth := middleware.BasicAuth("blog-admin", authUser, authPass)
 	handleAdmin := middleware.HandleWith(mux, basicAuth)
@@ -123,30 +118,4 @@ func setupAdminRoutes(mux *http.ServeMux, inertiaApp *inertia.Inertia) {
 		}
 		handler.UpdatePublishSetting(w, r, articleID)
 	}))
-}
-
-func mustGetEnv(envName string) string {
-	value := os.Getenv(envName)
-	if value == "" {
-		log.Fatalf(".env に %s が未設定です。", envName)
-	}
-	return value
-}
-
-func mustGetSecret(envName string) string {
-	path := os.Getenv(envName)
-	if path == "" {
-		log.Fatalf(".env に %s が未設定です。", envName)
-	}
-
-	raw, err := os.ReadFile(path)
-	if err != nil {
-		log.Fatalf("%s の読み込みに失敗しました: %v", envName, err)
-	}
-
-	value := strings.TrimSpace(string(raw))
-	if value == "" {
-		log.Fatalf("%s の内容が空です。", envName)
-	}
-	return value
 }

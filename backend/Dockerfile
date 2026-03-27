@@ -3,7 +3,7 @@ FROM golang:1.26-bookworm AS builder
 WORKDIR /app
 
 COPY ./ ./
-RUN go build -o ./blog-back ./cmd/blog/
+RUN go build -o ./blog-back ./cmd/
 
 FROM  debian:bookworm-slim
 
