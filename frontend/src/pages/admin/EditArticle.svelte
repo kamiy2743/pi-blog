@@ -21,12 +21,12 @@
           <div class="muted">本文 (Markdown)</div>
           <textarea name="content_md" rows="10" style="width: 100%; padding: 10px; border-radius: 10px; border: 1px solid #e2d8cc;"></textarea>
         </label>
+        <label style="display: flex; align-items: center; gap: 8px;">
+          <input name="is_published" type="checkbox" />
+          <span class="muted">公開する</span>
+        </label>
         <button class="cta" type="submit">更新</button>
       </div>
-    </form>
-
-    <form method="post" action={`/admin/article/publish/${articleId}`} style="margin-top: 12px;">
-      <button class="cta" type="submit">公開/非公開を切替</button>
     </form>
   </div>
 </div>

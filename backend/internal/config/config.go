@@ -3,12 +3,12 @@ package config
 import (
 	"log"
 
-	"blog/internal/model"
+	"blog/internal/domain"
 )
 
-func MustGetAppEnv() model.AppEnv {
+func MustGetAppEnv() domain.AppEnv {
 	appEnvRaw := mustGetEnvString("APP_ENV")
-	appEnv, err := model.ParseAppEnv(appEnvRaw)
+	appEnv, err := domain.ParseAppEnv(appEnvRaw)
 	if err != nil {
 		log.Fatal(err)
 	}
