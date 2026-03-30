@@ -3,12 +3,24 @@ package show
 import (
 	"net/http"
 
+	"blog/internal/domain/article"
+	"blog/internal/domain/category"
+
 	inertia "github.com/romsar/gonertia/v2"
 )
 
-func Handle(i *inertia.Inertia) http.HandlerFunc {
+func Handle(
+	i *inertia.Inertia,
+	articleRepository article.ArticleRepository,
+	categoryRepository category.CategoryRepository,
+) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		if err := i.Render(w, r, "ShowTop", nil); err != nil {
+		result, err := Run(r.Context(), articleRepository, categoryRepository)
+		if err != nil {
+			http.Error(w, "記事取得エラー", http.StatusInternalServerError)
+			return
+		}
+		if err := i.Render(w, r, "ShowTop", Format(result)); err != nil {
 			http.Error(w, "描画エラー", http.StatusInternalServerError)
 		}
 	}

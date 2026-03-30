@@ -1,1 +1,36 @@
 package show
+
+import (
+	"time"
+
+	inertia "github.com/romsar/gonertia/v2"
+)
+
+func Format(result ShowTopResult) inertia.Props {
+	latestArticles := make([]map[string]any, 0, len(result.LatestArticles))
+	for _, article := range result.LatestArticles {
+		categoryNames := make([]string, 0, len(article.Categories))
+		for _, category := range article.Categories {
+			categoryNames = append(categoryNames, category.Name)
+		}
+		latestArticles = append(latestArticles, map[string]any{
+			"id":            string(article.ID),
+			"title":         article.Title,
+			"date":          article.UpdatedAt.Format(time.RFC3339),
+			"categoryNames": categoryNames,
+		})
+	}
+
+	categories := make([]map[string]any, 0, len(result.Categories))
+	for _, category := range result.Categories {
+		categories = append(categories, map[string]any{
+			"id":   string(category.ID),
+			"name": category.Name,
+		})
+	}
+
+	return inertia.Props{
+		"latestArticles": latestArticles,
+		"categories":     categories,
+	}
+}

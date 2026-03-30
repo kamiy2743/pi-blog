@@ -5,30 +5,28 @@
 <script lang="ts">
   import { Link } from '@inertiajs/svelte'
 
-  const latestArticles = [
-    {
-      title: 'Raspberry Pi 5 の常時稼働メモ',
-      date: '2025.02.10',
-      category: 'Infra'
-    },
-    {
-      title: 'Go と SQLite で小さな CMS を組む',
-      date: '2025.02.04',
-      category: 'Backend'
-    },
-    {
-      title: 'Cloudflare Tunnel で公開構成を整理する',
-      date: '2025.01.28',
-      category: 'Network'
-    }
-  ]
+  type Article = {
+    id: string
+    title: string
+    date: string
+    categoryNames: string[]
+  }
 
-  const categoryLinks = [
-    { name: 'Infra', href: '/article?category=infra' },
-    { name: 'Backend', href: '/article?category=backend' },
-    { name: 'Network', href: '/article?category=network' },
-    { name: 'Raspberry Pi', href: '/article?category=raspberry-pi' }
-  ]
+  type Category = {
+    id: string
+    name: string
+  }
+
+  export let latestArticles: Article[] = []
+  export let categories: Category[] = []
+
+  function formatDate(value: string): string {
+    return new Intl.DateTimeFormat('ja-JP', {
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit'
+    }).format(new Date(value))
+  }
 </script>
 
 <div class="mx-auto max-w-7xl px-6 py-10 sm:px-8 lg:px-10 lg:py-12">
@@ -50,10 +48,10 @@
         <div class="blog-side-card rounded-[1.5rem] border p-6">
           <h2 class="blog-section-title text-2xl font-semibold">カテゴリ</h2>
           <div class="mt-5 space-y-3">
-            {#each categoryLinks as category}
+            {#each categories as category}
               <Link
                 class="blog-category-link block rounded-2xl border px-4 py-3 font-semibold transition"
-                href={category.href}
+                href={`/article?categoryId=${encodeURIComponent(category.id)}`}
               >
                 {category.name}
               </Link>
@@ -78,14 +76,16 @@
           {#each latestArticles as article}
             <Link
               class="blog-article-card group block rounded-[1.35rem] border px-5 py-5 transition"
-              href="/article"
+              href={`/article/${article.id}`}
             >
-              <p class="blog-accent text-sm font-semibold">{article.date}</p>
+              <p class="blog-accent text-sm font-semibold">{formatDate(article.date)}</p>
               <h3 class="blog-card-title mt-2 text-xl font-semibold">
                 {article.title}
               </h3>
-              <div class="mt-3">
-                <span class="blog-category-pill px-3 py-1 text-sm font-semibold">{article.category}</span>
+              <div class="mt-3 flex flex-wrap gap-2">
+                {#each article.categoryNames as categoryName}
+                  <span class="blog-category-pill px-3 py-1 text-sm font-semibold">{categoryName}</span>
+                {/each}
               </div>
             </Link>
           {/each}
