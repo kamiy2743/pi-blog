@@ -43,6 +43,8 @@ services:
       dockerfile: ./Dockerfile
     env_file: ./backend/.env.prd
     secrets:
+      - mysql_user
+      - mysql_user_password
       - admin_basic_auth_user
       - admin_basic_auth_pass
     cap_drop:

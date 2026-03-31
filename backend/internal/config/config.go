@@ -24,6 +24,26 @@ func MustGetSSRURL() string {
 	return mustGetEnvString("SSR_URL")
 }
 
+func MustGetMySQLHost() string {
+	return mustGetEnvString("MYSQL_HOST")
+}
+
+func MustGetMySQLPort() string {
+	return mustGetEnvString("MYSQL_PORT")
+}
+
+func MustGetMySQLDatabase() string {
+	return mustGetEnvString("MYSQL_DATABASE")
+}
+
+func MustGetMySQLUser() string {
+	return mustGetSecretString("mysql_user")
+}
+
+func MustGetMySQLPassword() string {
+	return mustGetSecretString("mysql_user_password")
+}
+
 func MustGetInertiaRootTemplate() string {
 	return mustGetEnvString("INERTIA_ROOT_TEMPLATE")
 }
