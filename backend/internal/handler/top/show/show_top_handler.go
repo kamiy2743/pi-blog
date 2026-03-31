@@ -6,11 +6,11 @@ import (
 	"blog/internal/domain/article"
 	"blog/internal/domain/category"
 
-	inertia "github.com/romsar/gonertia/v2"
+	"github.com/romsar/gonertia/v2"
 )
 
 func Handle(
-	i *inertia.Inertia,
+	i *gonertia.Inertia,
 	articleRepository article.ArticleRepository,
 	categoryRepository category.CategoryRepository,
 ) http.HandlerFunc {

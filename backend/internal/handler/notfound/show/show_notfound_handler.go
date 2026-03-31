@@ -4,10 +4,10 @@ import (
 	"net/http"
 	"net/http/httptest"
 
-	inertia "github.com/romsar/gonertia/v2"
+	"github.com/romsar/gonertia/v2"
 )
 
-func Handle(i *inertia.Inertia) http.HandlerFunc {
+func Handle(i *gonertia.Inertia) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if err := renderWithStatus(w, http.StatusNotFound, func(target http.ResponseWriter) error {
 			return i.Render(target, r, "NotFound", nil)
