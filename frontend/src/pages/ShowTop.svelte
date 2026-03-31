@@ -6,14 +6,14 @@
   import { Link } from '@inertiajs/svelte'
 
   type Article = {
-    id: string
+    id: number
     title: string
     date: string
     categoryNames: string[]
   }
 
   type Category = {
-    id: string
+    id: number
     name: string
   }
 

@@ -3,10 +3,10 @@ package show
 import (
 	"time"
 
-	inertia "github.com/romsar/gonertia/v2"
+	"github.com/romsar/gonertia/v2"
 )
 
-func Format(result ShowTopResult) inertia.Props {
+func Format(result ShowTopResult) gonertia.Props {
 	latestArticles := make([]map[string]any, 0, len(result.LatestArticles))
 	for _, article := range result.LatestArticles {
 		categoryNames := make([]string, 0, len(article.Categories))
@@ -14,7 +14,7 @@ func Format(result ShowTopResult) inertia.Props {
 			categoryNames = append(categoryNames, category.Name)
 		}
 		latestArticles = append(latestArticles, map[string]any{
-			"id":            string(article.ID),
+			"id":            article.ID,
 			"title":         article.Title,
 			"date":          article.UpdatedAt.Format(time.RFC3339),
 			"categoryNames": categoryNames,
@@ -24,12 +24,12 @@ func Format(result ShowTopResult) inertia.Props {
 	categories := make([]map[string]any, 0, len(result.Categories))
 	for _, category := range result.Categories {
 		categories = append(categories, map[string]any{
-			"id":   string(category.ID),
+			"id":   category.ID,
 			"name": category.Name,
 		})
 	}
 
-	return inertia.Props{
+	return gonertia.Props{
 		"latestArticles": latestArticles,
 		"categories":     categories,
 	}
