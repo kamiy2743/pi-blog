@@ -24,7 +24,10 @@ func Run(
 		return ShowTopResult{}, err
 	}
 
-	categories, err := categoryRepository.All(ctx)
+	categories, err := categoryRepository.All(ctx, domain.OrderBy{
+		Column:    "name",
+		Direction: domain.OrderDirectionAsc,
+	})
 	if err != nil {
 		return ShowTopResult{}, err
 	}
