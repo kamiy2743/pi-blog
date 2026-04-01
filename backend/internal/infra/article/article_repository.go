@@ -2,107 +2,50 @@ package article
 
 import (
 	"context"
-	"slices"
-	"strings"
-	"time"
+	"fmt"
 
-	"blog/internal/domain"
-	"blog/internal/domain/article"
-	"blog/internal/domain/category"
+	domainArticle "blog/internal/domain/article"
+	"blog/internal/ent"
+	entArticle "blog/internal/ent/article"
 )
 
-type ArticleRepository struct{}
-
-func NewArticleRepository() *ArticleRepository {
-	return &ArticleRepository{}
+type ArticleRepository struct {
+	client *ent.Client
 }
 
-func (r *ArticleRepository) Create(_ context.Context, input article.CreateArticleInput) (article.Article, error) {
-	if err := input.Validate(); err != nil {
-		return article.Article{}, err
-	}
-
-	now := time.Date(2025, 1, 1, 12, 0, 0, 0, time.UTC)
-	raspiCategoryID, _ := category.ParseCategoryID("1")
-	return article.Article{
-		ID:         article.ArticleID("1"),
-		Title:      input.Title,
-		ContentMD:  input.ContentMD,
-		Categories: withDefaultCategories(input.Categories, []category.Category{{ID: raspiCategoryID, Name: "Raspberry Pi"}}),
-		UpdatedAt:  now,
-	}, nil
+func NewArticleRepository(client *ent.Client) *ArticleRepository {
+	return &ArticleRepository{client: client}
 }
 
-func (r *ArticleRepository) Search(_ context.Context, criteria article.SearchArticleCriteria) ([]article.Article, error) {
-	raspiCategoryID, _ := category.ParseCategoryID("1")
-	infraCategoryID, _ := category.ParseCategoryID("2")
-	articles := []article.Article{
-		{
-			ID:        article.ArticleID("1"),
-			Title:     "Raspberry Pi 5 の常時稼働メモ",
-			ContentMD: "# Raspberry Pi 5\n\n常時稼働の設定メモです。",
-			Categories: []category.Category{
-				{ID: raspiCategoryID, Name: "Raspberry Pi"},
-			},
-			UpdatedAt: time.Date(2025, 1, 2, 12, 0, 0, 0, time.UTC),
-		},
-		{
-			ID:        article.ArticleID("2"),
-			Title:     "Cloudflare Tunnel で公開構成を整理する",
-			ContentMD: "# Cloudflare Tunnel\n\n公開構成の整理メモです。",
-			Categories: []category.Category{
-				{ID: infraCategoryID, Name: "Infrastructure"},
-			},
-			UpdatedAt: time.Date(2025, 1, 4, 12, 0, 0, 0, time.UTC),
-		},
-	}
-
-	if strings.TrimSpace(criteria.Title) == "" {
-		return applySearchCriteria(articles, criteria), nil
-	}
-
-	filtered := make([]article.Article, 0, len(articles))
-	for _, article := range articles {
-		if strings.Contains(article.Title, criteria.Title) {
-			filtered = append(filtered, article)
-		}
-	}
-	return applySearchCriteria(filtered, criteria), nil
+func (r *ArticleRepository) Create(ctx context.Context, input domainArticle.CreateArticleInput) (domainArticle.Article, error) {
+	return domainArticle.Article{}, nil
 }
 
-func (r *ArticleRepository) Update(_ context.Context, article article.Article) error {
-	return article.Validate()
+func (r *ArticleRepository) Update(ctx context.Context, input domainArticle.Article) error {
+	return nil
 }
 
-func withDefaultCategories(categories []category.Category, defaultCategories []category.Category) []category.Category {
-	if len(categories) == 0 {
-		return defaultCategories
-	}
-	return categories
-}
+func (r *ArticleRepository) Search(ctx context.Context, criteria domainArticle.SearchArticleCriteria) ([]domainArticle.Article, error) {
+	query := r.client.Article.Query().WithCategories()
 
-func applySearchCriteria(articles []article.Article, criteria article.SearchArticleCriteria) []article.Article {
-	filtered := slices.Clone(articles)
-
-	if criteria.OrderBy.Column != "" {
-		sortArticles(filtered, criteria.OrderBy)
+	if criteria.Title != "" {
+		query.Where(entArticle.TitleContainsFold(criteria.Title))
 	}
 
-	if criteria.Limit > 0 && len(filtered) > criteria.Limit {
-		filtered = filtered[:criteria.Limit]
+	switch criteria.OrderBy {
+	case domainArticle.OrderByLatest:
+		query.Order(ent.Desc(entArticle.FieldUpdatedAt))
+	default:
+		return nil, fmt.Errorf("未対応の記事の並び順です: %s", criteria.OrderBy)
 	}
 
-	return filtered
-}
-
-func sortArticles(articles []article.Article, orderBy domain.OrderBy) {
-	switch orderBy.Column {
-	case "updated_at":
-		slices.SortFunc(articles, func(a article.Article, b article.Article) int {
-			if orderBy.Direction == domain.OrderDirectionAsc {
-				return a.UpdatedAt.Compare(b.UpdatedAt)
-			}
-			return b.UpdatedAt.Compare(a.UpdatedAt)
-		})
+	if criteria.Limit > 0 {
+		query.Limit(criteria.Limit)
 	}
+
+	models, err := query.All(ctx)
+	if err != nil {
+		return nil, err
+	}
+	return hydrateArticles(models), nil
 }

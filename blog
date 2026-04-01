@@ -6,13 +6,13 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 usage() {
   cat <<'EOF'
-usage:
+使い方:
   ./blog {dev|prd} {up|down|restart|recreate} [docker compose args...]
   ./blog {dev|prd} [docker compose args...]
   ./blog {dev|prd} mysql [mysql args...]
-  ./blog {dev|prd} migrate {up|down|fresh|status} [goose args...]
+  ./blog ent generate
+  ./blog {dev|prd} migrate {up|down|refresh}
   ./blog {dev|prd} seed <seed_name>
-  ./blog sqlc [sqlc args...]
 EOF
 }
 
@@ -42,69 +42,46 @@ run_mysql() {
     "$@"
 }
 
-run_goose() {
-  local env="$1"
-  shift
-
-  local db_user="$(get_secret_value "$env" mysql_user)"
-  local db_password="$(get_secret_value "$env" mysql_user_password)"
-
-  docker run --rm \
-    --entrypoint goose \
-    --network "blog-${env}_private" \
-    -v "$SCRIPT_DIR/backend/db/migrations/:/migrations/:ro" \
-    "ghcr.io/kukymbr/goose-docker:3.27.0" \
-    mysql \
-    "${db_user}:${db_password}@tcp(mysql:3306)/blog?parseTime=true" \
-    -dir /migrations/ \
-    "$@"
-}
-
-run_sqlc() {
+run_ent() {
   local command="$1"
   shift
 
-  local args=()
-
   case "$command" in
     generate)
-      args+=("$command")
+      (cd "$SCRIPT_DIR/backend" && /usr/local/go/bin/go generate ./internal/ent "$@")
       ;;
     *)
-      args+=("$command")
-      ;;
-  esac
-
-  args+=("$@")
-
-  docker run --rm \
-    -v "$SCRIPT_DIR/backend/:/src/" \
-    -w /src/ \
-    "sqlc/sqlc:latest" \
-    "${args[@]}"
-}
-
-migrate() {
-  local env="$1"
-  local action="$2"
-  shift 2
-
-  case "$action" in
-    up|down|status)
-      run_goose "$env" "$action" "$@"
-      ;;
-    fresh)
-      run_goose "$env" reset "$@"
-      run_goose "$env" up
-      ;;
-    *)
-      echo "unsupported migrate action: $action" >&2
+      echo "未対応の ent コマンドです: $command" >&2
       exit 1
       ;;
   esac
 }
 
-seed() {
+run_migrate() {
+  local env="$1"
+  local command="$2"
+  local image_tag="blog-migration:${env}"
+
+  case "$command" in
+    up|down|refresh)
+      docker build \
+        -f "$SCRIPT_DIR/backend/Dockerfile.migration" \
+        -t "$image_tag" \
+        "$SCRIPT_DIR/backend"
+      docker run --rm \
+        --network "blog-${env}_private" \
+        --env-file "$SCRIPT_DIR/backend/.env.${env}" \
+        --mount "type=bind,src="$SCRIPT_DIR/secrets/${env}",dst=/run/secrets,readonly" \
+        "$image_tag" "$command"
+      ;;
+    *)
+      echo "未対応の migrate コマンドです: $command" >&2
+      exit 1
+      ;;
+  esac
+}
+
+run_seed() {
   local env="$1"
   local db_user="$(get_secret_value "$env" mysql_user)"
   local db_password="$(get_secret_value "$env" mysql_user_password)"
@@ -112,7 +89,7 @@ seed() {
   local seed_file="$SCRIPT_DIR/backend/db/seeds/$seed.sql"
 
   if [[ ! -f "$seed_file" ]]; then
-    echo "seed file not found: $seed_file" >&2
+    echo "seed ファイルが見つかりません: $seed_file" >&2
     exit 1
   fi
 
@@ -131,12 +108,12 @@ main() {
   shift
 
   case "$command" in
-    sqlc)
+    ent)
       if [[ $# -lt 1 ]]; then
         usage
         exit 1
       fi
-      run_sqlc "$@"
+      run_ent "$@"
       ;;
     dev|prd)
       local env="$command"
@@ -171,14 +148,14 @@ main() {
             usage
             exit 1
           fi
-          migrate "$env" "$@"
+          run_migrate "$env" "$1"
           ;;
         seed)
           if [[ $# -lt 1 ]]; then
             usage
             exit 1
           fi
-          seed "$env" "$1"
+          run_seed "$env" "$1"
           ;;
         *)
           run_compose "$env" "$action" "$@"

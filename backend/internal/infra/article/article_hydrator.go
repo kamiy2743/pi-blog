@@ -1,0 +1,25 @@
+package article
+
+import (
+	domainArticle "blog/internal/domain/article"
+	"blog/internal/ent"
+	infraCategory "blog/internal/infra/category"
+)
+
+func hydrateArticle(model *ent.Article) domainArticle.Article {
+	return domainArticle.Article{
+		ID:         domainArticle.ArticleID(model.ID),
+		Title:      model.Title,
+		ContentMD:  model.Body,
+		Categories: infraCategory.HydrateCategories(model.Edges.Categories),
+		UpdatedAt:  model.UpdatedAt,
+	}
+}
+
+func hydrateArticles(models []*ent.Article) []domainArticle.Article {
+	articles := make([]domainArticle.Article, 0, len(models))
+	for _, model := range models {
+		articles = append(articles, hydrateArticle(model))
+	}
+	return articles
+}

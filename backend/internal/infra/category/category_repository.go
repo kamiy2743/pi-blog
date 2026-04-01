@@ -2,70 +2,46 @@ package category
 
 import (
 	"context"
+	"fmt"
 
-	"blog/internal/domain/category"
+	domainCategory "blog/internal/domain/category"
+	"blog/internal/ent"
+	entCategory "blog/internal/ent/category"
 )
 
-type CategoryRepository struct{}
-
-func NewCategoryRepository() *CategoryRepository {
-	return &CategoryRepository{}
+type CategoryRepository struct {
+	client *ent.Client
 }
 
-func (r *CategoryRepository) All(_ context.Context) ([]category.Category, error) {
-	raspiCategoryID, _ := category.ParseCategoryID("1")
-	infraCategoryID, _ := category.ParseCategoryID("2")
-	backendCategoryID, _ := category.ParseCategoryID("3")
-
-	return []category.Category{
-		{ID: raspiCategoryID, Name: "Raspberry Pi"},
-		{ID: infraCategoryID, Name: "Infrastructure"},
-		{ID: backendCategoryID, Name: "Backend"},
-	}, nil
+func NewCategoryRepository(client *ent.Client) *CategoryRepository {
+	return &CategoryRepository{client: client}
 }
 
-func (r *CategoryRepository) Create(_ context.Context, input category.CreateCategoryInput) (category.Category, error) {
-	if err := input.Validate(); err != nil {
-		return category.Category{}, err
+func (r *CategoryRepository) Create(ctx context.Context, input domainCategory.CreateCategoryInput) (domainCategory.Category, error) {
+	return domainCategory.Category{}, nil
+}
+
+func (r *CategoryRepository) Update(ctx context.Context, input domainCategory.Category) error {
+	return nil
+}
+
+func (r *CategoryRepository) All(ctx context.Context, orderBy domainCategory.OrderBy) ([]domainCategory.Category, error) {
+	query := r.client.Category.Query()
+
+	switch orderBy {
+	case domainCategory.OrderByNameAsc:
+		query.Order(entCategory.ByName())
+	default:
+		return nil, fmt.Errorf("未対応のカテゴリの並び順です: %s", orderBy)
 	}
 
-	categoryID, _ := category.ParseCategoryID("1")
-	return category.Category{
-		ID:   categoryID,
-		Name: input.Name,
-	}, nil
-}
-
-func (r *CategoryRepository) Search(_ context.Context, criteria category.SearchCategoryCriteria) ([]category.Category, error) {
-	categories, err := r.All(context.Background())
+	models, err := query.All(ctx)
 	if err != nil {
 		return nil, err
 	}
-
-	filtered := make([]category.Category, 0, len(categories))
-	for _, category := range categories {
-		if !matchesCategoryIDs(criteria.IDs, category.ID) {
-			continue
-		}
-		filtered = append(filtered, category)
-	}
-
-	return filtered, nil
+	return HydrateCategories(models), nil
 }
 
-func (r *CategoryRepository) Update(_ context.Context, category category.Category) error {
-	return category.Validate()
-}
-
-func matchesCategoryIDs(ids []category.CategoryID, target category.CategoryID) bool {
-	if len(ids) == 0 {
-		return true
-	}
-
-	for _, id := range ids {
-		if id == target {
-			return true
-		}
-	}
-	return false
+func (r *CategoryRepository) Search(ctx context.Context, criteria domainCategory.SearchCategoryCriteria) ([]domainCategory.Category, error) {
+	return nil, nil
 }

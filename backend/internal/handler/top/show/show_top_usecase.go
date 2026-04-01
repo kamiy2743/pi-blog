@@ -3,7 +3,6 @@ package show
 import (
 	"context"
 
-	"blog/internal/domain"
 	"blog/internal/domain/article"
 	"blog/internal/domain/category"
 )
@@ -14,20 +13,14 @@ func Run(
 	categoryRepository category.CategoryRepository,
 ) (ShowTopResult, error) {
 	articles, err := articleRepository.Search(ctx, article.SearchArticleCriteria{
-		Limit: 10,
-		OrderBy: domain.OrderBy{
-			Column:    "updated_at",
-			Direction: domain.OrderDirectionDesc,
-		},
+		Limit:   10,
+		OrderBy: article.OrderByLatest,
 	})
 	if err != nil {
 		return ShowTopResult{}, err
 	}
 
-	categories, err := categoryRepository.All(ctx, domain.OrderBy{
-		Column:    "name",
-		Direction: domain.OrderDirectionAsc,
-	})
+	categories, err := categoryRepository.All(ctx, category.OrderByNameAsc)
 	if err != nil {
 		return ShowTopResult{}, err
 	}

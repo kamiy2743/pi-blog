@@ -11,7 +11,7 @@ func BasicAuth(realm, expectedUser, expectedPass string) Middleware {
 			user, pass, ok := r.BasicAuth()
 			if !ok || !secureEquals(user, expectedUser) || !secureEquals(pass, expectedPass) {
 				w.Header().Set("WWW-Authenticate", `Basic realm="`+realm+`", charset="UTF-8"`)
-				http.Error(w, "Unauthorized", http.StatusUnauthorized)
+				http.Error(w, "認証が必要です。", http.StatusUnauthorized)
 				return
 			}
 			next.ServeHTTP(w, r)

@@ -27,7 +27,7 @@ services:
   go:
     build:
       context: ./backend/
-      dockerfile: ./Dockerfile
+      dockerfile: ./Dockerfile.app
     env_file: ./backend/.env.dev
     secrets:
       - mysql_user

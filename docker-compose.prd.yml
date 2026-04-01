@@ -40,7 +40,7 @@ services:
   go:
     build:
       context: ./backend/
-      dockerfile: ./Dockerfile
+      dockerfile: ./Dockerfile.app
     env_file: ./backend/.env.prd
     secrets:
       - mysql_user

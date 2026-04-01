@@ -1,0 +1,18 @@
+FROM golang:1.26-bookworm AS builder
+
+WORKDIR /app
+
+COPY ./ ./
+RUN go build -o ./blog-migrate ./cmd/migration
+
+FROM  debian:bookworm-slim
+
+WORKDIR /app
+
+COPY --from=builder /app/blog-migrate /app/blog-migrate
+
+RUN groupadd --gid 1000 go
+RUN useradd --uid 1000 --gid 1000 --no-create-home --shell /usr/sbin/nologin go
+USER go:go
+
+ENTRYPOINT ["/app/blog-migrate"]
