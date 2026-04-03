@@ -1,0 +1,28 @@
+package di
+
+import (
+	"blog/internal/ent"
+	showTopHandler "blog/internal/handler/top/show"
+	infraArticle "blog/internal/infra/article"
+	infraCategory "blog/internal/infra/category"
+
+	"github.com/romsar/gonertia/v2"
+)
+
+type Container struct {
+	showTopHandler *showTopHandler.Handler
+}
+
+func NewContainer(entClient *ent.Client, inertiaApp *gonertia.Inertia) *Container {
+	articleRepository := infraArticle.NewArticleRepository(entClient)
+	categoryRepository := infraCategory.NewCategoryRepository(entClient)
+	showTopUsecase := showTopHandler.NewUsecase(articleRepository, categoryRepository)
+
+	return &Container{
+		showTopHandler: showTopHandler.NewHandler(inertiaApp, showTopUsecase),
+	}
+}
+
+func (c *Container) ShowTopHandler() *showTopHandler.Handler {
+	return c.showTopHandler
+}

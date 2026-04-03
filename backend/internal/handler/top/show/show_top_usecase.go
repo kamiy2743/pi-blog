@@ -7,12 +7,23 @@ import (
 	"blog/internal/domain/category"
 )
 
-func Run(
-	ctx context.Context,
+type Usecase struct {
+	articleRepository  article.ArticleRepository
+	categoryRepository category.CategoryRepository
+}
+
+func NewUsecase(
 	articleRepository article.ArticleRepository,
 	categoryRepository category.CategoryRepository,
-) (ShowTopResult, error) {
-	articles, err := articleRepository.Search(ctx, article.SearchArticleCriteria{
+) *Usecase {
+	return &Usecase{
+		articleRepository:  articleRepository,
+		categoryRepository: categoryRepository,
+	}
+}
+
+func (u *Usecase) Run(ctx context.Context) (ShowTopResult, error) {
+	articles, err := u.articleRepository.Search(ctx, article.SearchArticleCriteria{
 		Limit:   10,
 		OrderBy: article.OrderByLatest,
 	})
@@ -20,7 +31,7 @@ func Run(
 		return ShowTopResult{}, err
 	}
 
-	categories, err := categoryRepository.All(ctx, category.OrderByNameAsc)
+	categories, err := u.categoryRepository.All(ctx, category.OrderByNameAsc)
 	if err != nil {
 		return ShowTopResult{}, err
 	}

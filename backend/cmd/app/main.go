@@ -6,9 +6,9 @@ import (
 
 	"blog/internal/config"
 	"blog/internal/db"
+	"blog/internal/di"
 	"blog/internal/domain"
-	domainArticle "blog/internal/domain/article"
-	domainCategory "blog/internal/domain/category"
+	"blog/internal/domain/article"
 	createArticleHandler "blog/internal/handler/admin/article/create"
 	editArticleHandler "blog/internal/handler/admin/article/edit"
 	storeArticleHandler "blog/internal/handler/admin/article/store"
@@ -18,9 +18,6 @@ import (
 	showArticleHandler "blog/internal/handler/article/show"
 	healthHandler "blog/internal/handler/health"
 	showNotFoundHandler "blog/internal/handler/notfound/show"
-	showTopHandler "blog/internal/handler/top/show"
-	infraArticle "blog/internal/infra/article"
-	infraCategory "blog/internal/infra/category"
 	"blog/internal/middleware"
 
 	"github.com/romsar/gonertia/v2"
@@ -47,8 +44,7 @@ func main() {
 	}
 	defer entClient.Close()
 
-	articleRepository := infraArticle.NewArticleRepository(entClient)
-	categoryRepository := infraCategory.NewCategoryRepository(entClient)
+	container := di.NewContainer(entClient, inertiaApp)
 
 	addr := ":" + port
 	mux := http.NewServeMux()
@@ -57,7 +53,7 @@ func main() {
 		middleware.NormalizePath(),
 	)
 
-	setupRootRoutes(mux, inertiaApp, articleRepository, categoryRepository)
+	setupRootRoutes(mux, inertiaApp, container)
 	setupArticleRoutes(mux, inertiaApp)
 	setupAdminRoutes(mux, inertiaApp)
 
@@ -82,8 +78,7 @@ func configureTemplateAssets(appEnv domain.AppEnv, inertiaApp *gonertia.Inertia)
 func setupRootRoutes(
 	mux *http.ServeMux,
 	inertiaApp *gonertia.Inertia,
-	articleRepository domainArticle.ArticleRepository,
-	categoryRepository domainCategory.CategoryRepository,
+	container *di.Container,
 ) {
 	mux.HandleFunc("GET /health", healthHandler.Handle)
 
@@ -92,7 +87,7 @@ func setupRootRoutes(
 			showNotFoundHandler.Handle(inertiaApp)(w, r)
 			return
 		}
-		showTopHandler.Handle(inertiaApp, articleRepository, categoryRepository)(w, r)
+		container.ShowTopHandler().Handle(w, r)
 	})))
 }
 
@@ -100,7 +95,7 @@ func setupArticleRoutes(mux *http.ServeMux, inertiaApp *gonertia.Inertia) {
 	mux.Handle("GET /article", inertiaApp.Middleware(searchArticleHandler.Handle(inertiaApp)))
 
 	mux.Handle("GET /article/{articleId}", inertiaApp.Middleware(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		articleID, err := domainArticle.ParseArticleID(r.PathValue("articleId"))
+		articleID, err := article.ParseArticleID(r.PathValue("articleId"))
 		if err != nil {
 			showNotFoundHandler.Handle(inertiaApp)(w, r)
 			return
@@ -122,7 +117,7 @@ func setupAdminRoutes(mux *http.ServeMux, inertiaApp *gonertia.Inertia) {
 	handleAdmin("POST /admin/article/new", http.HandlerFunc(storeArticleHandler.Handle))
 
 	handleAdmin("GET /admin/article/edit/{articleId}", inertiaApp.Middleware(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		articleID, err := domainArticle.ParseArticleID(r.PathValue("articleId"))
+		articleID, err := article.ParseArticleID(r.PathValue("articleId"))
 		if err != nil {
 			showNotFoundHandler.Handle(inertiaApp)(w, r)
 			return
@@ -130,7 +125,7 @@ func setupAdminRoutes(mux *http.ServeMux, inertiaApp *gonertia.Inertia) {
 		editArticleHandler.Handle(inertiaApp, articleID)(w, r)
 	})))
 	handleAdmin("POST /admin/article/edit/{articleId}", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		articleID, err := domainArticle.ParseArticleID(r.PathValue("articleId"))
+		articleID, err := article.ParseArticleID(r.PathValue("articleId"))
 		if err != nil {
 			http.NotFound(w, r)
 			return
