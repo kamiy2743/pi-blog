@@ -44,8 +44,8 @@ func MustGetMySQLPassword() string {
 	return mustGetSecretString("mysql_user_password")
 }
 
-func MustGetInertiaRootTemplate() string {
-	return mustGetEnvString("INERTIA_ROOT_TEMPLATE")
+func MustGetInertiaRootTemplatePath() string {
+	return mustGetEnvString("INERTIA_ROOT_TEMPLATE_PATH")
 }
 
 func MustGetTemplateFaviconHref() string {

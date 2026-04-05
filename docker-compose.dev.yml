@@ -45,6 +45,31 @@ services:
       - mysql
     restart: unless-stopped
 
+  go-test:
+    image: golang:1.26-bookworm
+    working_dir: /app
+    command: ["sleep", "infinity"]
+    env_file: ./backend/.env.test
+    secrets:
+      - mysql_user
+      - mysql_user_password
+      - admin_basic_auth_user
+      - admin_basic_auth_pass
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    volumes:
+      - ./backend/:/app/
+      - go_test_modcache:/go/pkg/mod/
+      - go_test_gocache:/root/.cache/go-build/
+    networks:
+      - private
+      - egress
+    depends_on:
+      - mysql
+    restart: unless-stopped
+
   mysql:
     image: mysql:8.4
     environment:
@@ -61,6 +86,26 @@ services:
       - no-new-privileges:true
     volumes:
       - mysql_data:/var/lib/mysql/
+    networks:
+      - private
+    restart: unless-stopped
+
+  mysql-test:
+    image: mysql:8.4
+    environment:
+      MYSQL_ROOT_PASSWORD_FILE: /run/secrets/mysql_root_password
+      MYSQL_USER_FILE: /run/secrets/mysql_user
+      MYSQL_PASSWORD_FILE: /run/secrets/mysql_user_password
+      MYSQL_DATABASE: blog-test
+    command: ["mysqld", "--character-set-server=utf8mb4", "--collation-server=utf8mb4_unicode_ci"]
+    secrets:
+      - mysql_root_password
+      - mysql_user
+      - mysql_user_password
+    security_opt:
+      - no-new-privileges:true
+    volumes:
+      - mysql_test_data:/var/lib/mysql/
     networks:
       - private
     restart: unless-stopped
@@ -101,7 +146,11 @@ networks:
   egress:
 
 volumes:
+  go_test_modcache:
+  go_test_gocache:
+  go_test_gotmp:
   mysql_data:
+  mysql_test_data:
   node_modules:
   ssr_dist:
 

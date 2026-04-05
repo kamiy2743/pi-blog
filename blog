@@ -11,6 +11,8 @@ usage() {
   ./blog {dev|prd} [docker compose args...]
   ./blog {dev|prd} mysql [mysql args...]
   ./blog ent generate
+  ./blog back fmt
+  ./blog back test <backend path>
   ./blog {dev|prd} migrate {up|down|refresh}
   ./blog {dev|prd} seed <seed_name>
 EOF
@@ -52,6 +54,50 @@ run_ent() {
       ;;
     *)
       echo "未対応の ent コマンドです: $command" >&2
+      exit 1
+      ;;
+  esac
+}
+
+run_go() {
+  local command="$1"
+  shift
+
+  case "$command" in
+    fmt)
+      local backend_dir="$SCRIPT_DIR/backend"
+      mapfile -t go_files < <(find "$backend_dir" -type f -name '*.go' | sort)
+      if [[ ${#go_files[@]} -eq 0 ]]; then
+        echo "整形対象の Go ファイルがありません" >&2
+        return 0
+      fi
+      /usr/local/go/bin/gofmt -w "${go_files[@]}"
+      ;;
+    test)
+      if [[ $# -lt 1 ]]; then
+        usage
+        exit 1
+      fi
+
+      local backend_dir="$SCRIPT_DIR/backend"
+      local target="$1"
+
+      if [[ -f "$target" ]]; then
+        echo "back test は Go package 単位で実行してください。ファイル指定は未対応です: $target" >&2
+        exit 1
+      fi
+
+      if [[ "$target" == "$backend_dir" ]]; then
+        target="."
+      elif [[ "$target" == "$backend_dir"/* ]]; then
+        target=".${target#"$backend_dir"}"
+      fi
+
+      run_compose dev up -d --build go-test
+      run_compose dev exec -T go-test go test "$target"
+      ;;
+    *)
+      echo "未対応の back コマンドです: $command" >&2
       exit 1
       ;;
   esac
@@ -113,6 +159,13 @@ main() {
         exit 1
       fi
       run_ent "$@"
+      ;;
+    back)
+      if [[ $# -lt 1 ]]; then
+        usage
+        exit 1
+      fi
+      run_go "$@"
       ;;
     dev|prd)
       local env="$command"

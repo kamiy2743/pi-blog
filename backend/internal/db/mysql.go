@@ -11,14 +11,14 @@ import (
 )
 
 func OpenMySQL() (*sql.DB, error) {
-	return sql.Open("mysql", getDSN())
+	return sql.Open("mysql", GetDSN())
 }
 
 func OpenEntClient() (*ent.Client, error) {
-	return ent.Open("mysql", getDSN())
+	return ent.Open("mysql", GetDSN())
 }
 
-func getDSN() string {
+func GetDSN() string {
 	return fmt.Sprintf(
 		"%s:%s@tcp(%s:%s)/%s?parseTime=true",
 		config.MustGetMySQLUser(),
