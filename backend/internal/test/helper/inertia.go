@@ -9,14 +9,14 @@ import (
 	"testing"
 )
 
-type InertiaRequest struct {
+type TestInertiaRequest struct {
 	Method      string
 	Path        string
 	QueryParams map[string]string
 	Body        io.Reader
 }
 
-type InertiaResponse struct {
+type TestInertiaResponse struct {
 	StatusCode int            `json:"-"`
 	Component  string         `json:"component"`
 	Props      map[string]any `json:"props"`
@@ -26,8 +26,8 @@ type InertiaResponse struct {
 func RequestInertia(
 	t *testing.T,
 	server *httptest.Server,
-	inertiaRequest InertiaRequest,
-) InertiaResponse {
+	inertiaRequest TestInertiaRequest,
+) TestInertiaResponse {
 	t.Helper()
 
 	if inertiaRequest.Method == "" {
@@ -64,7 +64,7 @@ func RequestInertia(
 		t.Fatalf("Inertia レスポンスボディの読み取りに失敗しました: %v", err)
 	}
 
-	var inertiaResponse InertiaResponse
+	var inertiaResponse TestInertiaResponse
 	inertiaResponse.StatusCode = res.StatusCode
 	if err := json.Unmarshal(bodyBytes, &inertiaResponse); err != nil {
 		t.Fatalf("Inertia レスポンス JSON のデコードに失敗しました: %v", err)
@@ -73,7 +73,7 @@ func RequestInertia(
 	return inertiaResponse
 }
 
-func (response InertiaResponse) AssertProps(
+func (response TestInertiaResponse) AssertProps(
 	t *testing.T,
 	expectedComponent string,
 	expectedProps map[string]any,

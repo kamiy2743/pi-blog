@@ -16,7 +16,7 @@ func Testトップページを表示できる(t *testing.T) {
 	initResult := test.Init(t)
 	setUpRecords(t, initResult.EntClient)
 
-	res := helper.RequestInertia(t, initResult.Server, helper.InertiaRequest{
+	res := helper.RequestInertia(t, initResult.Server, helper.TestInertiaRequest{
 		Method: http.MethodGet,
 		Path:   "/",
 	})
