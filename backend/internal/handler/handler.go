@@ -3,9 +3,9 @@ package handler
 import (
 	"net/http"
 
+	"blog/internal/app"
 	"blog/internal/config"
 	"blog/internal/di"
-	"blog/internal/domain"
 	"blog/internal/middleware"
 
 	"blog/internal/ent"
@@ -39,7 +39,7 @@ func newInertiaApp() (*gonertia.Inertia, error) {
 
 	inertiaApp.ShareTemplateData("faviconHref", config.MustGetTemplateFaviconHref())
 	inertiaApp.ShareTemplateData("cssHref", config.MustGetTemplateCSSHref())
-	inertiaApp.ShareTemplateData("useViteClient", config.MustGetAppEnv() == domain.AppEnvDev)
+	inertiaApp.ShareTemplateData("useViteClient", config.MustGetAppEnv() == app.AppEnvDev)
 	inertiaApp.ShareTemplateData("appScriptSrc", config.MustGetTemplateAppScriptSrc())
 
 	return inertiaApp, nil

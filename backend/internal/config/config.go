@@ -4,12 +4,12 @@ import (
 	"log"
 	"path/filepath"
 
-	"blog/internal/domain"
+	"blog/internal/app"
 )
 
-func MustGetAppEnv() domain.AppEnv {
+func MustGetAppEnv() app.AppEnv {
 	appEnvRaw := mustGetEnvString("APP_ENV")
-	appEnv, err := domain.ParseAppEnv(appEnvRaw)
+	appEnv, err := app.ParseAppEnv(appEnvRaw)
 	if err != nil {
 		log.Fatal(err)
 	}
