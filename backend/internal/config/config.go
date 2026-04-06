@@ -12,7 +12,6 @@ func MustGetAppEnv() domain.AppEnv {
 	if err != nil {
 		log.Fatal(err)
 	}
-
 	return appEnv
 }
 
