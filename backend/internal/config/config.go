@@ -2,6 +2,7 @@ package config
 
 import (
 	"log"
+	"path/filepath"
 
 	"blog/internal/domain"
 )
@@ -43,8 +44,8 @@ func MustGetMySQLPassword() string {
 	return mustGetSecretString("mysql_user_password")
 }
 
-func MustGetInertiaRootTemplatePath() string {
-	return mustGetEnvString("INERTIA_ROOT_TEMPLATE_PATH")
+func MustGetInertiaTemplatePath(fileName string) string {
+	return filepath.Join(mustGetEnvString("INERTIA_TEMPLATES_DIR"), fileName)
 }
 
 func MustGetTemplateFaviconHref() string {

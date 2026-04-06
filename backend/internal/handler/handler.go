@@ -32,7 +32,7 @@ func newInertiaApp() (*gonertia.Inertia, error) {
 	inertiaOptions := []gonertia.Option{
 		gonertia.WithSSR(config.MustGetSSRURL()),
 	}
-	inertiaApp, err := gonertia.NewFromFile(config.MustGetInertiaRootTemplatePath(), inertiaOptions...)
+	inertiaApp, err := gonertia.NewFromFile(config.MustGetInertiaTemplatePath("root.html"), inertiaOptions...)
 	if err != nil {
 		return nil, err
 	}
