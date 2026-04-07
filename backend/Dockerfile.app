@@ -2,8 +2,14 @@ FROM golang:1.26-bookworm AS builder
 
 WORKDIR /app
 
+COPY ./go.mod ./go.sum ./
+RUN --mount=type=cache,target=/go/pkg/mod \
+    go mod download
+
 COPY ./ ./
-RUN go build -o ./blog-app ./cmd/app
+RUN --mount=type=cache,target=/go/pkg/mod \
+    --mount=type=cache,target=/root/.cache/go-build \
+    go build -o ./blog-app ./cmd/app
 
 FROM  debian:bookworm-slim
 
