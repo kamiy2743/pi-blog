@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>エラーが発生しました</title>
+  <link rel="icon" type="image/jpeg" href="/IMG_0282.JPG">
+</head>
+<body>
+  <div class="mx-auto max-w-5xl px-6 py-10 sm:px-8 lg:px-10 lg:py-14">
+    <div class="blog-shell overflow-hidden rounded-[2rem] border">
+      <div class="blog-hero px-6 py-10 sm:px-8 lg:px-10 lg:py-12">
+        <div class="max-w-3xl space-y-4">
+          <p class="blog-eyebrow text-sm font-semibold tracking-[0.24em]">500 / Internal Server Error</p>
+          <h1 class="blog-title text-3xl font-semibold tracking-tight sm:text-3xl">エラーが発生しました。</h1>
+          <p class="blog-copy max-w-2xl text-base leading-8 sm:text-lg">時間をおいてから、もう一度お試しください。</p>
+          <div class="flex flex-wrap gap-3">
+            <button
+              class="blog-button inline-flex items-center gap-2 rounded-full px-5 py-3 text-sm font-semibold transition"
+              type="button"
+              data-reload-button
+            >
+              再読み込み
+              <span aria-hidden="true">↻</span>
+            </button>
+            <a
+              class="blog-button inline-flex items-center gap-2 rounded-full px-5 py-3 text-sm font-semibold transition"
+              href="/"
+            >
+              トップページへ戻る
+              <span aria-hidden="true">→</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script type="module" src="/src/error/error.ts"></script>
+</body>
+</html>

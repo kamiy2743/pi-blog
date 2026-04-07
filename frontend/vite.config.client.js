@@ -12,9 +12,12 @@ export default defineConfig({
     outDir: './dist/client/',
     emptyOutDir: true,
     rollupOptions: {
-      input: './src/app.ts',
+      input: {
+        app: './src/app.ts',
+        error: './src/error/error.html'
+      },
       output: {
-        entryFileNames: 'assets/app.js',
+        entryFileNames: 'assets/[name].js',
         chunkFileNames: 'assets/[name].js',
         assetFileNames: 'assets/[name][extname]'
       }

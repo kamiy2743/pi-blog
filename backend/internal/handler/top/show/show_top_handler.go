@@ -1,8 +1,9 @@
 package show
 
 import (
-	"log"
 	"net/http"
+
+	"blog/internal/handler/inertia"
 
 	"github.com/romsar/gonertia/v2"
 )
@@ -22,12 +23,9 @@ func NewHandler(i *gonertia.Inertia, u *Usecase) *Handler {
 func (h *Handler) Handle(w http.ResponseWriter, r *http.Request) {
 	result, err := h.usecase.Run(r.Context())
 	if err != nil {
-		log.Print(err)
-		http.Error(w, "記事取得エラー", http.StatusInternalServerError)
+		inertia.RenderError(w, r, h.inertia, *err)
 		return
 	}
-	if err := h.inertia.Render(w, r, "ShowTop", Format(result)); err != nil {
-		log.Print(err)
-		http.Error(w, "描画エラー", http.StatusInternalServerError)
-	}
+
+	inertia.Render(w, r, h.inertia, "ShowTop", Format(result))
 }
