@@ -80,27 +80,61 @@ func (response TestInertiaResponse) AssertProps(
 ) {
 	t.Helper()
 
-	if response.StatusCode != http.StatusOK {
-		t.Fatalf("ステータスコードが不正です: expected=%d actual=%d", http.StatusOK, response.StatusCode)
+	response.AssertResponse(t, http.StatusOK, expectedComponent, expectedProps, map[string]any{})
+}
+
+func (response TestInertiaResponse) AssertError(
+	t *testing.T,
+	expectedStatusCode int,
+	expectedMessage string,
+	expectedDescription string,
+) {
+	t.Helper()
+
+	response.AssertResponse(t, expectedStatusCode, "ErrorPage", map[string]any{
+		"statusCode":  float64(expectedStatusCode),
+		"statusText":  http.StatusText(expectedStatusCode),
+		"message":     expectedMessage,
+		"description": expectedDescription,
+	}, map[string]any{})
+}
+
+func (response TestInertiaResponse) AssertResponse(
+	t *testing.T,
+	expectedStatusCode int,
+	expectedComponent string,
+	expectedProps map[string]any,
+	expectedErrors map[string]any,
+) {
+	t.Helper()
+
+	if response.StatusCode != expectedStatusCode {
+		t.Fatalf("ステータスコードが不正です: expected=%d actual=%d", expectedStatusCode, response.StatusCode)
 	}
 
 	if response.Component != expectedComponent {
 		t.Fatalf("component が不正です: expected=%q actual=%q", expectedComponent, response.Component)
 	}
 
+	expectedResponseProps := make(map[string]any, len(expectedProps)+1)
+	for key, value := range expectedProps {
+		expectedResponseProps[key] = value
+	}
+	expectedResponseProps["errors"] = expectedErrors
+
 	actualPropsJSON, err := json.Marshal(response.Props)
 	if err != nil {
 		t.Fatalf("取得した props の JSON エンコードに失敗しました: %v", err)
 	}
 
-	expectedPropsJSON, err := json.Marshal(expectedProps)
+	expectedPropsJSON, err := json.Marshal(expectedResponseProps)
 	if err != nil {
 		t.Fatalf("期待する props の JSON エンコードに失敗しました: %v", err)
 	}
 
 	if string(actualPropsJSON) != string(expectedPropsJSON) {
 		actualPrettyJSON, _ := json.MarshalIndent(response.Props, "", "  ")
-		expectedPrettyJSON, _ := json.MarshalIndent(expectedProps, "", "  ")
+		expectedPrettyJSON, _ := json.MarshalIndent(expectedResponseProps, "", "  ")
 		t.Fatalf("props が不正です:\nexpected:\n%s\nactual:\n%s", expectedPrettyJSON, actualPrettyJSON)
 	}
 }
