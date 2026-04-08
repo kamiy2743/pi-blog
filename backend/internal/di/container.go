@@ -10,7 +10,7 @@ import (
 )
 
 type Container struct {
-	showTopHandler *showTopHandler.Handler
+	ShowTopHandler *showTopHandler.Handler
 }
 
 func NewContainer(entClient *ent.Client, inertiaApp *gonertia.Inertia) *Container {
@@ -19,10 +19,6 @@ func NewContainer(entClient *ent.Client, inertiaApp *gonertia.Inertia) *Containe
 	showTopUsecase := showTopHandler.NewUsecase(articleRepository, categoryRepository)
 
 	return &Container{
-		showTopHandler: showTopHandler.NewHandler(inertiaApp, showTopUsecase),
+		ShowTopHandler: showTopHandler.NewHandler(inertiaApp, showTopUsecase),
 	}
-}
-
-func (c *Container) ShowTopHandler() *showTopHandler.Handler {
-	return c.showTopHandler
 }

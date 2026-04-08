@@ -42,7 +42,7 @@ func setUpRoute(
 			showNotFoundHandler.Handle(inertiaApp)(w, r)
 			return
 		}
-		container.ShowTopHandler().Handle(w, r)
+		container.ShowTopHandler.Handle(w, r)
 	})))
 }
 
