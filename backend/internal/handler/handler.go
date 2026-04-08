@@ -13,13 +13,17 @@ import (
 	"github.com/romsar/gonertia/v2"
 )
 
-func NewHTTPHandler(entClient *ent.Client) (http.Handler, error) {
+func NewHTTPHandler(entClient *ent.Client, containerOptions ...*di.ContainerOptions) (http.Handler, error) {
 	inertiaApp, err := newInertiaApp()
 	if err != nil {
 		return nil, err
 	}
 
-	container := di.NewContainer(entClient, inertiaApp)
+	var options *di.ContainerOptions
+	if len(containerOptions) > 0 {
+		options = containerOptions[0]
+	}
+	container := di.NewContainer(entClient, inertiaApp, options)
 	mux := newMux(inertiaApp, container)
 
 	return middleware.Chain(

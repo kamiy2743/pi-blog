@@ -7,6 +7,7 @@ import (
 	"testing"
 
 	"blog/internal/db"
+	"blog/internal/di"
 	"blog/internal/ent"
 	"blog/internal/ent/enttest"
 	"blog/internal/ent/migrate"
@@ -20,7 +21,7 @@ type InitResult struct {
 	Server    *httptest.Server
 }
 
-func Init(t *testing.T) InitResult {
+func Init(t *testing.T, containerOptions ...*di.ContainerOptions) InitResult {
 	t.Helper()
 
 	if err := resetTestDatabase(t.Context()); err != nil {
@@ -32,7 +33,7 @@ func Init(t *testing.T) InitResult {
 		_ = entClient.Close()
 	})
 
-	httpHandler, err := handler.NewHTTPHandler(entClient)
+	httpHandler, err := handler.NewHTTPHandler(entClient, containerOptions...)
 	if err != nil {
 		t.Fatalf("HTTP ハンドラーの初期化に失敗しました: %v", err)
 	}
