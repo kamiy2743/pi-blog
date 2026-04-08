@@ -29,10 +29,10 @@ func NewHTTPHandler(entClient *ent.Client) (http.Handler, error) {
 }
 
 func newInertiaApp() (*gonertia.Inertia, error) {
-	inertiaOptions := []gonertia.Option{
+	inertiaApp, err := gonertia.NewFromFile(
+		config.MustGetInertiaTemplatePath("root.html"),
 		gonertia.WithSSR(config.MustGetSSRURL()),
-	}
-	inertiaApp, err := gonertia.NewFromFile(config.MustGetInertiaTemplatePath("root.html"), inertiaOptions...)
+	)
 	if err != nil {
 		return nil, err
 	}
