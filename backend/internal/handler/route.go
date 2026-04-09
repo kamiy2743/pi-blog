@@ -14,7 +14,6 @@ import (
 	searchArticleHandler "blog/internal/handler/feature/article/search"
 	showArticleHandler "blog/internal/handler/feature/article/show"
 	healthHandler "blog/internal/handler/feature/health"
-	showNotFoundHandler "blog/internal/handler/feature/notfound/show"
 	"blog/internal/handler/middleware"
 
 	"github.com/romsar/gonertia/v2"
@@ -24,8 +23,8 @@ func newMux(inertiaApp *gonertia.Inertia, container *di.Container) *http.ServeMu
 	mux := http.NewServeMux()
 
 	setUpRoute(mux, inertiaApp, container)
-	setUpArticleRoutes(mux, inertiaApp)
-	setUpAdminRoutes(mux, inertiaApp)
+	setUpArticleRoutes(mux, inertiaApp, container)
+	setUpAdminRoutes(mux, inertiaApp, container)
 
 	return mux
 }
@@ -39,7 +38,7 @@ func setUpRoute(
 
 	mux.Handle("GET /", inertiaApp.Middleware(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.URL.Path != "/" {
-			showNotFoundHandler.Handle(inertiaApp)(w, r)
+			container.ShowNotFoundHandler.Handle(w, r)
 			return
 		}
 		container.ShowTopHandler.Handle(w, r)
@@ -49,13 +48,14 @@ func setUpRoute(
 func setUpArticleRoutes(
 	mux *http.ServeMux,
 	inertiaApp *gonertia.Inertia,
+	container *di.Container,
 ) {
 	mux.Handle("GET /article", inertiaApp.Middleware(searchArticleHandler.Handle(inertiaApp)))
 
 	mux.Handle("GET /article/{articleId}", inertiaApp.Middleware(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		articleID, err := article.ParseArticleID(r.PathValue("articleId"))
 		if err != nil {
-			showNotFoundHandler.Handle(inertiaApp)(w, r)
+			container.ShowNotFoundHandler.Handle(w, r)
 			return
 		}
 		showArticleHandler.Handle(inertiaApp, articleID)(w, r)
@@ -65,6 +65,7 @@ func setUpArticleRoutes(
 func setUpAdminRoutes(
 	mux *http.ServeMux,
 	inertiaApp *gonertia.Inertia,
+	container *di.Container,
 ) {
 	basicAuth := middleware.BasicAuth(
 		"blog-admin",
@@ -81,7 +82,7 @@ func setUpAdminRoutes(
 	handleAdmin("GET /admin/article/edit/{articleId}", inertiaApp.Middleware(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		articleID, err := article.ParseArticleID(r.PathValue("articleId"))
 		if err != nil {
-			showNotFoundHandler.Handle(inertiaApp)(w, r)
+			container.ShowNotFoundHandler.Handle(w, r)
 			return
 		}
 		editArticleHandler.Handle(inertiaApp, articleID)(w, r)

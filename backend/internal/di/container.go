@@ -4,6 +4,7 @@ import (
 	domainArticle "blog/internal/domain/article"
 	domainCategory "blog/internal/domain/category"
 	"blog/internal/ent"
+	showNotFoundHandler "blog/internal/handler/feature/notfound/show"
 	showTopHandler "blog/internal/handler/feature/top/show"
 	infraArticle "blog/internal/infra/article"
 	infraCategory "blog/internal/infra/category"
@@ -12,7 +13,8 @@ import (
 )
 
 type Container struct {
-	ShowTopHandler *showTopHandler.Handler
+	ShowNotFoundHandler *showNotFoundHandler.Handler
+	ShowTopHandler      *showTopHandler.Handler
 }
 
 type ContainerOptions struct {
@@ -42,6 +44,7 @@ func NewContainer(
 	showTopUsecase := showTopHandler.NewUsecase(articleRepository, categoryRepository)
 
 	return &Container{
-		ShowTopHandler: showTopHandler.NewHandler(inertiaApp, showTopUsecase),
+		ShowNotFoundHandler: showNotFoundHandler.NewHandler(inertiaApp),
+		ShowTopHandler:      showTopHandler.NewHandler(inertiaApp, showTopUsecase),
 	}
 }

@@ -25,35 +25,19 @@ func Render(
 	}
 }
 
-func RenderError(
+func RenderWithStatus(
 	w http.ResponseWriter,
 	r *http.Request,
 	inertiaApp *gonertia.Inertia,
-	displayableError handlererror.DisplayableError,
+	statusCode int,
+	component string,
+	props gonertia.Props,
 ) {
-	log.Print(displayableError.Err)
-
-	if err := renderWithStatus(w, displayableError.StatusCode, func(target http.ResponseWriter) error {
-		return inertiaApp.Render(target, r, "ErrorPage", gonertia.Props{
-			"statusCode":  displayableError.StatusCode,
-			"statusText":  http.StatusText(displayableError.StatusCode),
-			"message":     displayableError.Message,
-			"description": displayableError.Description,
-		})
-	}); err != nil {
+	recorder := httptest.NewRecorder()
+	if err := inertiaApp.Render(recorder, r, component, props); err != nil {
 		log.Print(err)
 		triggerStaticErrorPage(w)
-	}
-}
-
-func renderWithStatus(
-	w http.ResponseWriter,
-	statusCode int,
-	render func(target http.ResponseWriter) error,
-) error {
-	recorder := httptest.NewRecorder()
-	if err := render(recorder); err != nil {
-		return err
+		return
 	}
 
 	for key, values := range recorder.Header() {
@@ -63,7 +47,22 @@ func renderWithStatus(
 	}
 	w.WriteHeader(statusCode)
 	_, _ = w.Write(recorder.Body.Bytes())
-	return nil
+}
+
+func RenderError(
+	w http.ResponseWriter,
+	r *http.Request,
+	inertiaApp *gonertia.Inertia,
+	displayableError handlererror.DisplayableError,
+) {
+	log.Print(displayableError.Err)
+
+	RenderWithStatus(w, r, inertiaApp, displayableError.StatusCode, "ErrorPage", gonertia.Props{
+		"statusCode":  displayableError.StatusCode,
+		"statusText":  http.StatusText(displayableError.StatusCode),
+		"message":     displayableError.Message,
+		"description": displayableError.Description,
+	})
 }
 
 func triggerStaticErrorPage(w http.ResponseWriter) {
