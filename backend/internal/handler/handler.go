@@ -6,7 +6,7 @@ import (
 	"blog/internal/app"
 	"blog/internal/config"
 	"blog/internal/di"
-	"blog/internal/middleware"
+	"blog/internal/handler/middleware"
 
 	"blog/internal/ent"
 

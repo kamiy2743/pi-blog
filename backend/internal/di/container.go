@@ -4,7 +4,7 @@ import (
 	domainArticle "blog/internal/domain/article"
 	domainCategory "blog/internal/domain/category"
 	"blog/internal/ent"
-	showTopHandler "blog/internal/handler/top/show"
+	showTopHandler "blog/internal/handler/feature/top/show"
 	infraArticle "blog/internal/infra/article"
 	infraCategory "blog/internal/infra/category"
 

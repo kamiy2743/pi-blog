@@ -6,7 +6,7 @@ import (
 	"os"
 
 	"blog/internal/db"
-	"blog/internal/seed"
+	"blog/internal/db/seed"
 )
 
 func main() {
