@@ -13,7 +13,6 @@ import (
 	showAdminHandler "blog/internal/handler/feature/admin/show"
 	searchArticleHandler "blog/internal/handler/feature/article/search"
 	showArticleHandler "blog/internal/handler/feature/article/show"
-	healthHandler "blog/internal/handler/feature/health"
 	"blog/internal/handler/middleware"
 
 	"github.com/romsar/gonertia/v2"
@@ -34,7 +33,7 @@ func setUpRoute(
 	inertiaApp *gonertia.Inertia,
 	container *di.Container,
 ) {
-	mux.HandleFunc("GET /health", healthHandler.Handle)
+	mux.HandleFunc("GET /health", container.HealthHandler.Handle)
 
 	mux.Handle("GET /", inertiaApp.Middleware(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.URL.Path != "/" {
