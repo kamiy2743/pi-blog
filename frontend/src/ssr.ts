@@ -1,30 +1,18 @@
 import { createServer, type IncomingMessage, type ServerResponse } from 'http'
-import { createInertiaApp } from '@inertiajs/svelte'
+import { createInertiaApp, type ResolvedComponent } from '@inertiajs/svelte'
 import type { Page, PageProps } from '@inertiajs/core'
-import type { ComponentType } from 'svelte'
-
-type PageModule = {
-  default: ComponentType
-}
+import { render as renderSvelte } from 'svelte/server'
 
 type InertiaSSRResponse = {
   head: string[]
   body: string
 }
 
-type SvelteSSRRenderResult = {
-  html: string
-  head: string
-  css?: {
-    code: string
-  }
-}
-
 type JsonObject = Record<string, unknown>
 
 type RouteHandler = (request: IncomingMessage) => Promise<JsonObject>
 
-const pages = import.meta.glob<PageModule>('./pages/**/*.svelte', { eager: true })
+const pages = import.meta.glob<ResolvedComponent>('./pages/**/*.svelte', { eager: true })
 
 const portRaw = process.env.PORT
 if (!portRaw) {
@@ -57,10 +45,7 @@ const render = async (page: Page<PageProps>): Promise<InertiaSSRResponse> => {
       return pageModule
     },
     setup: ({ App, props }) => {
-      if (typeof App !== 'object' || App === null || !('render' in App)) {
-        throw new Error('SSRレンダラーが不正です')
-      }
-      return (App as { render: (p: unknown) => SvelteSSRRenderResult }).render(props)
+      return renderSvelte(App, { props })
     }
   })
 

@@ -1,12 +1,8 @@
 import './app.css'
-import { createInertiaApp } from '@inertiajs/svelte'
-import type { ComponentType } from 'svelte'
+import { createInertiaApp, type ResolvedComponent } from '@inertiajs/svelte'
+import { hydrate } from 'svelte'
 
-type PageModule = {
-  default: ComponentType
-}
-
-const pages = import.meta.glob<PageModule>('./pages/**/*.svelte')
+const pages = import.meta.glob<ResolvedComponent>('./pages/**/*.svelte')
 
 createInertiaApp({
   resolve: async (name: string) => {
@@ -21,6 +17,6 @@ createInertiaApp({
     if (!(el instanceof HTMLElement)) {
       throw new Error('マウント先の要素が見つかりません')
     }
-    new App({ target: el, props, hydrate: true })
+    return hydrate(App, { target: el, props })
   }
 })
