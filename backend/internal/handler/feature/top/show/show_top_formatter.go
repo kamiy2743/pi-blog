@@ -6,7 +6,7 @@ import (
 	"github.com/romsar/gonertia/v2"
 )
 
-func Format(result ShowTopResult) gonertia.Props {
+func format(result result) gonertia.Props {
 	latestArticles := make([]map[string]any, 0, len(result.LatestArticles))
 	for _, article := range result.LatestArticles {
 		categoryNames := make([]string, 0, len(article.Categories))

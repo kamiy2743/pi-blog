@@ -21,11 +21,11 @@ func NewHandler(i *gonertia.Inertia, u *Usecase) *Handler {
 }
 
 func (h *Handler) Handle(w http.ResponseWriter, r *http.Request) {
-	result, err := h.usecase.Run(r.Context())
+	result, err := h.usecase.run(r.Context())
 	if err != nil {
 		inertia.RenderError(w, r, h.inertia, *err)
 		return
 	}
 
-	inertia.Render(w, r, h.inertia, "ShowTop", Format(result))
+	inertia.Render(w, r, h.inertia, "ShowTop", format(result))
 }
