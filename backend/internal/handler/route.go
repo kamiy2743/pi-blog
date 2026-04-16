@@ -5,13 +5,13 @@ import (
 
 	"blog/internal/config"
 	"blog/internal/di"
-	"blog/internal/domain/article"
 	createArticleHandler "blog/internal/handler/feature/admin/article/create"
 	editArticleHandler "blog/internal/handler/feature/admin/article/edit"
 	storeArticleHandler "blog/internal/handler/feature/admin/article/store"
 	updateArticleHandler "blog/internal/handler/feature/admin/article/update"
 	showAdminHandler "blog/internal/handler/feature/admin/show"
 	showArticleHandler "blog/internal/handler/feature/article/show"
+	"blog/internal/handler/inertia"
 	"blog/internal/handler/middleware"
 
 	"github.com/romsar/gonertia/v2"
@@ -36,7 +36,7 @@ func setUpRoute(
 
 	mux.Handle("GET /", inertiaApp.Middleware(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.URL.Path != "/" {
-			container.ShowNotFoundHandler.Handle(w, r)
+			inertia.RenderNotFound(w, r, inertiaApp)
 			return
 		}
 		container.ShowTopHandler.Handle(w, r)
@@ -50,14 +50,7 @@ func setUpArticleRoutes(
 ) {
 	mux.Handle("GET /article", inertiaApp.Middleware(http.HandlerFunc(container.SearchArticleHandler.Handle)))
 
-	mux.Handle("GET /article/{articleId}", inertiaApp.Middleware(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		articleID, err := article.ParseArticleID(r.PathValue("articleId"))
-		if err != nil {
-			container.ShowNotFoundHandler.Handle(w, r)
-			return
-		}
-		showArticleHandler.Handle(inertiaApp, articleID)(w, r)
-	})))
+	mux.Handle("GET /article/{articleId}", inertiaApp.Middleware(http.HandlerFunc(showArticleHandler.Handle)))
 }
 
 func setUpAdminRoutes(
@@ -77,20 +70,6 @@ func setUpAdminRoutes(
 	handleAdmin("GET /admin/article/new", inertiaApp.Middleware(createArticleHandler.Handle(inertiaApp)))
 	handleAdmin("POST /admin/article/new", http.HandlerFunc(storeArticleHandler.Handle))
 
-	handleAdmin("GET /admin/article/edit/{articleId}", inertiaApp.Middleware(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		articleID, err := article.ParseArticleID(r.PathValue("articleId"))
-		if err != nil {
-			container.ShowNotFoundHandler.Handle(w, r)
-			return
-		}
-		editArticleHandler.Handle(inertiaApp, articleID)(w, r)
-	})))
-	handleAdmin("POST /admin/article/edit/{articleId}", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		articleID, err := article.ParseArticleID(r.PathValue("articleId"))
-		if err != nil {
-			http.NotFound(w, r)
-			return
-		}
-		updateArticleHandler.Handle(w, r, articleID)
-	}))
+	handleAdmin("GET /admin/article/edit/{articleId}", inertiaApp.Middleware(http.HandlerFunc(editArticleHandler.Handle)))
+	handleAdmin("POST /admin/article/edit/{articleId}", http.HandlerFunc(updateArticleHandler.Handle))
 }

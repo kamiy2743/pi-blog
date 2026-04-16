@@ -72,6 +72,10 @@ func RenderError(
 	})
 }
 
+func RenderNotFound(w http.ResponseWriter, r *http.Request, inertiaApp *gonertia.Inertia) {
+	RenderWithStatus(w, r, inertiaApp, http.StatusNotFound, "NotFound", nil)
+}
+
 type PrepareInputResult[T any] struct {
 	Input              T
 	HasValidationError bool

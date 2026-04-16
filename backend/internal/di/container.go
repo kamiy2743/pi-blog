@@ -6,7 +6,6 @@ import (
 	"blog/internal/ent"
 	searchArticleHandler "blog/internal/handler/feature/article/search"
 	healthHandler "blog/internal/handler/feature/health"
-	showNotFoundHandler "blog/internal/handler/feature/notfound/show"
 	showTopHandler "blog/internal/handler/feature/top/show"
 	infraArticle "blog/internal/infra/article"
 	infraCategory "blog/internal/infra/category"
@@ -17,7 +16,6 @@ import (
 type Container struct {
 	SearchArticleHandler *searchArticleHandler.Handler
 	HealthHandler        *healthHandler.Handler
-	ShowNotFoundHandler  *showNotFoundHandler.Handler
 	ShowTopHandler       *showTopHandler.Handler
 }
 
@@ -51,7 +49,6 @@ func NewContainer(
 	return &Container{
 		SearchArticleHandler: searchArticleHandler.NewHandler(inertiaApp, searchArticleUsecase),
 		HealthHandler:        healthHandler.NewHandler(),
-		ShowNotFoundHandler:  showNotFoundHandler.NewHandler(inertiaApp),
 		ShowTopHandler:       showTopHandler.NewHandler(inertiaApp, showTopUsecase),
 	}
 }
