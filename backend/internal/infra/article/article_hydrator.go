@@ -8,11 +8,14 @@ import (
 
 func hydrateArticle(model *ent.Article) domainArticle.Article {
 	return domainArticle.Article{
-		ID:         domainArticle.ArticleID(model.ID),
-		Title:      model.Title,
-		ContentMD:  model.Body,
-		Categories: infraCategory.HydrateCategories(model.Edges.Categories),
-		UpdatedAt:  model.UpdatedAt,
+		ID:             domainArticle.ArticleID(model.ID),
+		Title:          model.Title,
+		Body:           model.Body,
+		IsPublished:    model.IsPublished,
+		PublishStartAt: model.PublishStartAt,
+		PublishEndAt:   model.PublishEndAt,
+		Categories:     infraCategory.HydrateCategories(model.Edges.Categories),
+		UpdatedAt:      model.UpdatedAt,
 	}
 }
 

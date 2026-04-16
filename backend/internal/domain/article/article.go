@@ -10,28 +10,31 @@ import (
 )
 
 type Article struct {
-	ID         ArticleID
-	Title      string
-	ContentMD  string
-	Categories []category.Category
-	UpdatedAt  time.Time
+	ID             ArticleID
+	Title          string
+	Body           string
+	IsPublished    bool
+	PublishStartAt *time.Time
+	PublishEndAt   *time.Time
+	Categories     []category.Category
+	UpdatedAt      time.Time
 }
 
 type CreateArticleInput struct {
 	Title      string
-	ContentMD  string
+	Body       string
 	Categories []category.Category
 }
 
 var (
 	errInvalidArticle   = errors.New("記事が不正です")
 	errEmptyTitle       = errors.New("記事タイトルは必須です")
-	errEmptyContentMD   = errors.New("記事本文は必須です")
+	errEmptyBody        = errors.New("記事本文は必須です")
 	errInvalidUpdatedAt = errors.New("更新日時が不正です")
 )
 
 func (a Article) Validate() error {
-	if err := validateContent(a.Title, a.ContentMD, a.Categories); err != nil {
+	if err := validateContent(a.Title, a.Body, a.Categories); err != nil {
 		return err
 	}
 	if a.UpdatedAt.IsZero() {
@@ -41,18 +44,18 @@ func (a Article) Validate() error {
 }
 
 func (a CreateArticleInput) Validate() error {
-	if err := validateContent(a.Title, a.ContentMD, a.Categories); err != nil {
+	if err := validateContent(a.Title, a.Body, a.Categories); err != nil {
 		return err
 	}
 	return nil
 }
 
-func validateContent(title string, contentMD string, categories []category.Category) error {
+func validateContent(title string, body string, categories []category.Category) error {
 	if strings.TrimSpace(title) == "" {
 		return fmt.Errorf("%w: %w", errInvalidArticle, errEmptyTitle)
 	}
-	if strings.TrimSpace(contentMD) == "" {
-		return fmt.Errorf("%w: %w", errInvalidArticle, errEmptyContentMD)
+	if strings.TrimSpace(body) == "" {
+		return fmt.Errorf("%w: %w", errInvalidArticle, errEmptyBody)
 	}
 	for _, category := range categories {
 		if err := category.Validate(); err != nil {

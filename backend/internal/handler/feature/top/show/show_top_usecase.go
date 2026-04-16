@@ -29,8 +29,9 @@ func NewUsecase(
 }
 
 func (u *Usecase) run(ctx context.Context) (result, *handlererror.DisplayableError) {
+	limit := 10
 	articles, err := u.articleRepository.Search(ctx, article.SearchArticleCriteria{
-		Limit:   10,
+		Limit:   &limit,
 		OrderBy: article.OrderByLatest,
 	})
 	if err != nil {

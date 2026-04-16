@@ -20,16 +20,21 @@ import (
 	stubCategory "blog/internal/test/stub/category"
 )
 
+type records struct {
+	Articles   []*ent.Article
+	Categories []*ent.Category
+}
+
 func Testトップページを表示できる(t *testing.T) {
 	initResult := test.Init(t)
-	setUpRecords(t, initResult.EntClient)
+	records := setUpRecords(t, initResult.EntClient)
 
 	res := callEndpoint(t, initResult.Server)
+
 	res.AssertProps(t, "ShowTop", map[string]any{
-		"errors": map[string]any{},
 		"latestArticles": []map[string]any{
 			{
-				"id":    2,
+				"id":    records.Articles[1].ID,
 				"title": "title1",
 				"date":  "2026-01-02T00:00:00Z",
 				"categoryNames": []string{
@@ -38,7 +43,7 @@ func Testトップページを表示できる(t *testing.T) {
 				},
 			},
 			{
-				"id":    1,
+				"id":    records.Articles[0].ID,
 				"title": "title0",
 				"date":  "2026-01-01T00:00:00Z",
 				"categoryNames": []string{
@@ -49,15 +54,34 @@ func Testトップページを表示できる(t *testing.T) {
 		},
 		"categories": []map[string]any{
 			{
-				"id":   2,
+				"id":   records.Categories[0].ID,
 				"name": "category-a",
 			},
 			{
-				"id":   1,
+				"id":   records.Categories[1].ID,
 				"name": "category-b",
 			},
 		},
 	})
+}
+
+func Test最大10件までしか表示されない(t *testing.T) {
+	initResult := test.Init(t)
+	setUpRecords(t, initResult.EntClient)
+
+	for i := 0; i < 10; i++ {
+		fixtureArticle.CreateArticle(
+			t,
+			initResult.EntClient,
+			fixtureArticle.CreateArticleInput{
+				IsPublished: true,
+			},
+		)
+	}
+
+	res := callEndpoint(t, initResult.Server)
+
+	res.AssertPropsCount(t, "ShowTop", "latestArticles", 10)
 }
 
 func Test記事の取得に失敗した場合は500(t *testing.T) {
@@ -88,14 +112,15 @@ func Testカテゴリの取得に失敗した場合は500(t *testing.T) {
 	res.AssertError(t, http.StatusInternalServerError, "カテゴリの読み込みに失敗しました。", "時間をおいてから、もう一度お試しください。")
 }
 
-func setUpRecords(t *testing.T, entClient *ent.Client) {
+func setUpRecords(t *testing.T, entClient *ent.Client) records {
 	t.Helper()
 
-	category1 := fixtureCategory.CreateCategory(t, entClient, fixtureCategory.CreateCategoryInput{Name: "category-b"})
-	category2 := fixtureCategory.CreateCategory(t, entClient, fixtureCategory.CreateCategoryInput{Name: "category-a"})
+	categoryB := fixtureCategory.CreateCategory(t, entClient, fixtureCategory.CreateCategoryInput{Name: "category-b"})
+	categoryA := fixtureCategory.CreateCategory(t, entClient, fixtureCategory.CreateCategoryInput{Name: "category-a"})
 
+	articles := make([]*ent.Article, 0, 2)
 	for i := 0; i < 2; i++ {
-		fixtureArticle.CreateArticle(
+		articles = append(articles, fixtureArticle.CreateArticle(
 			t,
 			entClient,
 			fixtureArticle.CreateArticleInput{
@@ -104,11 +129,27 @@ func setUpRecords(t *testing.T, entClient *ent.Client) {
 				IsPublished: true,
 				UpdatedAt:   helper.TimePtr(t, fmt.Sprintf("2026-01-0%d 00:00", i+1)),
 				Categories: []*ent.Category{
-					category1,
-					category2,
+					categoryB,
+					categoryA,
 				},
 			},
-		)
+		))
+	}
+	articles = append(articles, fixtureArticle.CreateArticle(
+		t,
+		entClient,
+		fixtureArticle.CreateArticleInput{
+			Title:       "unpublished",
+			IsPublished: false,
+		},
+	))
+
+	return records{
+		Articles: articles,
+		Categories: []*ent.Category{
+			categoryA,
+			categoryB,
+		},
 	}
 }
 
