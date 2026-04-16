@@ -23,7 +23,7 @@ func toInput(r *http.Request) (input, []handlererror.ValidationError, *handlerer
 		CategoryIDs: r.URL.Query()["categoryId"],
 		Page:        r.URL.Query().Get("page"),
 	}
-	varidationErrs := validator.Validate(req, toValidationError)
+	validationErrs := validator.Validate(req, toValidationError)
 
 	categoryIDs := parseCategoryIDs(req.CategoryIDs)
 	page := parsePage(req.Page)
@@ -33,7 +33,7 @@ func toInput(r *http.Request) (input, []handlererror.ValidationError, *handlerer
 		CategoryIDs: categoryIDs,
 		Page:        page,
 		PerPage:     perPage,
-	}, varidationErrs, nil
+	}, validationErrs, nil
 }
 
 func parseCategoryIDs(categoryIDStrs []string) []category.CategoryID {

@@ -2,6 +2,7 @@ package validator
 
 import (
 	"errors"
+	"strings"
 
 	"blog/internal/handler/handlererror"
 
@@ -22,12 +23,14 @@ func Validate[T any](
 
 	result := make([]handlererror.ValidationError, 0, len(validationErrors))
 	for _, validationError := range validationErrors {
-		err := toValidationErr(validationError.Field(), validationError.Tag())
+		field := strings.ToLower(validationError.Field())
+		err := toValidationErr(field, validationError.Tag())
 		if err == nil {
 			result = append(result, handlererror.ValidationError{
-				Field:   validationError.Field(),
+				Field:   field,
 				Message: "入力内容が不正です。",
 			})
+			continue
 		}
 		result = append(result, *err)
 	}
