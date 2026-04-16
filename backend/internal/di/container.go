@@ -5,8 +5,8 @@ import (
 	domainCategory "blog/internal/domain/category"
 	"blog/internal/ent"
 	searchArticleHandler "blog/internal/handler/feature/article/search"
-	healthHandler "blog/internal/handler/feature/health"
 	showTopHandler "blog/internal/handler/feature/top/show"
+	healthHandler "blog/internal/handler/health"
 	infraArticle "blog/internal/infra/article"
 	infraCategory "blog/internal/infra/category"
 
@@ -15,8 +15,8 @@ import (
 
 type Container struct {
 	SearchArticleHandler *searchArticleHandler.Handler
-	HealthHandler        *healthHandler.Handler
 	ShowTopHandler       *showTopHandler.Handler
+	HealthHandler        *healthHandler.Handler
 }
 
 type ContainerOptions struct {
@@ -48,7 +48,7 @@ func NewContainer(
 
 	return &Container{
 		SearchArticleHandler: searchArticleHandler.NewHandler(inertiaApp, searchArticleUsecase),
-		HealthHandler:        healthHandler.NewHandler(),
 		ShowTopHandler:       showTopHandler.NewHandler(inertiaApp, showTopUsecase),
+		HealthHandler:        healthHandler.NewHandler(),
 	}
 }
