@@ -7,9 +7,10 @@ import (
 )
 
 type ArticleRepositoryStub struct {
-	CreateFunc func(ctx context.Context, input domainArticle.CreateArticleInput) (domainArticle.Article, error)
-	UpdateFunc func(ctx context.Context, article domainArticle.Article) error
-	SearchFunc func(ctx context.Context, criteria domainArticle.SearchArticleCriteria) ([]domainArticle.Article, error)
+	CreateFunc   func(ctx context.Context, input domainArticle.CreateArticleInput) (domainArticle.Article, error)
+	UpdateFunc   func(ctx context.Context, article domainArticle.Article) error
+	SearchFunc   func(ctx context.Context, criteria domainArticle.SearchArticleCriteria) ([]domainArticle.Article, error)
+	PaginateFunc func(ctx context.Context, criteria domainArticle.PaginateArticleCriteria) (domainArticle.PaginatedArticles, error)
 }
 
 func (s ArticleRepositoryStub) Create(ctx context.Context, input domainArticle.CreateArticleInput) (domainArticle.Article, error) {
@@ -31,4 +32,11 @@ func (s ArticleRepositoryStub) Search(ctx context.Context, criteria domainArticl
 		return nil, nil
 	}
 	return s.SearchFunc(ctx, criteria)
+}
+
+func (s ArticleRepositoryStub) Paginate(ctx context.Context, criteria domainArticle.PaginateArticleCriteria) (domainArticle.PaginatedArticles, error) {
+	if s.PaginateFunc == nil {
+		return domainArticle.PaginatedArticles{}, nil
+	}
+	return s.PaginateFunc(ctx, criteria)
 }

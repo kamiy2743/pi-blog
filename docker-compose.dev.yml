@@ -67,7 +67,7 @@ services:
       - private
       - egress
     depends_on:
-      - mysql
+      - mysql-test
     restart: unless-stopped
 
   mysql:

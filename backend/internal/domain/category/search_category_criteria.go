@@ -1,5 +1,6 @@
 package category
 
 type SearchCategoryCriteria struct {
-	IDs []CategoryID
+	IDs     []CategoryID
+	OrderBy OrderBy
 }

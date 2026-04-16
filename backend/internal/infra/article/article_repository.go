@@ -3,10 +3,12 @@ package article
 import (
 	"context"
 	"fmt"
+	"time"
 
 	domainArticle "blog/internal/domain/article"
 	"blog/internal/ent"
 	entArticle "blog/internal/ent/article"
+	entCategory "blog/internal/ent/category"
 )
 
 type ArticleRepository struct {
@@ -28,19 +30,8 @@ func (r *ArticleRepository) Update(ctx context.Context, input domainArticle.Arti
 func (r *ArticleRepository) Search(ctx context.Context, criteria domainArticle.SearchArticleCriteria) ([]domainArticle.Article, error) {
 	query := r.client.Article.Query().WithCategories()
 
-	if criteria.Title != "" {
-		query.Where(entArticle.TitleContainsFold(criteria.Title))
-	}
-
-	switch criteria.OrderBy {
-	case domainArticle.OrderByLatest:
-		query.Order(ent.Desc(entArticle.FieldUpdatedAt))
-	default:
-		return nil, fmt.Errorf("未対応の記事の並び順です: %s", criteria.OrderBy)
-	}
-
-	if criteria.Limit > 0 {
-		query.Limit(criteria.Limit)
+	if err := applySearchCriteria(query, criteria, time.Now()); err != nil {
+		return nil, err
 	}
 
 	models, err := query.All(ctx)
@@ -48,4 +39,85 @@ func (r *ArticleRepository) Search(ctx context.Context, criteria domainArticle.S
 		return nil, err
 	}
 	return hydrateArticles(models), nil
+}
+
+func (r *ArticleRepository) Paginate(ctx context.Context, criteria domainArticle.PaginateArticleCriteria) (domainArticle.PaginatedArticles, error) {
+	now := time.Now()
+
+	countQuery := r.client.Article.Query()
+	if err := applySearchCriteria(countQuery, criteria.SearchCriteria, now); err != nil {
+		return domainArticle.PaginatedArticles{}, err
+	}
+	totalCount, err := countQuery.Count(ctx)
+	if err != nil {
+		return domainArticle.PaginatedArticles{}, err
+	}
+
+	articleQuery := r.client.Article.Query().WithCategories()
+
+	criteria.SearchCriteria.Limit = &criteria.PerPage
+	if err := applySearchCriteria(articleQuery, criteria.SearchCriteria, now); err != nil {
+		return domainArticle.PaginatedArticles{}, err
+	}
+	if criteria.Page > 1 {
+		articleQuery.Offset((criteria.Page - 1) * criteria.PerPage)
+	}
+
+	models, err := articleQuery.All(ctx)
+	if err != nil {
+		return domainArticle.PaginatedArticles{}, err
+	}
+
+	return domainArticle.PaginatedArticles{
+		TotalCount: totalCount,
+		Articles:   hydrateArticles(models),
+	}, nil
+}
+
+func applySearchCriteria(
+	query *ent.ArticleQuery,
+	criteria domainArticle.SearchArticleCriteria,
+	now time.Time,
+) error {
+	if criteria.Title != "" {
+		query.Where(entArticle.TitleContainsFold(criteria.Title))
+	}
+
+	if len(criteria.CategoryIDs) > 0 {
+		categoryIDs := make([]uint32, 0, len(criteria.CategoryIDs))
+		for _, categoryID := range criteria.CategoryIDs {
+			categoryIDs = append(categoryIDs, uint32(categoryID))
+		}
+		query.Where(entArticle.HasCategoriesWith(entCategory.IDIn(categoryIDs...)))
+	}
+
+	if !criteria.IncludeUnpublished {
+		query.Where(
+			entArticle.IsPublished(true),
+			entArticle.Or(
+				entArticle.PublishStartAtIsNil(),
+				entArticle.PublishStartAtLTE(now),
+			),
+			entArticle.Or(
+				entArticle.PublishEndAtIsNil(),
+				entArticle.PublishEndAtGTE(now),
+			),
+		)
+	}
+
+	if criteria.Limit != nil {
+		query.Limit(*criteria.Limit)
+	}
+
+	switch criteria.OrderBy {
+	case domainArticle.OrderByLatest:
+		query.Order(
+			ent.Desc(entArticle.FieldUpdatedAt),
+			ent.Desc(entArticle.FieldID),
+		)
+	default:
+		return fmt.Errorf("未対応の記事の並び順です: %s", criteria.OrderBy)
+	}
+
+	return nil
 }

@@ -4,6 +4,8 @@
 
 <script lang="ts">
   import { Link } from '@inertiajs/svelte'
+  import PublicSiteLink from '../components/PublicSiteLink.svelte'
+  import { formatDate } from '../utils/date'
 
   type Article = {
     id: number
@@ -19,21 +21,13 @@
 
   export let latestArticles: Article[] = []
   export let categories: Category[] = []
-
-  function formatDate(value: string): string {
-    return new Intl.DateTimeFormat('ja-JP', {
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit'
-    }).format(new Date(value))
-  }
 </script>
 
 <div class="mx-auto max-w-7xl px-6 py-10 sm:px-8 lg:px-10 lg:py-12">
   <div class="blog-shell overflow-hidden rounded-[2rem] border">
     <div class="blog-hero border-b px-6 py-10 sm:px-8 lg:px-10 lg:py-12">
       <div class="max-w-3xl space-y-4">
-        <p class="blog-eyebrow text-sm font-semibold tracking-[0.24em]">panda-dev.net / blog</p>
+        <PublicSiteLink />
         <h1 class="blog-title text-3xl font-semibold tracking-tight sm:text-3xl">
           パンダの個人開発ブログ
         </h1>
@@ -61,7 +55,7 @@
             class="blog-button mt-5 inline-flex items-center gap-2 rounded-full px-5 py-3 text-sm font-semibold transition"
             href="/article"
           >
-            記事一覧へ
+            記事一覧
             <span aria-hidden="true">→</span>
           </Link>
         </div>

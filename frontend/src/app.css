@@ -126,4 +126,16 @@
     color: var(--color-accent);
     box-shadow: var(--shadow-hover);
   }
+
+  .blog-filter-chip {
+    border-color: var(--color-border);
+    background: var(--color-surface);
+    color: var(--color-text-secondary);
+  }
+
+  .blog-filter-chip-selected {
+    border-color: var(--color-accent);
+    background: color-mix(in srgb, var(--color-accent) 12%, white);
+    color: var(--color-accent);
+  }
 }

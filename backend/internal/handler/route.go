@@ -11,7 +11,6 @@ import (
 	storeArticleHandler "blog/internal/handler/feature/admin/article/store"
 	updateArticleHandler "blog/internal/handler/feature/admin/article/update"
 	showAdminHandler "blog/internal/handler/feature/admin/show"
-	searchArticleHandler "blog/internal/handler/feature/article/search"
 	showArticleHandler "blog/internal/handler/feature/article/show"
 	"blog/internal/handler/middleware"
 
@@ -49,7 +48,7 @@ func setUpArticleRoutes(
 	inertiaApp *gonertia.Inertia,
 	container *di.Container,
 ) {
-	mux.Handle("GET /article", inertiaApp.Middleware(searchArticleHandler.Handle(inertiaApp)))
+	mux.Handle("GET /article", inertiaApp.Middleware(http.HandlerFunc(container.SearchArticleHandler.Handle)))
 
 	mux.Handle("GET /article/{articleId}", inertiaApp.Middleware(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		articleID, err := article.ParseArticleID(r.PathValue("articleId"))

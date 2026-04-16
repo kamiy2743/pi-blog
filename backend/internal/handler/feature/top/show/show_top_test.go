@@ -31,7 +31,7 @@ func Testトップページを表示できる(t *testing.T) {
 
 	res := callEndpoint(t, initResult.Server)
 
-	res.AssertProps(t, "ShowTop", map[string]any{
+	res.AssertFullProps(t, "ShowTop", map[string]any{
 		"latestArticles": []map[string]any{
 			{
 				"id":    records.Articles[1].ID,

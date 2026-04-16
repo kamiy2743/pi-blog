@@ -6,13 +6,15 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"net/url"
+	"reflect"
+	"strings"
 	"testing"
 )
 
 type TestInertiaRequest struct {
 	Method      string
 	Path        string
-	QueryParams map[string]string
+	QueryParams map[string][]string
 	Body        io.Reader
 }
 
@@ -41,8 +43,10 @@ func RequestInertia(
 
 	if len(inertiaRequest.QueryParams) > 0 {
 		values := url.Values{}
-		for key, value := range inertiaRequest.QueryParams {
-			values.Set(key, value)
+		for key, valueList := range inertiaRequest.QueryParams {
+			for _, value := range valueList {
+				values.Add(key, value)
+			}
 		}
 		requestURL += "?" + values.Encode()
 	}
@@ -73,7 +77,7 @@ func RequestInertia(
 	return inertiaResponse
 }
 
-func (response TestInertiaResponse) AssertProps(
+func (response TestInertiaResponse) AssertFullProps(
 	t *testing.T,
 	expectedComponent string,
 	expectedProps map[string]any,
@@ -136,5 +140,147 @@ func (response TestInertiaResponse) AssertResponse(
 		actualPrettyJSON, _ := json.MarshalIndent(response.Props, "", "  ")
 		expectedPrettyJSON, _ := json.MarshalIndent(expectedResponseProps, "", "  ")
 		t.Fatalf("props が不正です:\nexpected:\n%s\nactual:\n%s", expectedPrettyJSON, actualPrettyJSON)
+	}
+}
+
+func (response TestInertiaResponse) AssertPartialProps(
+	t *testing.T,
+	expectedComponent string,
+	propPath string,
+	expectedProps map[string]any,
+) {
+	t.Helper()
+
+	if response.StatusCode != http.StatusOK {
+		t.Fatalf("ステータスコードが不正です: expected=%d actual=%d", http.StatusOK, response.StatusCode)
+	}
+
+	if response.Component != expectedComponent {
+		t.Fatalf("component が不正です: expected=%q actual=%q", expectedComponent, response.Component)
+	}
+
+	actualProps, ok := lookupPropPath(response.Props, propPath)
+	if !ok {
+		t.Fatalf("props に %q が存在しません", propPath)
+	}
+
+	assertPartialJSON(t, "props."+propPath, actualProps, expectedProps)
+}
+
+func (response TestInertiaResponse) AssertPropsCount(
+	t *testing.T,
+	componentName string,
+	propName string,
+	expectedCount int,
+) {
+	t.Helper()
+
+	if response.StatusCode != http.StatusOK {
+		t.Fatalf("ステータスコードが不正です: expected=%d actual=%d", http.StatusOK, response.StatusCode)
+	}
+
+	if response.Component != componentName {
+		t.Fatalf("component が不正です: expected=%q actual=%q", componentName, response.Component)
+	}
+
+	prop, ok := lookupPropPath(response.Props, propName)
+	if !ok {
+		t.Fatalf("props に %q が存在しません", propName)
+	}
+
+	value := reflect.ValueOf(prop)
+	if value.Kind() != reflect.Slice && value.Kind() != reflect.Array {
+		t.Fatalf("props[%q] は件数を検証できる型ではありません: actual=%T", propName, prop)
+	}
+
+	if value.Len() != expectedCount {
+		t.Fatalf("props[%q] の件数が不正です: expected=%d actual=%d", propName, expectedCount, value.Len())
+	}
+}
+
+func (response TestInertiaResponse) AssertPropsValue(
+	t *testing.T,
+	componentName string,
+	propPath string,
+	expectedValue any,
+) {
+	t.Helper()
+
+	if response.StatusCode != http.StatusOK {
+		t.Fatalf("ステータスコードが不正です: expected=%d actual=%d", http.StatusOK, response.StatusCode)
+	}
+
+	if response.Component != componentName {
+		t.Fatalf("component が不正です: expected=%q actual=%q", componentName, response.Component)
+	}
+
+	actualValue, ok := lookupPropPath(response.Props, propPath)
+	if !ok {
+		t.Fatalf("props に %q が存在しません", propPath)
+	}
+
+	assertJSONValue(t, "props."+propPath, actualValue, expectedValue)
+}
+
+func lookupPropPath(props map[string]any, propPath string) (any, bool) {
+	if propPath == "" {
+		return nil, false
+	}
+
+	var current any = props
+	for _, key := range strings.Split(propPath, ".") {
+		currentMap, ok := current.(map[string]any)
+		if !ok {
+			return nil, false
+		}
+
+		current, ok = currentMap[key]
+		if !ok {
+			return nil, false
+		}
+	}
+
+	return current, true
+}
+
+func assertPartialJSON(t *testing.T, path string, actual any, expected any) {
+	t.Helper()
+
+	expectedMap, ok := expected.(map[string]any)
+	if !ok {
+		assertJSONValue(t, path, actual, expected)
+		return
+	}
+
+	actualMap, ok := actual.(map[string]any)
+	if !ok {
+		t.Fatalf("%s は object ではありません: actual=%T", path, actual)
+	}
+
+	for key, expectedValue := range expectedMap {
+		actualValue, ok := actualMap[key]
+		if !ok {
+			t.Fatalf("%s.%s が存在しません", path, key)
+		}
+
+		assertPartialJSON(t, path+"."+key, actualValue, expectedValue)
+	}
+}
+
+func assertJSONValue(t *testing.T, path string, actual any, expected any) {
+	t.Helper()
+
+	actualJSON, err := json.Marshal(actual)
+	if err != nil {
+		t.Fatalf("取得した %s の JSON エンコードに失敗しました: %v", path, err)
+	}
+
+	expectedJSON, err := json.Marshal(expected)
+	if err != nil {
+		t.Fatalf("期待する %s の JSON エンコードに失敗しました: %v", path, err)
+	}
+
+	if string(actualJSON) != string(expectedJSON) {
+		t.Fatalf("%s の値が不正です: expected=%s actual=%s", path, expectedJSON, actualJSON)
 	}
 }
