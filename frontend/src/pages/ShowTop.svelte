@@ -1,5 +1,5 @@
 <svelte:head>
-  <title>Blog Top</title>
+  <title>パンダの開発ブログ</title>
 </svelte:head>
 
 <script lang="ts">
@@ -29,10 +29,10 @@
       <div class="max-w-3xl space-y-4">
         <PublicSiteLink />
         <h1 class="blog-title text-3xl font-semibold tracking-tight sm:text-3xl">
-          パンダの個人開発ブログ
+          パンダの開発ブログ
         </h1>
         <p class="blog-copy max-w-2xl text-base leading-8 sm:text-lg">
-          Raspberry Pi で自宅サーバーを開発・運用しながら学んだことを発信していきます
+          Raspberry Pi で自宅サーバーを開発・運用しながら学んだことを発信していきます。
         </p>
       </div>
     </div>
