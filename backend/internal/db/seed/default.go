@@ -51,7 +51,7 @@ func RunDefault(ctx context.Context, client *ent.Client) error {
 		article, err := tx.Article.Create().
 			SetTitle(fmt.Sprintf("かさまし記事%d", i)).
 			SetBody("記事の件数を増やすためのかさまし記事です。内容は適当です。").
-			SetIsPublished(true).
+			SetIsPublished(i%2 == 0).
 			SetPublishStartAt(publishStartAt).
 			Save(ctx)
 		if err != nil {

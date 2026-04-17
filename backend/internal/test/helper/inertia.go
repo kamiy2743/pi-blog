@@ -9,6 +9,8 @@ import (
 	"reflect"
 	"strings"
 	"testing"
+
+	"blog/internal/config"
 )
 
 type TestInertiaRequest struct {
@@ -16,6 +18,7 @@ type TestInertiaRequest struct {
 	Path        string
 	QueryParams map[string][]string
 	Body        io.Reader
+	UseBasicAuth bool
 }
 
 type TestInertiaResponse struct {
@@ -56,6 +59,9 @@ func RequestInertia(
 		t.Fatalf("Inertia リクエストの作成に失敗しました: %v", err)
 	}
 	req.Header.Set("X-Inertia", "true")
+	if inertiaRequest.UseBasicAuth {
+		req.SetBasicAuth(config.MustGetAdminBasicAuthUser(), config.MustGetAdminBasicAuthPass())
+	}
 
 	res, err := server.Client().Do(req)
 	if err != nil {

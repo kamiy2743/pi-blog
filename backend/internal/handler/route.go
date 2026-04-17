@@ -9,7 +9,6 @@ import (
 	editArticleHandler "blog/internal/handler/feature/admin/article/edit"
 	storeArticleHandler "blog/internal/handler/feature/admin/article/store"
 	updateArticleHandler "blog/internal/handler/feature/admin/article/update"
-	showAdminHandler "blog/internal/handler/feature/admin/show"
 	"blog/internal/handler/inertia"
 	"blog/internal/handler/middleware"
 
@@ -64,7 +63,7 @@ func setUpAdminRoutes(
 	)
 	handleAdmin := middleware.HandleWith(mux, basicAuth)
 
-	handleAdmin("GET /admin", inertiaApp.Middleware(showAdminHandler.Handle(inertiaApp)))
+	handleAdmin("GET /admin", inertiaApp.Middleware(http.HandlerFunc(container.ShowAdminHandler.Handle)))
 
 	handleAdmin("GET /admin/article/new", inertiaApp.Middleware(createArticleHandler.Handle(inertiaApp)))
 	handleAdmin("POST /admin/article/new", http.HandlerFunc(storeArticleHandler.Handle))

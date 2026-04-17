@@ -4,6 +4,7 @@ import (
 	domainArticle "blog/internal/domain/article"
 	domainCategory "blog/internal/domain/category"
 	"blog/internal/ent"
+	showAdminHandler "blog/internal/handler/feature/admin/show"
 	searchArticleHandler "blog/internal/handler/feature/article/search"
 	showArticleHandler "blog/internal/handler/feature/article/show"
 	showTopHandler "blog/internal/handler/feature/top/show"
@@ -15,6 +16,7 @@ import (
 )
 
 type Container struct {
+	ShowAdminHandler    *showAdminHandler.Handler
 	SearchArticleHandler *searchArticleHandler.Handler
 	ShowArticleHandler   *showArticleHandler.Handler
 	ShowTopHandler       *showTopHandler.Handler
@@ -45,11 +47,13 @@ func NewContainer(
 		categoryRepository = infraCategory.NewCategoryRepository(entClient)
 	}
 
+	showAdminUsecase := showAdminHandler.NewUsecase(articleRepository, categoryRepository)
 	searchArticleUsecase := searchArticleHandler.NewUsecase(articleRepository, categoryRepository)
 	showArticleUsecase := showArticleHandler.NewUsecase(articleRepository)
 	showTopUsecase := showTopHandler.NewUsecase(articleRepository, categoryRepository)
 
 	return &Container{
+		ShowAdminHandler:    showAdminHandler.NewHandler(inertiaApp, showAdminUsecase),
 		SearchArticleHandler: searchArticleHandler.NewHandler(inertiaApp, searchArticleUsecase),
 		ShowArticleHandler:   showArticleHandler.NewHandler(inertiaApp, showArticleUsecase),
 		ShowTopHandler:       showTopHandler.NewHandler(inertiaApp, showTopUsecase),

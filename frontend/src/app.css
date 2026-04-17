@@ -138,4 +138,108 @@
     background: color-mix(in srgb, var(--color-accent) 12%, white);
     color: var(--color-accent);
   }
+
+  .admin-page {
+    --admin-page-bg: #f4f4f5;
+    --admin-surface: #ffffff;
+    --admin-surface-muted: #fafafa;
+    --admin-border: #d4d4d8;
+    --admin-text-primary: #18181b;
+    --admin-text-secondary: #52525b;
+    --admin-text-muted: #71717a;
+    --admin-accent: #be123c;
+    --admin-accent-weak: color-mix(in srgb, var(--admin-accent) 10%, white);
+    --admin-button-bg: #18181b;
+    --admin-button-bg-hover: #3f3f46;
+    --admin-button-text: #ffffff;
+    --admin-shadow-hover: 0 10px 10px rgba(63, 63, 70, 0.12);
+    min-height: 100vh;
+    background: var(--admin-page-bg);
+    color: var(--admin-text-primary);
+  }
+
+  .admin-shell,
+  .admin-hero,
+  .admin-panel {
+    border-color: var(--admin-border);
+    background: var(--admin-surface);
+  }
+
+  .admin-eyebrow,
+  .admin-muted {
+    color: var(--admin-text-muted);
+  }
+
+  .admin-copy {
+    color: var(--admin-text-secondary);
+  }
+
+  .admin-accent {
+    color: var(--admin-accent);
+  }
+
+  .admin-button {
+    background: var(--admin-button-bg);
+    color: var(--admin-button-text);
+  }
+
+  .admin-button:hover {
+    background: var(--admin-button-bg-hover);
+  }
+
+  .admin-secondary-button {
+    border-color: var(--admin-border);
+    background: var(--admin-surface);
+    color: var(--admin-text-primary);
+  }
+
+  .admin-secondary-button:hover {
+    border-color: var(--admin-accent);
+    box-shadow: var(--admin-shadow-hover);
+  }
+
+  .admin-pill {
+    display: inline-flex;
+    align-items: center;
+    border: 1px solid var(--admin-border);
+    border-radius: 9999px;
+    background: var(--admin-surface-muted);
+    color: var(--admin-text-secondary);
+  }
+
+  .admin-pill-accent {
+    border-color: color-mix(in srgb, var(--admin-accent) 35%, white);
+    background: var(--admin-accent-weak);
+    color: var(--admin-accent);
+  }
+
+  .admin-filter-chip {
+    border-color: var(--admin-border);
+    background: var(--admin-surface);
+    color: var(--admin-text-secondary);
+  }
+
+  .admin-filter-chip-selected {
+    border-color: var(--admin-accent);
+    background: var(--admin-accent-weak);
+    color: var(--admin-accent);
+  }
+
+  .admin-table-head {
+    border-bottom: 1px solid var(--admin-border);
+    background: var(--admin-surface-muted);
+    color: var(--admin-text-secondary);
+  }
+
+  .admin-table-row {
+    border-bottom: 1px solid var(--admin-border);
+  }
+
+  .admin-table-row:last-child {
+    border-bottom: 0;
+  }
+
+  .admin-table-row:hover {
+    background: var(--admin-surface-muted);
+  }
 }
