@@ -93,7 +93,7 @@ run_go() {
       fi
 
       run_compose dev up -d --build go-test
-      run_compose dev exec -T go-test go test "$target"
+      run_compose dev exec -T go-test go test -p 1 "$target"
       ;;
     *)
       echo "未対応の back コマンドです: $command" >&2
