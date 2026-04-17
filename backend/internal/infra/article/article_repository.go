@@ -79,6 +79,14 @@ func applySearchCriteria(
 	criteria domainArticle.SearchArticleCriteria,
 	now time.Time,
 ) error {
+	if len(criteria.IDs) > 0 {
+		ids := make([]uint32, 0, len(criteria.IDs))
+		for _, id := range criteria.IDs {
+			ids = append(ids, uint32(id))
+		}
+		query.Where(entArticle.IDIn(ids...))
+	}
+
 	if criteria.Title != "" {
 		query.Where(entArticle.TitleContainsFold(criteria.Title))
 	}
@@ -109,14 +117,16 @@ func applySearchCriteria(
 		query.Limit(*criteria.Limit)
 	}
 
-	switch criteria.OrderBy {
-	case domainArticle.OrderByLatest:
-		query.Order(
-			ent.Desc(entArticle.FieldUpdatedAt),
-			ent.Desc(entArticle.FieldID),
-		)
-	default:
-		return fmt.Errorf("未対応の記事の並び順です: %s", criteria.OrderBy)
+	if criteria.OrderBy != "" {
+		switch criteria.OrderBy {
+		case domainArticle.OrderByLatest:
+			query.Order(
+				ent.Desc(entArticle.FieldUpdatedAt),
+				ent.Desc(entArticle.FieldID),
+			)
+		default:
+			return fmt.Errorf("未対応の記事の並び順です: %s", criteria.OrderBy)
+		}
 	}
 
 	return nil

@@ -103,6 +103,12 @@ func (response TestInertiaResponse) AssertError(
 	}, map[string]any{})
 }
 
+func (response TestInertiaResponse) AssertNotFound(t *testing.T) {
+	t.Helper()
+
+	response.AssertResponse(t, http.StatusNotFound, "NotFound", map[string]any{}, map[string]any{})
+}
+
 func (response TestInertiaResponse) AssertResponse(
 	t *testing.T,
 	expectedStatusCode int,

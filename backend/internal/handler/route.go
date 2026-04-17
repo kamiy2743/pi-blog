@@ -10,7 +10,6 @@ import (
 	storeArticleHandler "blog/internal/handler/feature/admin/article/store"
 	updateArticleHandler "blog/internal/handler/feature/admin/article/update"
 	showAdminHandler "blog/internal/handler/feature/admin/show"
-	showArticleHandler "blog/internal/handler/feature/article/show"
 	"blog/internal/handler/inertia"
 	"blog/internal/handler/middleware"
 
@@ -50,7 +49,7 @@ func setUpArticleRoutes(
 ) {
 	mux.Handle("GET /article", inertiaApp.Middleware(http.HandlerFunc(container.SearchArticleHandler.Handle)))
 
-	mux.Handle("GET /article/{articleId}", inertiaApp.Middleware(http.HandlerFunc(showArticleHandler.Handle)))
+	mux.Handle("GET /article/{articleId}", inertiaApp.Middleware(http.HandlerFunc(container.ShowArticleHandler.Handle)))
 }
 
 func setUpAdminRoutes(
