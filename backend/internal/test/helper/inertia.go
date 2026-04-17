@@ -14,10 +14,10 @@ import (
 )
 
 type TestInertiaRequest struct {
-	Method      string
-	Path        string
-	QueryParams map[string][]string
-	Body        io.Reader
+	Method       string
+	Path         string
+	QueryParams  map[string][]string
+	Body         io.Reader
 	UseBasicAuth bool
 }
 

@@ -4,7 +4,7 @@ import (
 	"testing"
 	"time"
 
-	"blog/internal/ent"
+	"blog/internal/db/ent"
 )
 
 type CreateArticleInput struct {

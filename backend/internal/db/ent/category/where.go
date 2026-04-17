@@ -3,7 +3,7 @@
 package category
 
 import (
-	"blog/internal/ent/predicate"
+	"blog/internal/db/ent/predicate"
 	"time"
 
 	"entgo.io/ent/dialect/sql"

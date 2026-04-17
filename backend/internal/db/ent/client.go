@@ -9,11 +9,11 @@ import (
 	"log"
 	"reflect"
 
-	"blog/internal/ent/migrate"
+	"blog/internal/db/ent/migrate"
 
-	"blog/internal/ent/article"
-	"blog/internal/ent/category"
-	"blog/internal/ent/comment"
+	"blog/internal/db/ent/article"
+	"blog/internal/db/ent/category"
+	"blog/internal/db/ent/comment"
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect"

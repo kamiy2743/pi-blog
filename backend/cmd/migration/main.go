@@ -7,7 +7,7 @@ import (
 	"os"
 
 	"blog/internal/db"
-	"blog/internal/ent/migrate"
+	"blog/internal/db/ent/migrate"
 )
 
 func main() {

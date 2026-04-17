@@ -3,7 +3,7 @@
 package ent
 
 import (
-	"blog/internal/ent/article"
+	"blog/internal/db/ent/article"
 	"fmt"
 	"strings"
 	"time"

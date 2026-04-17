@@ -11,7 +11,7 @@ import (
 	"blog/internal/di"
 	domainArticle "blog/internal/domain/article"
 	domainCategory "blog/internal/domain/category"
-	"blog/internal/ent"
+	"blog/internal/db/ent"
 	"blog/internal/test"
 	fixtureArticle "blog/internal/test/fixture/article"
 	fixtureCategory "blog/internal/test/fixture/category"

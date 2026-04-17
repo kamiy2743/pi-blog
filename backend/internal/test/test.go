@@ -8,9 +8,9 @@ import (
 
 	"blog/internal/db"
 	"blog/internal/di"
-	"blog/internal/ent"
-	"blog/internal/ent/enttest"
-	"blog/internal/ent/migrate"
+	"blog/internal/db/ent"
+	"blog/internal/db/ent/enttest"
+	"blog/internal/db/ent/migrate"
 	"blog/internal/handler"
 
 	_ "github.com/go-sql-driver/mysql"

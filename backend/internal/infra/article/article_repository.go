@@ -6,9 +6,9 @@ import (
 	"time"
 
 	domainArticle "blog/internal/domain/article"
-	"blog/internal/ent"
-	entArticle "blog/internal/ent/article"
-	entCategory "blog/internal/ent/category"
+	"blog/internal/db/ent"
+	entArticle "blog/internal/db/ent/article"
+	entCategory "blog/internal/db/ent/category"
 )
 
 type ArticleRepository struct {

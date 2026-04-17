@@ -3,7 +3,7 @@
 package hook
 
 import (
-	"blog/internal/ent"
+	"blog/internal/db/ent"
 	"context"
 	"fmt"
 )

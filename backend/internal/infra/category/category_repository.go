@@ -5,8 +5,8 @@ import (
 	"fmt"
 
 	domainCategory "blog/internal/domain/category"
-	"blog/internal/ent"
-	entCategory "blog/internal/ent/category"
+	"blog/internal/db/ent"
+	entCategory "blog/internal/db/ent/category"
 )
 
 type CategoryRepository struct {

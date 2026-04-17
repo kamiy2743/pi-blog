@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"time"
 
-	"blog/internal/ent"
+	"blog/internal/db/ent"
 )
 
 func RunDefault(ctx context.Context, client *ent.Client) error {

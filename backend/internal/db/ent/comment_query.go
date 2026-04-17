@@ -3,9 +3,9 @@
 package ent
 
 import (
-	"blog/internal/ent/article"
-	"blog/internal/ent/comment"
-	"blog/internal/ent/predicate"
+	"blog/internal/db/ent/article"
+	"blog/internal/db/ent/comment"
+	"blog/internal/db/ent/predicate"
 	"context"
 	"fmt"
 	"math"

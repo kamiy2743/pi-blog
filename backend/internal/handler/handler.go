@@ -8,7 +8,7 @@ import (
 	"blog/internal/di"
 	"blog/internal/handler/middleware"
 
-	"blog/internal/ent"
+	"blog/internal/db/ent"
 
 	"github.com/romsar/gonertia/v2"
 )

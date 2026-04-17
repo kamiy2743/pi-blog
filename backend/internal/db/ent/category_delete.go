@@ -3,8 +3,8 @@
 package ent
 
 import (
-	"blog/internal/ent/category"
-	"blog/internal/ent/predicate"
+	"blog/internal/db/ent/category"
+	"blog/internal/db/ent/predicate"
 	"context"
 
 	"entgo.io/ent/dialect/sql"

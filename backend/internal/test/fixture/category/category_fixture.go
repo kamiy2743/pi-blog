@@ -3,7 +3,7 @@ package category
 import (
 	"testing"
 
-	"blog/internal/ent"
+	"blog/internal/db/ent"
 )
 
 type CreateCategoryInput struct {

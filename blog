@@ -50,7 +50,7 @@ run_ent() {
 
   case "$command" in
     generate)
-      (cd "$SCRIPT_DIR/backend" && /usr/local/go/bin/go generate ./internal/ent "$@")
+      (cd "$SCRIPT_DIR/backend" && /usr/local/go/bin/go generate ./internal/db/ent "$@")
       ;;
     *)
       echo "未対応の ent コマンドです: $command" >&2

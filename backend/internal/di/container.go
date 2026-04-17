@@ -3,7 +3,7 @@ package di
 import (
 	domainArticle "blog/internal/domain/article"
 	domainCategory "blog/internal/domain/category"
-	"blog/internal/ent"
+	"blog/internal/db/ent"
 	showAdminHandler "blog/internal/handler/feature/admin/show"
 	searchArticleHandler "blog/internal/handler/feature/article/search"
 	showArticleHandler "blog/internal/handler/feature/article/show"
@@ -16,7 +16,7 @@ import (
 )
 
 type Container struct {
-	ShowAdminHandler    *showAdminHandler.Handler
+	ShowAdminHandler     *showAdminHandler.Handler
 	SearchArticleHandler *searchArticleHandler.Handler
 	ShowArticleHandler   *showArticleHandler.Handler
 	ShowTopHandler       *showTopHandler.Handler
@@ -53,7 +53,7 @@ func NewContainer(
 	showTopUsecase := showTopHandler.NewUsecase(articleRepository, categoryRepository)
 
 	return &Container{
-		ShowAdminHandler:    showAdminHandler.NewHandler(inertiaApp, showAdminUsecase),
+		ShowAdminHandler:     showAdminHandler.NewHandler(inertiaApp, showAdminUsecase),
 		SearchArticleHandler: searchArticleHandler.NewHandler(inertiaApp, searchArticleUsecase),
 		ShowArticleHandler:   showArticleHandler.NewHandler(inertiaApp, showArticleUsecase),
 		ShowTopHandler:       showTopHandler.NewHandler(inertiaApp, showTopUsecase),
