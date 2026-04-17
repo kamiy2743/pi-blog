@@ -27,14 +27,16 @@
           {description}
         </p>
         <div class="flex flex-wrap gap-3">
-          <button
-            class="blog-button inline-flex items-center gap-2 rounded-full px-5 py-3 text-sm font-semibold transition"
-            type="button"
-            on:click={reloadPage}
-          >
-            再読み込み
-            <span aria-hidden="true">↻</span>
-          </button>
+          {#if statusCode >= 500 && statusCode < 600}
+            <button
+              class="blog-button inline-flex items-center gap-2 rounded-full px-5 py-3 text-sm font-semibold transition"
+              type="button"
+              on:click={reloadPage}
+            >
+              再読み込み
+              <span aria-hidden="true">↻</span>
+            </button>
+          {/if}
           <Link
             class="blog-button inline-flex items-center gap-2 rounded-full px-5 py-3 text-sm font-semibold transition"
             href="/"

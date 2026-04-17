@@ -37,7 +37,7 @@ func (u *Usecase) run(ctx context.Context, articleID article.ArticleID) (result,
 		return result{}, &handlererror.DisplayableError{
 			StatusCode:  404,
 			Message:     "記事が見つかりませんでした。",
-			Description: "正しいURLか確認してください。",
+			Description: "URL が変わったか、公開が終了した可能性があります。",
 		}
 	}
 

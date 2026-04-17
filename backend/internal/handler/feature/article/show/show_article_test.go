@@ -53,7 +53,7 @@ func Test記事が見つからない場合は404(t *testing.T) {
 
 	res := callEndpoint(t, initResult.Server, 999)
 
-	res.AssertError(t, 404, "記事が見つかりませんでした。", "正しいURLか確認してください。")
+	res.AssertError(t, 404, "記事が見つかりませんでした。", "URL が変わったか、公開が終了した可能性があります。")
 }
 
 func Test非公開記事は404(t *testing.T) {
@@ -62,7 +62,7 @@ func Test非公開記事は404(t *testing.T) {
 
 	res := callEndpoint(t, initResult.Server, article.ID)
 
-	res.AssertError(t, 404, "記事が見つかりませんでした。", "正しいURLか確認してください。")
+	res.AssertError(t, 404, "記事が見つかりませんでした。", "URL が変わったか、公開が終了した可能性があります。")
 }
 
 func Test記事の取得に失敗した場合は500(t *testing.T) {
