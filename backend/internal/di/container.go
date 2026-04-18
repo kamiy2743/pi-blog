@@ -56,9 +56,6 @@ func NewContainer(
 	}
 
 	editCategoryUsecase := editCategoryHandler.NewUsecase(categoryRepository)
-	storeCategoryUsecase := storeCategoryHandler.NewUsecase(categoryRepository)
-	updateCategoryUsecase := updateCategoryHandler.NewUsecase(categoryRepository)
-	destroyCategoryUsecase := destroyCategoryHandler.NewUsecase(categoryRepository)
 	showAdminUsecase := showAdminHandler.NewUsecase(articleRepository, categoryRepository)
 	searchArticleUsecase := searchArticleHandler.NewUsecase(articleRepository, categoryRepository)
 	showArticleUsecase := showArticleHandler.NewUsecase(articleRepository)
@@ -66,9 +63,9 @@ func NewContainer(
 
 	return &Container{
 		EditCategoryHandler:    editCategoryHandler.NewHandler(inertiaApp, editCategoryUsecase),
-		StoreCategoryHandler:   storeCategoryHandler.NewHandler(storeCategoryUsecase),
-		UpdateCategoryHandler:  updateCategoryHandler.NewHandler(updateCategoryUsecase),
-		DestroyCategoryHandler: destroyCategoryHandler.NewHandler(destroyCategoryUsecase),
+		StoreCategoryHandler:   storeCategoryHandler.NewHandler(),
+		UpdateCategoryHandler:  updateCategoryHandler.NewHandler(),
+		DestroyCategoryHandler: destroyCategoryHandler.NewHandler(),
 		ShowAdminHandler:       showAdminHandler.NewHandler(inertiaApp, showAdminUsecase),
 		SearchArticleHandler:   searchArticleHandler.NewHandler(inertiaApp, searchArticleUsecase),
 		ShowArticleHandler:     showArticleHandler.NewHandler(inertiaApp, showArticleUsecase),
