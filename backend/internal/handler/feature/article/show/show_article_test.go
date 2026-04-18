@@ -8,9 +8,9 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	"blog/internal/db/ent"
 	"blog/internal/di"
 	domainArticle "blog/internal/domain/article"
-	"blog/internal/db/ent"
 	"blog/internal/test"
 	fixtureArticle "blog/internal/test/fixture/article"
 	fixtureCategory "blog/internal/test/fixture/category"

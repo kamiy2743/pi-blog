@@ -7,10 +7,10 @@ import (
 	"testing"
 
 	"blog/internal/db"
-	"blog/internal/di"
 	"blog/internal/db/ent"
 	"blog/internal/db/ent/enttest"
 	"blog/internal/db/ent/migrate"
+	"blog/internal/di"
 	"blog/internal/handler"
 
 	_ "github.com/go-sql-driver/mysql"

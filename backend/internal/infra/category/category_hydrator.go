@@ -1,8 +1,8 @@
 package category
 
 import (
-	domainCategory "blog/internal/domain/category"
 	"blog/internal/db/ent"
+	domainCategory "blog/internal/domain/category"
 )
 
 func hydrateCategory(model *ent.Category) domainCategory.Category {

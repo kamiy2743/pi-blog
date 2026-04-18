@@ -1,8 +1,8 @@
 package article
 
 import (
-	domainArticle "blog/internal/domain/article"
 	"blog/internal/db/ent"
+	domainArticle "blog/internal/domain/article"
 	infraCategory "blog/internal/infra/category"
 )
 

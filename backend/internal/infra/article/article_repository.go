@@ -5,10 +5,10 @@ import (
 	"fmt"
 	"time"
 
-	domainArticle "blog/internal/domain/article"
 	"blog/internal/db/ent"
 	entArticle "blog/internal/db/ent/article"
 	entCategory "blog/internal/db/ent/category"
+	domainArticle "blog/internal/domain/article"
 )
 
 type ArticleRepository struct {
