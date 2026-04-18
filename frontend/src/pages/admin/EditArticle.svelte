@@ -11,7 +11,7 @@
     <h1>編集: {articleId}</h1>
     <p class="muted">記事を更新します。</p>
 
-    <form method="post" action={`/admin/article/edit/${articleId}`} style="margin-top: 24px;">
+    <form method="post" action={`/admin/article/${articleId}`} style="margin-top: 24px;">
       <div style="display: grid; gap: 12px;">
         <label>
           <div class="muted">タイトル</div>

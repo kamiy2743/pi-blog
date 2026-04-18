@@ -218,7 +218,7 @@
                     <td class="whitespace-nowrap px-4 py-3">
                       <Link
                         class="admin-secondary-button inline-flex items-center justify-center rounded-lg border px-4 py-2 text-sm font-semibold transition"
-                        href={`/admin/article/edit/${article.id}`}
+                        href={`/admin/article/${article.id}`}
                       >
                         編集
                       </Link>
@@ -284,6 +284,12 @@
             href="/admin/article/new"
           >
             新規作成
+          </Link>
+          <Link
+            class="admin-secondary-button mt-3 inline-flex w-full items-center justify-center rounded-lg border px-5 py-3 text-sm font-semibold transition"
+            href="/admin/category"
+          >
+            カテゴリ編集
           </Link>
         </section>
 

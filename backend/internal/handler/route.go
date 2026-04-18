@@ -18,20 +18,18 @@ import (
 func newMux(inertiaApp *gonertia.Inertia, container *di.Container) *http.ServeMux {
 	mux := http.NewServeMux()
 
-	setUpRoute(mux, inertiaApp, container)
+	setUpRootRoutes(mux, inertiaApp, container)
 	setUpArticleRoutes(mux, inertiaApp, container)
 	setUpAdminRoutes(mux, inertiaApp, container)
 
 	return mux
 }
 
-func setUpRoute(
+func setUpRootRoutes(
 	mux *http.ServeMux,
 	inertiaApp *gonertia.Inertia,
 	container *di.Container,
 ) {
-	mux.HandleFunc("GET /health", container.HealthHandler.Handle)
-
 	mux.Handle("GET /", inertiaApp.Middleware(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.URL.Path != "/" {
 			inertia.RenderNotFound(w, r, inertiaApp)
@@ -39,6 +37,8 @@ func setUpRoute(
 		}
 		container.ShowTopHandler.Handle(w, r)
 	})))
+
+	mux.HandleFunc("GET /health", container.HealthHandler.Handle)
 }
 
 func setUpArticleRoutes(
@@ -68,6 +68,11 @@ func setUpAdminRoutes(
 	handleAdmin("GET /admin/article/new", inertiaApp.Middleware(createArticleHandler.Handle(inertiaApp)))
 	handleAdmin("POST /admin/article/new", http.HandlerFunc(storeArticleHandler.Handle))
 
-	handleAdmin("GET /admin/article/edit/{articleId}", inertiaApp.Middleware(http.HandlerFunc(editArticleHandler.Handle)))
-	handleAdmin("POST /admin/article/edit/{articleId}", http.HandlerFunc(updateArticleHandler.Handle))
+	handleAdmin("GET /admin/article/{articleId}", inertiaApp.Middleware(http.HandlerFunc(editArticleHandler.Handle)))
+	handleAdmin("POST /admin/article/{articleId}", http.HandlerFunc(updateArticleHandler.Handle))
+
+	handleAdmin("GET /admin/category", inertiaApp.Middleware(http.HandlerFunc(container.EditCategoryHandler.Handle)))
+	handleAdmin("POST /admin/category", http.HandlerFunc(container.StoreCategoryHandler.Handle))
+	handleAdmin("POST /admin/category/{categoryId}", http.HandlerFunc(container.UpdateCategoryHandler.Handle))
+	handleAdmin("POST /admin/category/{categoryId}/delete", http.HandlerFunc(container.DestroyCategoryHandler.Handle))
 }

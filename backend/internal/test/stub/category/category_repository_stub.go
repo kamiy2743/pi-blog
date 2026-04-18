@@ -7,15 +7,16 @@ import (
 )
 
 type CategoryRepositoryStub struct {
-	CreateFunc func(ctx context.Context, input domainCategory.CreateCategoryInput) (domainCategory.Category, error)
+	CreateFunc func(ctx context.Context, input domainCategory.CreateCategoryInput) error
 	UpdateFunc func(ctx context.Context, category domainCategory.Category) error
+	DeleteFunc func(ctx context.Context, category domainCategory.Category) error
 	AllFunc    func(ctx context.Context, orderBy domainCategory.OrderBy) ([]domainCategory.Category, error)
 	SearchFunc func(ctx context.Context, criteria domainCategory.SearchCategoryCriteria) ([]domainCategory.Category, error)
 }
 
-func (s CategoryRepositoryStub) Create(ctx context.Context, input domainCategory.CreateCategoryInput) (domainCategory.Category, error) {
+func (s CategoryRepositoryStub) Create(ctx context.Context, input domainCategory.CreateCategoryInput) error {
 	if s.CreateFunc == nil {
-		return domainCategory.Category{}, nil
+		return nil
 	}
 	return s.CreateFunc(ctx, input)
 }
@@ -25,6 +26,13 @@ func (s CategoryRepositoryStub) Update(ctx context.Context, category domainCateg
 		return nil
 	}
 	return s.UpdateFunc(ctx, category)
+}
+
+func (s CategoryRepositoryStub) Delete(ctx context.Context, category domainCategory.Category) error {
+	if s.DeleteFunc == nil {
+		return nil
+	}
+	return s.DeleteFunc(ctx, category)
 }
 
 func (s CategoryRepositoryStub) All(ctx context.Context, orderBy domainCategory.OrderBy) ([]domainCategory.Category, error) {

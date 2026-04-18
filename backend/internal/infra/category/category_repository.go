@@ -4,9 +4,9 @@ import (
 	"context"
 	"fmt"
 
-	domainCategory "blog/internal/domain/category"
 	"blog/internal/db/ent"
 	entCategory "blog/internal/db/ent/category"
+	domainCategory "blog/internal/domain/category"
 )
 
 type CategoryRepository struct {
@@ -17,12 +17,32 @@ func NewCategoryRepository(client *ent.Client) *CategoryRepository {
 	return &CategoryRepository{client: client}
 }
 
-func (r *CategoryRepository) Create(ctx context.Context, input domainCategory.CreateCategoryInput) (domainCategory.Category, error) {
-	return domainCategory.Category{}, nil
+func (r *CategoryRepository) Create(ctx context.Context, input domainCategory.CreateCategoryInput) error {
+	if err := input.Validate(); err != nil {
+		return err
+	}
+
+	if _, err := r.client.Category.Create().
+		SetName(input.Name).
+		Save(ctx); err != nil {
+		return err
+	}
+
+	return nil
 }
 
-func (r *CategoryRepository) Update(ctx context.Context, input domainCategory.Category) error {
-	return nil
+func (r *CategoryRepository) Update(ctx context.Context, entity domainCategory.Category) error {
+	if err := entity.Validate(); err != nil {
+		return err
+	}
+
+	return r.client.Category.UpdateOneID(uint32(entity.ID)).
+		SetName(entity.Name).
+		Exec(ctx)
+}
+
+func (r *CategoryRepository) Delete(ctx context.Context, entity domainCategory.Category) error {
+	return r.client.Category.DeleteOneID(uint32(entity.ID)).Exec(ctx)
 }
 
 func (r *CategoryRepository) All(ctx context.Context, orderBy domainCategory.OrderBy) ([]domainCategory.Category, error) {

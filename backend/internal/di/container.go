@@ -1,9 +1,13 @@
 package di
 
 import (
+	"blog/internal/db/ent"
 	domainArticle "blog/internal/domain/article"
 	domainCategory "blog/internal/domain/category"
-	"blog/internal/db/ent"
+	destroyCategoryHandler "blog/internal/handler/feature/admin/category/destroy"
+	editCategoryHandler "blog/internal/handler/feature/admin/category/edit"
+	storeCategoryHandler "blog/internal/handler/feature/admin/category/store"
+	updateCategoryHandler "blog/internal/handler/feature/admin/category/update"
 	showAdminHandler "blog/internal/handler/feature/admin/show"
 	searchArticleHandler "blog/internal/handler/feature/article/search"
 	showArticleHandler "blog/internal/handler/feature/article/show"
@@ -16,11 +20,15 @@ import (
 )
 
 type Container struct {
-	ShowAdminHandler     *showAdminHandler.Handler
-	SearchArticleHandler *searchArticleHandler.Handler
-	ShowArticleHandler   *showArticleHandler.Handler
-	ShowTopHandler       *showTopHandler.Handler
-	HealthHandler        *healthHandler.Handler
+	EditCategoryHandler    *editCategoryHandler.Handler
+	StoreCategoryHandler   *storeCategoryHandler.Handler
+	UpdateCategoryHandler  *updateCategoryHandler.Handler
+	DestroyCategoryHandler *destroyCategoryHandler.Handler
+	ShowAdminHandler       *showAdminHandler.Handler
+	SearchArticleHandler   *searchArticleHandler.Handler
+	ShowArticleHandler     *showArticleHandler.Handler
+	ShowTopHandler         *showTopHandler.Handler
+	HealthHandler          *healthHandler.Handler
 }
 
 type ContainerOptions struct {
@@ -47,16 +55,24 @@ func NewContainer(
 		categoryRepository = infraCategory.NewCategoryRepository(entClient)
 	}
 
+	editCategoryUsecase := editCategoryHandler.NewUsecase(categoryRepository)
+	storeCategoryUsecase := storeCategoryHandler.NewUsecase(categoryRepository)
+	updateCategoryUsecase := updateCategoryHandler.NewUsecase(categoryRepository)
+	destroyCategoryUsecase := destroyCategoryHandler.NewUsecase(categoryRepository)
 	showAdminUsecase := showAdminHandler.NewUsecase(articleRepository, categoryRepository)
 	searchArticleUsecase := searchArticleHandler.NewUsecase(articleRepository, categoryRepository)
 	showArticleUsecase := showArticleHandler.NewUsecase(articleRepository)
 	showTopUsecase := showTopHandler.NewUsecase(articleRepository, categoryRepository)
 
 	return &Container{
-		ShowAdminHandler:     showAdminHandler.NewHandler(inertiaApp, showAdminUsecase),
-		SearchArticleHandler: searchArticleHandler.NewHandler(inertiaApp, searchArticleUsecase),
-		ShowArticleHandler:   showArticleHandler.NewHandler(inertiaApp, showArticleUsecase),
-		ShowTopHandler:       showTopHandler.NewHandler(inertiaApp, showTopUsecase),
-		HealthHandler:        healthHandler.NewHandler(),
+		EditCategoryHandler:    editCategoryHandler.NewHandler(inertiaApp, editCategoryUsecase),
+		StoreCategoryHandler:   storeCategoryHandler.NewHandler(storeCategoryUsecase),
+		UpdateCategoryHandler:  updateCategoryHandler.NewHandler(updateCategoryUsecase),
+		DestroyCategoryHandler: destroyCategoryHandler.NewHandler(destroyCategoryUsecase),
+		ShowAdminHandler:       showAdminHandler.NewHandler(inertiaApp, showAdminUsecase),
+		SearchArticleHandler:   searchArticleHandler.NewHandler(inertiaApp, searchArticleUsecase),
+		ShowArticleHandler:     showArticleHandler.NewHandler(inertiaApp, showArticleUsecase),
+		ShowTopHandler:         showTopHandler.NewHandler(inertiaApp, showTopUsecase),
+		HealthHandler:          healthHandler.NewHandler(),
 	}
 }
