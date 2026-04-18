@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { Link } from '@inertiajs/svelte'
   import PublicSiteLink from '../../components/PublicSiteLink.svelte'
   import { formatDate } from '../../utils/date'
 
@@ -12,6 +11,14 @@
   }
 
   export let article: Article
+
+  function goBack() {
+    if (window.history.length > 1) {
+      window.history.back()
+      return
+    }
+    window.location.href = '/article'
+  }
 </script>
 
 <svelte:head>
@@ -41,12 +48,14 @@
       </div>
 
       <div class="mt-8">
-        <Link
+        <button
           class="blog-button inline-flex items-center gap-2 rounded-full px-5 py-3 text-sm font-semibold transition"
-          href="/article"
+          type="button"
+          on:click={goBack}
         >
-          記事一覧へ戻る
-        </Link>
+          <span aria-hidden="true">←</span>
+          前のページへ戻る
+        </button>
       </div>
     </article>
   </div>

@@ -41,8 +41,8 @@
             class="blog-button inline-flex items-center gap-2 rounded-full px-5 py-3 text-sm font-semibold transition"
             href="/"
           >
+            <span aria-hidden="true">←</span>
             トップページへ戻る
-            <span aria-hidden="true">→</span>
           </Link>
         </div>
       </div>

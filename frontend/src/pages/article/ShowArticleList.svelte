@@ -243,6 +243,16 @@
             {/if}
           </div>
         {/if}
+
+        <div class="flex justify-center pt-4">
+          <Link
+            class="blog-button inline-flex items-center justify-center gap-2 rounded-full px-5 py-3 text-sm font-semibold transition"
+            href="/"
+          >
+            <span aria-hidden="true">←</span>
+            トップページへ戻る
+          </Link>
+        </div>
       </section>
     </div>
   </div>
