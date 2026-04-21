@@ -13,7 +13,7 @@ func format(result result) gonertia.Props {
 	}
 
 	return gonertia.Props{
-		"article": map[string]any{
+		"article": gonertia.Props{
 			"id":            result.Article.ID,
 			"title":         result.Article.Title,
 			"body":          result.Article.Body,

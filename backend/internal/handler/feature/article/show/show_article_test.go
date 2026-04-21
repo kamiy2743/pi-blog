@@ -16,6 +16,8 @@ import (
 	fixtureCategory "blog/internal/test/fixture/category"
 	"blog/internal/test/helper"
 	stubArticle "blog/internal/test/stub/article"
+
+	"github.com/romsar/gonertia/v2"
 )
 
 func Test記事を表示できる(t *testing.T) {
@@ -24,8 +26,8 @@ func Test記事を表示できる(t *testing.T) {
 
 	res := callEndpoint(t, initResult.Server, article.ID)
 
-	res.AssertFullProps(t, "article/ShowArticle", map[string]any{
-		"article": map[string]any{
+	res.AssertFullProps(t, "article/ShowArticle", gonertia.Props{
+		"article": gonertia.Props{
 			"id":    article.ID,
 			"title": "title",
 			"body":  "body",

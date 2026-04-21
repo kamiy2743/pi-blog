@@ -18,6 +18,8 @@ import (
 	"blog/internal/test/helper"
 	stubArticle "blog/internal/test/stub/article"
 	stubCategory "blog/internal/test/stub/category"
+
+	"github.com/romsar/gonertia/v2"
 )
 
 type records struct {
@@ -31,8 +33,8 @@ func Testトップページを表示できる(t *testing.T) {
 
 	res := callEndpoint(t, initResult.Server)
 
-	res.AssertFullProps(t, "ShowTop", map[string]any{
-		"latestArticles": []map[string]any{
+	res.AssertFullProps(t, "ShowTop", gonertia.Props{
+		"latestArticles": []gonertia.Props{
 			{
 				"id":    records.Articles[1].ID,
 				"title": "title1",
@@ -52,7 +54,7 @@ func Testトップページを表示できる(t *testing.T) {
 				},
 			},
 		},
-		"categories": []map[string]any{
+		"categories": []gonertia.Props{
 			{
 				"id":   records.Categories[0].ID,
 				"name": "category-a",

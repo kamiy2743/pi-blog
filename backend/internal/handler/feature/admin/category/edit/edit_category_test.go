@@ -14,6 +14,8 @@ import (
 	fixtureCategory "blog/internal/test/fixture/category"
 	"blog/internal/test/helper"
 	stubCategory "blog/internal/test/stub/category"
+
+	"github.com/romsar/gonertia/v2"
 )
 
 func Testカテゴリ編集画面を表示できる(t *testing.T) {
@@ -22,8 +24,8 @@ func Testカテゴリ編集画面を表示できる(t *testing.T) {
 
 	res := callEndpoint(t, initResult.Server)
 
-	res.AssertFullProps(t, "admin/EditCategory", map[string]any{
-		"categories": []map[string]any{
+	res.AssertFullProps(t, "admin/EditCategory", gonertia.Props{
+		"categories": []gonertia.Props{
 			{
 				"id":   categories[0].ID,
 				"name": "Docker",

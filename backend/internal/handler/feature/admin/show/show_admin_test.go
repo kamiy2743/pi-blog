@@ -18,6 +18,8 @@ import (
 	"blog/internal/test/helper"
 	stubArticle "blog/internal/test/stub/article"
 	stubCategory "blog/internal/test/stub/category"
+
+	"github.com/romsar/gonertia/v2"
 )
 
 type records struct {
@@ -38,8 +40,8 @@ func Testカテゴリ一覧を表示できる(t *testing.T) {
 
 	res := callEndpoint(t, initResult.Server, queryParams{})
 
-	res.AssertPartialProps(t, "admin/ShowAdmin", "initial", map[string]any{
-		"categories": []map[string]any{
+	res.AssertPartialProps(t, "admin/ShowAdmin", "initial", gonertia.Props{
+		"categories": []gonertia.Props{
 			{
 				"id":   records.CategoryDocker.ID,
 				"name": "Docker",
@@ -58,8 +60,8 @@ func Testパラメータなしで記事一覧を表示できる(t *testing.T) {
 
 	res := callEndpoint(t, initResult.Server, queryParams{})
 
-	res.AssertPartialProps(t, "admin/ShowAdmin", "partialSearch", map[string]any{
-		"articles": []map[string]any{
+	res.AssertPartialProps(t, "admin/ShowAdmin", "partialSearch", gonertia.Props{
+		"articles": []gonertia.Props{
 			{
 				"id":          records.Articles[3].ID,
 				"title":       "Docker 非公開",
@@ -116,8 +118,8 @@ func Test全パラメータありで記事一覧を表示できる(t *testing.T)
 		Page: "1",
 	})
 
-	res.AssertPartialProps(t, "admin/ShowAdmin", "partialSearch", map[string]any{
-		"articles": []map[string]any{
+	res.AssertPartialProps(t, "admin/ShowAdmin", "partialSearch", gonertia.Props{
+		"articles": []gonertia.Props{
 			{
 				"id":          records.Articles[3].ID,
 				"title":       "Docker 非公開",
