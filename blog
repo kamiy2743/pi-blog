@@ -12,6 +12,7 @@ usage() {
   ./blog {dev|prd} mysql [mysql args...]
   ./blog ent generate
   ./blog back fmt
+  ./blog back mod tidy
   ./blog back test [backend path]
   ./blog {dev|prd} migrate {up|down|refresh}
   ./blog {dev|prd} seed <seed_name>
@@ -72,6 +73,20 @@ run_go() {
         return 0
       fi
       /usr/local/go/bin/gofmt -w "${go_files[@]}"
+      ;;
+    mod)
+      local subcommand="${1:-}"
+      shift || true
+
+      case "$subcommand" in
+        tidy)
+          (cd "$SCRIPT_DIR/backend" && /usr/local/go/bin/go mod tidy "$@")
+          ;;
+        *)
+          echo "未対応の back mod コマンドです: $subcommand" >&2
+          exit 1
+          ;;
+      esac
       ;;
     test)
       local backend_dir="$SCRIPT_DIR/backend"

@@ -16,3 +16,11 @@ func (e ValidationError) Error() string {
 		e.Message,
 	)
 }
+
+func ValidationErrorsToMap(validationErrors []ValidationError) map[string]string {
+	errorsMap := make(map[string]string, len(validationErrors))
+	for _, validationError := range validationErrors {
+		errorsMap[validationError.Field] = validationError.Message
+	}
+	return errorsMap
+}

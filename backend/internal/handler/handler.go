@@ -7,6 +7,7 @@ import (
 	"blog/internal/config"
 	"blog/internal/di"
 	"blog/internal/handler/middleware"
+	"blog/internal/handler/session"
 
 	"blog/internal/db/ent"
 
@@ -26,8 +27,11 @@ func NewHTTPHandler(entClient *ent.Client, containerOptions ...*di.ContainerOpti
 	container := di.NewContainer(entClient, inertiaApp, options)
 	mux := newMux(inertiaApp, container)
 
+	sessionManager := session.NewSessionManager(config.MustGetAppEnv())
+
 	return middleware.Chain(
 		http.NewCrossOriginProtection().Handler(mux),
+		sessionManager.Middleware(),
 		middleware.NormalizePath(),
 	), nil
 }
