@@ -9,12 +9,12 @@ func (f Flash) IsEmpty() bool {
 	return f.Error == "" && f.Success == ""
 }
 
-func FlashToMap(flash *Flash) map[string]any {
+func FlashToMap(flash *Flash) map[string]string {
 	if flash == nil || flash.IsEmpty() {
-		return map[string]any{}
+		return map[string]string{}
 	}
 
-	flashMap := map[string]any{}
+	flashMap := map[string]string{}
 	if flash.Success != "" {
 		flashMap["success"] = flash.Success
 	}
