@@ -53,11 +53,12 @@ type RedirectBackOptions struct {
 }
 
 func Page(component string, props gonertia.Props, options ...PageOptions) HandlerResult {
-	option := PageOptions{
-		StatusCode: http.StatusOK,
-	}
+	var option PageOptions
 	if len(options) > 0 {
 		option = options[0]
+	}
+	if option.StatusCode == 0 {
+		option.StatusCode = http.StatusOK
 	}
 
 	return PageResult{
