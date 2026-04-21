@@ -4,35 +4,35 @@ import (
 	"net/http"
 
 	"blog/internal/domain/article"
-	"blog/internal/handler/inertia"
-
-	"github.com/romsar/gonertia/v2"
+	"blog/internal/handler/handlererror"
+	"blog/internal/handler/handlerresult"
 )
 
 type Handler struct {
-	inertia *gonertia.Inertia
 	usecase *Usecase
 }
 
-func NewHandler(i *gonertia.Inertia, u *Usecase) *Handler {
+func NewHandler(u *Usecase) *Handler {
 	return &Handler{
-		inertia: i,
 		usecase: u,
 	}
 }
 
-func (h *Handler) Handle(w http.ResponseWriter, r *http.Request) {
-	articleID, err := article.ParseArticleID(r.PathValue("articleId"))
-	if err != nil {
-		inertia.RenderNotFound(w, r, h.inertia)
-		return
+func (h *Handler) Handle(r *http.Request) (handlerresult.HandlerResult, *handlererror.DisplayableError) {
+	articleID, parseErr := article.ParseArticleID(r.PathValue("articleId"))
+	if parseErr != nil {
+		return nil, &handlererror.DisplayableError{
+			StatusCode:  http.StatusNotFound,
+			Message:     "ページが見つかりません。",
+			Description: "URL が変わったか、公開が終了した可能性があります。",
+			Err:         parseErr,
+		}
 	}
 
 	result, usecaseErr := h.usecase.run(r.Context(), articleID)
 	if usecaseErr != nil {
-		inertia.RenderError(w, r, h.inertia, *usecaseErr)
-		return
+		return nil, usecaseErr
 	}
 
-	inertia.Render(w, r, h.inertia, "article/ShowArticle", format(result))
+	return handlerresult.Page("article/ShowArticle", format(result)), nil
 }

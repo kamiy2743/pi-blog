@@ -66,11 +66,11 @@
 
 ### GET /article/{articleId}
 
-- [ ] `ShowArticleHandler` を `func(*http.Request) (handlerresult.HandlerResult, *handlererror.DisplayableError)` に移行する。
-- [ ] 不正 ID / not found を `DisplayableError{StatusCode: 404}` に統一する。
-- [ ] route を `handler.InertiaPage(...)` へ差し替える。
-- [ ] `ShowArticle` の integration test を更新する。
-- [ ] 旧 `RenderNotFound` 依存を削除する。
+- [x] `ShowArticleHandler` を `func(*http.Request) (handlerresult.HandlerResult, *handlererror.DisplayableError)` に移行する。
+- [x] 不正 ID / not found を `DisplayableError{StatusCode: 404}` に統一する。
+- [x] route を `handler.InertiaPage(...)` へ差し替える。
+- [x] `ShowArticle` の integration test を更新する。
+- [x] 旧 `RenderNotFound` 依存を削除する。
 
 ### GET /admin/category
 

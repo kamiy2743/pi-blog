@@ -45,7 +45,7 @@ func Test記事IDが不正な場合は404(t *testing.T) {
 		Path:   "/article/invalid",
 	})
 
-	res.AssertNotFound(t)
+	res.AssertError(t, 404, "ページが見つかりません。", "URL が変わったか、公開が終了した可能性があります。")
 }
 
 func Test記事が見つからない場合は404(t *testing.T) {
