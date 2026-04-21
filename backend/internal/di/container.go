@@ -69,7 +69,7 @@ func NewContainer(
 		ShowAdminHandler:       showAdminHandler.NewHandler(inertiaApp, showAdminUsecase),
 		SearchArticleHandler:   searchArticleHandler.NewHandler(inertiaApp, searchArticleUsecase),
 		ShowArticleHandler:     showArticleHandler.NewHandler(inertiaApp, showArticleUsecase),
-		ShowTopHandler:         showTopHandler.NewHandler(inertiaApp, showTopUsecase),
+		ShowTopHandler:         showTopHandler.NewHandler(showTopUsecase),
 		HealthHandler:          healthHandler.NewHandler(),
 	}
 }

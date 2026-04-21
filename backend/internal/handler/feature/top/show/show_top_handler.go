@@ -3,29 +3,33 @@ package show
 import (
 	"net/http"
 
-	"blog/internal/handler/inertia"
-
-	"github.com/romsar/gonertia/v2"
+	"blog/internal/handler/handlererror"
+	"blog/internal/handler/handlerresult"
 )
 
 type Handler struct {
-	inertia *gonertia.Inertia
 	usecase *Usecase
 }
 
-func NewHandler(i *gonertia.Inertia, u *Usecase) *Handler {
+func NewHandler(u *Usecase) *Handler {
 	return &Handler{
-		inertia: i,
 		usecase: u,
 	}
 }
 
-func (h *Handler) Handle(w http.ResponseWriter, r *http.Request) {
-	result, err := h.usecase.run(r.Context())
-	if err != nil {
-		inertia.RenderError(w, r, h.inertia, *err)
-		return
+func (h *Handler) Handle(r *http.Request) (handlerresult.HandlerResult, *handlererror.DisplayableError) {
+	if r.URL.Path != "/" {
+		return nil, &handlererror.DisplayableError{
+			StatusCode:  http.StatusNotFound,
+			Message:     "ページが見つかりません。",
+			Description: "URL が変わったか、公開が終了した可能性があります。",
+		}
 	}
 
-	inertia.Render(w, r, h.inertia, "ShowTop", format(result))
+	result, err := h.usecase.run(r.Context())
+	if err != nil {
+		return nil, err
+	}
+
+	return handlerresult.Page("ShowTop", format(result)), nil
 }

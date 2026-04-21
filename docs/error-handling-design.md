@@ -56,10 +56,10 @@ usecase は以下を知らない。
 
 ### feature handler
 
-feature handler は request を受け取り、成功時は `handler.HandlerResult`、失敗時は `*handlererror.DisplayableError` を返す。
+feature handler は request を受け取り、成功時は `handlerresult.HandlerResult`、失敗時は `*handlererror.DisplayableError` を返す。
 
 ```go
-func (h *Handler) Handle(r *http.Request) (handler.HandlerResult, *handlererror.DisplayableError)
+func (h *Handler) Handle(r *http.Request) (handlerresult.HandlerResult, *handlererror.DisplayableError)
 ```
 
 feature handler は以下を担当する。
@@ -99,7 +99,7 @@ adapter は以下を担当する。
 
 ## HandlerResult
 
-response は `HandlerResult` で表す。
+response は `handlerresult.HandlerResult` で表す。
 
 ```go
 type HandlerResult interface {
@@ -107,7 +107,7 @@ type HandlerResult interface {
 }
 ```
 
-adapter は `HandlerResult` の concrete type を type switch して処理を分ける。
+adapter は `handlerresult.HandlerResult` の concrete type を type switch して処理を分ける。
 
 ```go
 type PageResult struct {
@@ -158,9 +158,9 @@ options は可変長引数として省略可能にする。status code や valid
 
 `RedirectBack` は `Referer` header を優先して戻り先に使う。`Referer` に query string が含まれる場合はそのまま保持する。`Referer` がない場合の fallback はトップページ `/` とする。
 
-validation errors / flash message も `HandlerResult` に載せる。feature handler は validation error や action failure 用の response 情報を別チャネルで返さず、常に `HandlerResult` に寄せる。
+validation errors / flash message も `handlerresult.HandlerResult` に載せる。feature handler は validation error や action failure 用の response 情報を別チャネルで返さず、常に `handlerresult.HandlerResult` に寄せる。
 
-POST の成功時は feature handler が `http.Redirect` を呼ばず、`handler.Redirect("/admin")` のように返す。
+POST の成功時は feature handler が `http.Redirect` を呼ばず、`handlerresult.Redirect("/admin")` のように返す。
 
 ## Error Types
 
@@ -246,12 +246,12 @@ GET page 用と action 用は adapter を分ける。
 ```go
 func InertiaPage(
 	inertiaApp *gonertia.Inertia,
-	handle func(*http.Request) (HandlerResult, *handlererror.DisplayableError),
+	handle func(*http.Request) (handlerresult.HandlerResult, *handlererror.DisplayableError),
 ) http.Handler
 
 func InertiaAction(
 	inertiaApp *gonertia.Inertia,
-	handle func(*http.Request) (HandlerResult, *handlererror.DisplayableError),
+	handle func(*http.Request) (handlerresult.HandlerResult, *handlererror.DisplayableError),
 ) http.Handler
 ```
 
@@ -461,13 +461,13 @@ handleAdmin("POST /admin/category", handler.InertiaAction(inertiaApp, container.
 GET page:
 
 ```go
-func (h *Handler) Handle(r *http.Request) (handler.HandlerResult, *handlererror.DisplayableError) {
+func (h *Handler) Handle(r *http.Request) (handlerresult.HandlerResult, *handlererror.DisplayableError) {
 	input, validationErrors, err := toInput(r)
 	if err != nil {
 		return nil, err
 	}
 
-	return handler.Page("admin/ShowAdmin", gonertia.Props{
+	return handlerresult.Page("admin/ShowAdmin", gonertia.Props{
 		"initial": func(ctx context.Context) (any, error) {
 			result, err := h.usecase.runInitial(ctx)
 			if err != nil {
@@ -492,7 +492,7 @@ func (h *Handler) Handle(r *http.Request) (handler.HandlerResult, *handlererror.
 			}
 			return formatPartialSearch(result), nil
 		},
-	}, handler.PageOptions{
+	}, handlerresult.PageOptions{
 		ValidationErrors: validationErrors,
 	}), nil
 }
@@ -503,13 +503,13 @@ GET query validation error では validation error を `error` として early r
 POST action:
 
 ```go
-func (h *Handler) Handle(r *http.Request) (handler.HandlerResult, *handlererror.DisplayableError) {
+func (h *Handler) Handle(r *http.Request) (handlerresult.HandlerResult, *handlererror.DisplayableError) {
 	input, validationErrors, err := toInput(r)
 	if err != nil {
 		return nil, err
 	}
 	if len(validationErrors) > 0 {
-		return handler.RedirectBack(handler.RedirectBackOptions{
+		return handlerresult.RedirectBack(handlerresult.RedirectBackOptions{
 			ValidationErrors: validationErrors,
 		}), nil
 	}
@@ -517,19 +517,19 @@ func (h *Handler) Handle(r *http.Request) (handler.HandlerResult, *handlererror.
 	if err := h.usecase.run(r.Context(), input); err != nil {
 		return nil, err
 	}
-	return handler.Redirect("/admin/category"), nil
+	return handlerresult.Redirect("/admin/category"), nil
 }
 ```
 
 ## 移行手順
 
-1. `handler.HandlerResult` と `InertiaPage` / `InertiaAction` adapter を追加する。
+1. `handlerresult.HandlerResult` と `InertiaPage` / `InertiaAction` adapter を追加する。
 2. 既存の `handlererror.ValidationError` と `handlererror.DisplayableError` を継続利用する。
 3. `scs` の session manager を導入する。
 4. session cookie の name、`HttpOnly`、`Secure`、`SameSite`、lifetime、idle timeout を config に追加する。
 5. session に保存した validation errors / flash global error / flash success を GET page adapter で props に展開する。
 6. partial reload fallback が必要な lazy props に `PartialProp` / fallback 契約を追加する。
-7. 新規または未完成の POST handler から `func(*http.Request) (handler.HandlerResult, *handlererror.DisplayableError)` に移行する。
+7. 新規または未完成の POST handler から `func(*http.Request) (handlerresult.HandlerResult, *handlererror.DisplayableError)` に移行する。
 8. `GET /admin`、`GET /article` など lazy props を持つ画面を adapter 対応に移行する。
 9. `GET /article/{articleId}` の not found を `DisplayableError{StatusCode: 404}` に移行する。
 10. 各 route から `http.HandlerFunc(...)` と `inertiaApp.Middleware(...)` の直接指定を減らす。

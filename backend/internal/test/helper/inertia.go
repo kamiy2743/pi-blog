@@ -132,11 +132,17 @@ func (response TestInertiaResponse) AssertResponse(
 		t.Fatalf("component が不正です: expected=%q actual=%q", expectedComponent, response.Component)
 	}
 
-	expectedResponseProps := make(map[string]any, len(expectedProps)+1)
+	expectedResponseProps := make(map[string]any, len(expectedProps)+3)
 	for key, value := range expectedProps {
 		expectedResponseProps[key] = value
 	}
 	expectedResponseProps["errors"] = expectedErrors
+	if _, ok := expectedResponseProps["validationErrors"]; !ok && response.Props["validationErrors"] != nil {
+		expectedResponseProps["validationErrors"] = map[string]any{}
+	}
+	if _, ok := expectedResponseProps["flash"]; !ok && response.Props["flash"] != nil {
+		expectedResponseProps["flash"] = map[string]any{}
+	}
 
 	actualPropsJSON, err := json.Marshal(response.Props)
 	if err != nil {

@@ -6,6 +6,7 @@ import (
 	"net/http"
 
 	"blog/internal/handler/handlererror"
+	"blog/internal/handler/handlerresult"
 	"blog/internal/handler/inertia"
 	"blog/internal/handler/session"
 
@@ -14,7 +15,7 @@ import (
 
 func InertiaPage(
 	inertiaApp *gonertia.Inertia,
-	handle func(*http.Request) (HandlerResult, *handlererror.DisplayableError),
+	handle func(*http.Request) (handlerresult.HandlerResult, *handlererror.DisplayableError),
 ) http.Handler {
 	return inertiaApp.Middleware(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		result, err := handle(r)
@@ -28,11 +29,11 @@ func InertiaPage(
 		}
 
 		switch typedResult := result.(type) {
-		case PageResult:
+		case handlerresult.PageResult:
 			respondPageResult(w, r, inertiaApp, typedResult)
-		case RedirectResult:
+		case handlerresult.RedirectResult:
 			respondRedirectResult(w, r, inertiaApp, typedResult)
-		case RedirectBackResult:
+		case handlerresult.RedirectBackResult:
 			respondRedirectBackResult(w, r, inertiaApp, typedResult)
 		default:
 			respondPageError(w, r, inertiaApp, errors.New("未知の result 型です"))
@@ -42,7 +43,7 @@ func InertiaPage(
 
 func InertiaAction(
 	inertiaApp *gonertia.Inertia,
-	handle func(*http.Request) (HandlerResult, *handlererror.DisplayableError),
+	handle func(*http.Request) (handlerresult.HandlerResult, *handlererror.DisplayableError),
 ) http.Handler {
 	return inertiaApp.Middleware(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		result, err := handle(r)
@@ -56,9 +57,9 @@ func InertiaAction(
 		}
 
 		switch typedResult := result.(type) {
-		case RedirectResult:
+		case handlerresult.RedirectResult:
 			respondRedirectResult(w, r, inertiaApp, typedResult)
-		case RedirectBackResult:
+		case handlerresult.RedirectBackResult:
 			respondRedirectBackResult(w, r, inertiaApp, typedResult)
 		default:
 			respondActionError(w, r, inertiaApp, errors.New("未知の result 型です"))
@@ -70,7 +71,7 @@ func respondPageResult(
 	w http.ResponseWriter,
 	r *http.Request,
 	inertiaApp *gonertia.Inertia,
-	result PageResult,
+	result handlerresult.PageResult,
 ) {
 	props := result.Props
 	if props == nil {
@@ -98,7 +99,7 @@ func respondRedirectResult(
 	w http.ResponseWriter,
 	r *http.Request,
 	inertiaApp *gonertia.Inertia,
-	result RedirectResult,
+	result handlerresult.RedirectResult,
 ) {
 	saveFlash(r, result.Flash)
 	inertiaApp.Redirect(w, r, result.To, http.StatusSeeOther)
@@ -108,7 +109,7 @@ func respondRedirectBackResult(
 	w http.ResponseWriter,
 	r *http.Request,
 	inertiaApp *gonertia.Inertia,
-	result RedirectBackResult,
+	result handlerresult.RedirectBackResult,
 ) {
 	saveValidationErrors(r, result.ValidationErrors)
 	saveFlash(r, result.Flash)
