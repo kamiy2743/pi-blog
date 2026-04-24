@@ -40,8 +40,8 @@ func Testトップページを表示できる(t *testing.T) {
 				"title": "title1",
 				"date":  "2026-01-02T00:00:00Z",
 				"categoryNames": []string{
-					"category-b",
 					"category-a",
+					"category-b",
 				},
 			},
 			{
@@ -49,8 +49,8 @@ func Testトップページを表示できる(t *testing.T) {
 				"title": "title0",
 				"date":  "2026-01-01T00:00:00Z",
 				"categoryNames": []string{
-					"category-b",
 					"category-a",
+					"category-b",
 				},
 			},
 		},

@@ -2,13 +2,13 @@ package article
 
 import (
 	"context"
-	"fmt"
 	"time"
 
 	"blog/internal/db/ent"
 	entArticle "blog/internal/db/ent/article"
 	entCategory "blog/internal/db/ent/category"
 	domainArticle "blog/internal/domain/article"
+	infraCategory "blog/internal/infra/category"
 )
 
 type ArticleRepository struct {
@@ -28,7 +28,13 @@ func (r *ArticleRepository) Update(ctx context.Context, input domainArticle.Arti
 }
 
 func (r *ArticleRepository) Search(ctx context.Context, criteria domainArticle.SearchArticleCriteria) ([]domainArticle.Article, error) {
-	query := r.client.Article.Query().WithCategories()
+	var applyCategoryOrderErr error
+	query := r.client.Article.Query().WithCategories(func(categoryQuery *ent.CategoryQuery) {
+		applyCategoryOrderErr = infraCategory.ApplyOrder(categoryQuery, criteria.CategoryOrderBy)
+	})
+	if applyCategoryOrderErr != nil {
+		return nil, applyCategoryOrderErr
+	}
 
 	if err := applySearchCriteria(query, criteria, time.Now()); err != nil {
 		return nil, err
@@ -53,7 +59,13 @@ func (r *ArticleRepository) Paginate(ctx context.Context, criteria domainArticle
 		return domainArticle.PaginatedArticles{}, err
 	}
 
-	articleQuery := r.client.Article.Query().WithCategories()
+	var applyCategoryOrderErr error
+	articleQuery := r.client.Article.Query().WithCategories(func(categoryQuery *ent.CategoryQuery) {
+		applyCategoryOrderErr = infraCategory.ApplyOrder(categoryQuery, criteria.SearchCriteria.CategoryOrderBy)
+	})
+	if applyCategoryOrderErr != nil {
+		return domainArticle.PaginatedArticles{}, applyCategoryOrderErr
+	}
 
 	criteria.SearchCriteria.Limit = &criteria.PerPage
 	if err := applySearchCriteria(articleQuery, criteria.SearchCriteria, now); err != nil {
@@ -117,16 +129,8 @@ func applySearchCriteria(
 		query.Limit(*criteria.Limit)
 	}
 
-	if criteria.OrderBy != "" {
-		switch criteria.OrderBy {
-		case domainArticle.OrderByLatest:
-			query.Order(
-				ent.Desc(entArticle.FieldUpdatedAt),
-				ent.Desc(entArticle.FieldID),
-			)
-		default:
-			return fmt.Errorf("未対応の記事の並び順です: %s", criteria.OrderBy)
-		}
+	if err := ApplyOrder(query, criteria.OrderBy); err != nil {
+		return err
 	}
 
 	return nil

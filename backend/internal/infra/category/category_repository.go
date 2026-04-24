@@ -2,7 +2,6 @@ package category
 
 import (
 	"context"
-	"fmt"
 
 	"blog/internal/db/ent"
 	entCategory "blog/internal/db/ent/category"
@@ -48,11 +47,8 @@ func (r *CategoryRepository) Delete(ctx context.Context, entity domainCategory.C
 func (r *CategoryRepository) All(ctx context.Context, orderBy domainCategory.OrderBy) ([]domainCategory.Category, error) {
 	query := r.client.Category.Query()
 
-	switch orderBy {
-	case domainCategory.OrderByNameAsc:
-		query.Order(entCategory.ByName())
-	default:
-		return nil, fmt.Errorf("未対応のカテゴリの並び順です: %s", orderBy)
+	if err := ApplyOrder(query, orderBy); err != nil {
+		return nil, err
 	}
 
 	models, err := query.All(ctx)
@@ -71,11 +67,8 @@ func (r *CategoryRepository) Search(ctx context.Context, criteria domainCategory
 	}
 	query = query.Where(entCategory.IDIn(categoryIDs...))
 
-	switch criteria.OrderBy {
-	case domainCategory.OrderByNameAsc:
-		query.Order(entCategory.ByName())
-	default:
-		return nil, fmt.Errorf("未対応のカテゴリの並び順です: %s", criteria.OrderBy)
+	if err := ApplyOrder(query, criteria.OrderBy); err != nil {
+		return nil, err
 	}
 
 	models, err := query.All(ctx)

@@ -9,4 +9,5 @@ type SearchArticleCriteria struct {
 	IncludeUnpublished bool
 	Limit              *int
 	OrderBy            OrderBy
+	CategoryOrderBy    category.OrderBy
 }
