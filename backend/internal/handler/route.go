@@ -56,7 +56,7 @@ func setUpAdminRoutes(
 	)
 	handleAdmin := middleware.HandleWith(mux, basicAuth)
 
-	handleAdmin("GET /admin", inertiaApp.Middleware(http.HandlerFunc(container.ShowAdminHandler.Handle)))
+	handleAdmin("GET /admin", InertiaPage(inertiaApp, container.ShowAdminHandler.Handle))
 
 	handleAdmin("GET /admin/article/new", inertiaApp.Middleware(createArticleHandler.Handle(inertiaApp)))
 	handleAdmin("POST /admin/article/new", http.HandlerFunc(storeArticleHandler.Handle))

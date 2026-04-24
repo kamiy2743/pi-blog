@@ -1,6 +1,8 @@
 <script lang="ts">
   import { Link, router } from '@inertiajs/svelte'
   import { ChevronRight } from 'lucide-svelte'
+  import FlashMessage from '../../components/FlashMessage.svelte'
+  import type { Flash } from '../../types/flash'
   import { formatDate } from '../../utils/date'
 
   type Article = {
@@ -40,7 +42,8 @@
     totalPages: 1,
     articles: [],
   }
-  export let errors: Record<string, string> = {}
+  export let validationErrors: Record<string, string> = {}
+  export let flash: Flash = {}
 
   let titleInput = partialSearch.title
   let selectedCategoryIds: number[] = [...partialSearch.categoryIds]
@@ -51,7 +54,7 @@
       preserveState: true,
       preserveScroll: true,
       replace: true,
-      only: ['partialSearch', 'errors'],
+      only: ['partialSearch', 'validationErrors', 'flash'],
     })
   }
 
@@ -109,6 +112,8 @@
 
     <main class="mt-6 grid gap-6 lg:grid-cols-[minmax(0,1fr)_320px]">
       <section class="space-y-4">
+        <FlashMessage {flash} />
+
         <div class="flex flex-wrap items-center justify-between gap-3">
           <div>
             <h2 class="text-2xl font-semibold">記事一覧</h2>
@@ -132,8 +137,8 @@
               bind:value={titleInput}
               placeholder="Go, Docker など"
             />
-            {#if errors.title}
-              <p class="mt-2 text-sm font-semibold text-red-600">{errors.title}</p>
+            {#if validationErrors.title}
+              <p class="mt-2 text-sm font-semibold text-red-600">{validationErrors.title}</p>
             {/if}
 
             <fieldset class="mt-5">

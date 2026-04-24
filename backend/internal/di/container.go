@@ -66,7 +66,7 @@ func NewContainer(
 		StoreCategoryHandler:   storeCategoryHandler.NewHandler(),
 		UpdateCategoryHandler:  updateCategoryHandler.NewHandler(),
 		DestroyCategoryHandler: destroyCategoryHandler.NewHandler(),
-		ShowAdminHandler:       showAdminHandler.NewHandler(inertiaApp, showAdminUsecase),
+		ShowAdminHandler:       showAdminHandler.NewHandler(showAdminUsecase),
 		SearchArticleHandler:   searchArticleHandler.NewHandler(searchArticleUsecase),
 		ShowArticleHandler:     showArticleHandler.NewHandler(showArticleUsecase),
 		ShowTopHandler:         showTopHandler.NewHandler(showTopUsecase),

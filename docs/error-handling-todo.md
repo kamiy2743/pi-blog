@@ -95,12 +95,12 @@
 
 ### GET /admin
 
-- [ ] `ShowAdminHandler` を `func(*http.Request) (handlerresult.HandlerResult, *handlererror.DisplayableError)` に移行する。
-- [ ] GET query validation error を `PageResult.ValidationErrors` に載せる。
-- [ ] partial reload failure 時に表示用 props と `flash.error` を返す。
-- [ ] frontend の `only` に `flash` を含める。
-- [ ] `FlashMessage` component を画面へ適用する。
-- [ ] integration test を追加 / 更新する。
+- [x] `ShowAdminHandler` を `func(*http.Request) (handlerresult.HandlerResult, *handlererror.DisplayableError)` に移行する。
+- [x] GET query validation error を `PageResult.ValidationErrors` に載せる。
+- [x] partial reload failure 時に表示用 props と `flash.error` を返す。
+- [x] frontend の `only` に `flash` を含める。
+- [x] `FlashMessage` component を画面へ適用する。
+- [x] integration test を追加 / 更新する。
   - 通常 GET の displayable error
   - partial reload の validation error
   - partial reload の displayable error
