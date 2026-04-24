@@ -20,6 +20,10 @@ func InertiaPage(
 	return inertiaApp.Middleware(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		result, err := handle(r)
 		if err != nil {
+			if pageResult, ok := result.(handlerresult.PageResult); ok {
+				respondPartialPageError(w, r, inertiaApp, pageResult, err)
+				return
+			}
 			respondPageError(w, r, inertiaApp, err)
 			return
 		}
@@ -135,6 +139,23 @@ func respondPageError(
 		"message":     "エラーが発生しました。",
 		"description": "時間をおいてから、もう一度お試しください。",
 	})
+}
+
+func respondPartialPageError(
+	w http.ResponseWriter,
+	r *http.Request,
+	inertiaApp *gonertia.Inertia,
+	result handlerresult.PageResult,
+	err error,
+) {
+	var displayableError *handlererror.DisplayableError
+	if errors.As(err, &displayableError) && inertia.IsPartialReload(r, result.Component) {
+		result.Flash = &session.Flash{Error: displayableError.Message}
+		respondPageResult(w, r, inertiaApp, result)
+		return
+	}
+
+	respondPageError(w, r, inertiaApp, err)
 }
 
 func respondActionError(

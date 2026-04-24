@@ -11,20 +11,24 @@ import (
 	"testing"
 
 	"blog/internal/config"
+
+	"github.com/romsar/gonertia/v2"
 )
 
 type TestInertiaRequest struct {
-	Method       string
-	Path         string
-	QueryParams  map[string][]string
-	Body         io.Reader
-	UseBasicAuth bool
+	Method           string
+	Path             string
+	QueryParams      map[string][]string
+	Body             io.Reader
+	UseBasicAuth     bool
+	PartialComponent string
+	PartialData      []string
 }
 
 type TestInertiaResponse struct {
 	StatusCode int            `json:"-"`
 	Component  string         `json:"component"`
-	Props      map[string]any `json:"props"`
+	Props      gonertia.Props `json:"props"`
 	URL        string         `json:"url"`
 }
 
@@ -59,6 +63,13 @@ func RequestInertia(
 		t.Fatalf("Inertia リクエストの作成に失敗しました: %v", err)
 	}
 	req.Header.Set("X-Inertia", "true")
+	if inertiaRequest.PartialComponent != "" {
+		req.Header.Set("X-Inertia-Partial-Component", inertiaRequest.PartialComponent)
+	}
+	if len(inertiaRequest.PartialData) > 0 {
+		req.Header.Set("X-Inertia-Partial-Data", strings.Join(inertiaRequest.PartialData, ","))
+	}
+
 	if inertiaRequest.UseBasicAuth {
 		req.SetBasicAuth(config.MustGetAdminBasicAuthUser(), config.MustGetAdminBasicAuthPass())
 	}
@@ -86,11 +97,11 @@ func RequestInertia(
 func (response TestInertiaResponse) AssertFullProps(
 	t *testing.T,
 	expectedComponent string,
-	expectedProps map[string]any,
+	expectedProps gonertia.Props,
 ) {
 	t.Helper()
 
-	response.AssertResponse(t, http.StatusOK, expectedComponent, expectedProps, map[string]any{})
+	response.AssertResponse(t, http.StatusOK, expectedComponent, expectedProps, gonertia.Props{})
 }
 
 func (response TestInertiaResponse) AssertError(
@@ -101,26 +112,26 @@ func (response TestInertiaResponse) AssertError(
 ) {
 	t.Helper()
 
-	response.AssertResponse(t, expectedStatusCode, "ErrorPage", map[string]any{
+	response.AssertResponse(t, expectedStatusCode, "ErrorPage", gonertia.Props{
 		"statusCode":  float64(expectedStatusCode),
 		"statusText":  http.StatusText(expectedStatusCode),
 		"message":     expectedMessage,
 		"description": expectedDescription,
-	}, map[string]any{})
+	}, gonertia.Props{})
 }
 
 func (response TestInertiaResponse) AssertNotFound(t *testing.T) {
 	t.Helper()
 
-	response.AssertResponse(t, http.StatusNotFound, "NotFound", map[string]any{}, map[string]any{})
+	response.AssertResponse(t, http.StatusNotFound, "NotFound", gonertia.Props{}, gonertia.Props{})
 }
 
 func (response TestInertiaResponse) AssertResponse(
 	t *testing.T,
 	expectedStatusCode int,
 	expectedComponent string,
-	expectedProps map[string]any,
-	expectedErrors map[string]any,
+	expectedProps gonertia.Props,
+	expectedErrors gonertia.Props,
 ) {
 	t.Helper()
 
@@ -132,16 +143,16 @@ func (response TestInertiaResponse) AssertResponse(
 		t.Fatalf("component が不正です: expected=%q actual=%q", expectedComponent, response.Component)
 	}
 
-	expectedResponseProps := make(map[string]any, len(expectedProps)+3)
+	expectedResponseProps := make(gonertia.Props, len(expectedProps)+3)
 	for key, value := range expectedProps {
 		expectedResponseProps[key] = value
 	}
 	expectedResponseProps["errors"] = expectedErrors
 	if _, ok := expectedResponseProps["validationErrors"]; !ok && response.Props["validationErrors"] != nil {
-		expectedResponseProps["validationErrors"] = map[string]any{}
+		expectedResponseProps["validationErrors"] = gonertia.Props{}
 	}
 	if _, ok := expectedResponseProps["flash"]; !ok && response.Props["flash"] != nil {
-		expectedResponseProps["flash"] = map[string]any{}
+		expectedResponseProps["flash"] = gonertia.Props{}
 	}
 
 	actualPropsJSON, err := json.Marshal(response.Props)
@@ -165,7 +176,7 @@ func (response TestInertiaResponse) AssertPartialProps(
 	t *testing.T,
 	expectedComponent string,
 	propPath string,
-	expectedProps map[string]any,
+	expectedProps gonertia.Props,
 ) {
 	t.Helper()
 
@@ -240,14 +251,14 @@ func (response TestInertiaResponse) AssertPropsValue(
 	assertJSONValue(t, "props."+propPath, actualValue, expectedValue)
 }
 
-func lookupPropPath(props map[string]any, propPath string) (any, bool) {
+func lookupPropPath(props gonertia.Props, propPath string) (any, bool) {
 	if propPath == "" {
 		return nil, false
 	}
 
 	var current any = props
 	for _, key := range strings.Split(propPath, ".") {
-		currentMap, ok := current.(map[string]any)
+		currentMap, ok := propMap(current)
 		if !ok {
 			return nil, false
 		}
@@ -264,13 +275,13 @@ func lookupPropPath(props map[string]any, propPath string) (any, bool) {
 func assertPartialJSON(t *testing.T, path string, actual any, expected any) {
 	t.Helper()
 
-	expectedMap, ok := expected.(map[string]any)
+	expectedMap, ok := propMap(expected)
 	if !ok {
 		assertJSONValue(t, path, actual, expected)
 		return
 	}
 
-	actualMap, ok := actual.(map[string]any)
+	actualMap, ok := propMap(actual)
 	if !ok {
 		t.Fatalf("%s は object ではありません: actual=%T", path, actual)
 	}
@@ -282,6 +293,17 @@ func assertPartialJSON(t *testing.T, path string, actual any, expected any) {
 		}
 
 		assertPartialJSON(t, path+"."+key, actualValue, expectedValue)
+	}
+}
+
+func propMap(value any) (map[string]any, bool) {
+	switch typedValue := value.(type) {
+	case gonertia.Props:
+		return map[string]any(typedValue), true
+	case map[string]any:
+		return typedValue, true
+	default:
+		return nil, false
 	}
 }
 

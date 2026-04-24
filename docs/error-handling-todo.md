@@ -82,29 +82,29 @@
 
 ### GET /article
 
-- [ ] `SearchArticleHandler` を `func(*http.Request) (handlerresult.HandlerResult, *handlererror.DisplayableError)` に移行する。
-- [ ] GET query validation error を `PageResult.ValidationErrors` に載せる。
-- [ ] partial reload failure 用の fallback 契約を実装する。
-- [ ] frontend の `only` に `flash` を含める。
-- [ ] `FlashMessage` component を画面へ適用する。
-- [ ] integration test を追加 / 更新する。
-  - 通常 GET の displayable error
-  - partial reload の validation error
-  - partial reload の displayable error
-  - fallback あり / なし
+- [x] `SearchArticleHandler` を `func(*http.Request) (handlerresult.HandlerResult, *handlererror.DisplayableError)` に移行する。
+- [x] GET query validation error を `PageResult.ValidationErrors` に載せる。
+- [x] partial reload failure 時に表示用 props と `flash.error` を返す。
+- [x] frontend の `only` に `flash` を含める。
+- [x] `FlashMessage` component を画面へ適用する。
+- [x] integration test を追加 / 更新する。
+  - [x] 通常 GET の displayable error
+  - [x] partial reload の validation error
+  - [x] partial reload の displayable error
+  - [x] error 時の表示用 props
 
 ### GET /admin
 
 - [ ] `ShowAdminHandler` を `func(*http.Request) (handlerresult.HandlerResult, *handlererror.DisplayableError)` に移行する。
 - [ ] GET query validation error を `PageResult.ValidationErrors` に載せる。
-- [ ] partial reload failure 用の fallback 契約を実装する。
+- [ ] partial reload failure 時に表示用 props と `flash.error` を返す。
 - [ ] frontend の `only` に `flash` を含める。
 - [ ] `FlashMessage` component を画面へ適用する。
 - [ ] integration test を追加 / 更新する。
   - 通常 GET の displayable error
   - partial reload の validation error
   - partial reload の displayable error
-  - fallback あり / なし
+  - error 時の表示用 props
 
 ## Phase 3: POST action を移行
 

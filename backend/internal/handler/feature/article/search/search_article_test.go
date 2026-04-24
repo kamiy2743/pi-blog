@@ -18,6 +18,8 @@ import (
 	"blog/internal/test/helper"
 	stubArticle "blog/internal/test/stub/article"
 	stubCategory "blog/internal/test/stub/category"
+
+	"github.com/romsar/gonertia/v2"
 )
 
 type records struct {
@@ -40,8 +42,8 @@ func Testカテゴリ一覧を表示できる(t *testing.T) {
 
 	res := callEndpoint(t, initResult.Server, queryParams{})
 
-	res.AssertPartialProps(t, "article/ShowArticleList", "initial", map[string]any{
-		"categories": []map[string]any{
+	res.AssertPartialProps(t, "article/ShowArticleList", "initial", gonertia.Props{
+		"categories": []gonertia.Props{
 			{
 				"id":   records.CategoryCloudflare.ID,
 				"name": "Cloudflare",
@@ -68,8 +70,13 @@ func Testパラメータなしで記事一覧を表示できる(t *testing.T) {
 
 	res := callEndpoint(t, initResult.Server, queryParams{})
 
-	res.AssertPartialProps(t, "article/ShowArticleList", "partialSearch", map[string]any{
-		"articles": []map[string]any{
+	res.AssertPartialProps(t, "article/ShowArticleList", "partialSearch", gonertia.Props{
+		"title":       "",
+		"categoryIds": []uint32{},
+		"page":        1,
+		"totalCount":  4,
+		"totalPages":  1,
+		"articles": []gonertia.Props{
 			{
 				"id":    records.Articles[3].ID,
 				"title": "Docker Raspberry Pi",
@@ -106,11 +113,6 @@ func Testパラメータなしで記事一覧を表示できる(t *testing.T) {
 				},
 			},
 		},
-		"title":       "",
-		"categoryIds": []uint32{},
-		"page":        1,
-		"totalCount":  4,
-		"totalPages":  1,
 	})
 }
 
@@ -126,8 +128,15 @@ func Test全パラメータありで記事一覧を表示できる(t *testing.T)
 		Page: "1",
 	})
 
-	res.AssertPartialProps(t, "article/ShowArticleList", "partialSearch", map[string]any{
-		"articles": []map[string]any{
+	res.AssertPartialProps(t, "article/ShowArticleList", "partialSearch", gonertia.Props{
+		"title": "cloud",
+		"categoryIds": []uint32{
+			records.CategoryCloudflare.ID,
+		},
+		"page":       1,
+		"totalCount": 1,
+		"totalPages": 1,
+		"articles": []gonertia.Props{
 			{
 				"id":    records.Articles[2].ID,
 				"title": "Go Cloudflare",
@@ -138,13 +147,6 @@ func Test全パラメータありで記事一覧を表示できる(t *testing.T)
 				},
 			},
 		},
-		"title": "cloud",
-		"categoryIds": []uint32{
-			records.CategoryCloudflare.ID,
-		},
-		"page":       1,
-		"totalCount": 1,
-		"totalPages": 1,
 	})
 }
 
@@ -156,10 +158,10 @@ func Testページネーションできる(t *testing.T) {
 		Page: "4",
 	})
 
-	res.AssertPropsCount(t, "article/ShowArticleList", "partialSearch.articles", 3)
 	res.AssertPropsValue(t, "article/ShowArticleList", "partialSearch.page", 4)
 	res.AssertPropsValue(t, "article/ShowArticleList", "partialSearch.totalCount", 33)
 	res.AssertPropsValue(t, "article/ShowArticleList", "partialSearch.totalPages", 4)
+	res.AssertPropsCount(t, "article/ShowArticleList", "partialSearch.articles", 3)
 }
 
 func TestカテゴリIDが不正なら除外する(t *testing.T) {
@@ -190,6 +192,56 @@ func Testページ番号が不正なら1ページ目を表示する(t *testing.T
 	res.AssertPropsValue(t, "article/ShowArticleList", "partialSearch.page", 1)
 }
 
+func Testタイトルが長すぎる場合はバリデーションエラー(t *testing.T) {
+	initResult := test.Init(t)
+	records := setUpRecords(t, initResult.EntClient, 4)
+
+	title := helper.StringOfLength(256)
+	res := callEndpoint(t, initResult.Server, queryParams{
+		Title: title,
+		CategoryIDs: []string{
+			strconv.FormatUint(uint64(records.CategoryCloudflare.ID), 10),
+		},
+	})
+
+	res.AssertPropsValue(t, "article/ShowArticleList", "validationErrors.title", "タイトルは255文字以下で入力してください。")
+	res.AssertPartialProps(t, "article/ShowArticleList", "partialSearch", gonertia.Props{
+		"title": title,
+		"categoryIds": []uint32{
+			records.CategoryCloudflare.ID,
+		},
+		"page":       1,
+		"totalCount": 0,
+		"totalPages": 1,
+		"articles":   []gonertia.Props{},
+	})
+}
+
+func TestPartialReloadでタイトルが長すぎる場合はバリデーションエラー(t *testing.T) {
+	initResult := test.Init(t)
+	records := setUpRecords(t, initResult.EntClient, 4)
+
+	title := helper.StringOfLength(256)
+	res := callPartialEndpoint(t, initResult.Server, queryParams{
+		Title: title,
+		CategoryIDs: []string{
+			strconv.FormatUint(uint64(records.CategoryCloudflare.ID), 10),
+		},
+	})
+
+	res.AssertPropsValue(t, "article/ShowArticleList", "validationErrors.title", "タイトルは255文字以下で入力してください。")
+	res.AssertPartialProps(t, "article/ShowArticleList", "partialSearch", gonertia.Props{
+		"title": title,
+		"categoryIds": []uint32{
+			records.CategoryCloudflare.ID,
+		},
+		"page":       1,
+		"totalCount": 0,
+		"totalPages": 1,
+		"articles":   []gonertia.Props{},
+	})
+}
+
 func Testカテゴリの取得に失敗した場合は500(t *testing.T) {
 	initResult := test.Init(t, &di.ContainerOptions{
 		CategoryRepository: stubCategory.CategoryRepositoryStub{
@@ -216,6 +268,32 @@ func Test記事の取得に失敗した場合は500(t *testing.T) {
 
 	res := callEndpoint(t, initResult.Server, queryParams{})
 	res.AssertError(t, 500, "記事の読み込みに失敗しました。", "時間をおいてから、もう一度お試しください。")
+}
+
+func TestPartialReloadで記事の取得に失敗した場合はフラッシュメッセージを表示する(t *testing.T) {
+	initResult := test.Init(t, &di.ContainerOptions{
+		ArticleRepository: stubArticle.ArticleRepositoryStub{
+			PaginateFunc: func(ctx context.Context, criteria domainArticle.PaginateArticleCriteria) (domainArticle.PaginatedArticles, error) {
+				return domainArticle.PaginatedArticles{}, errors.New("test")
+			},
+		},
+	})
+	setUpRecords(t, initResult.EntClient, 4)
+
+	res := callPartialEndpoint(t, initResult.Server, queryParams{
+		Title: "go",
+		Page:  "2",
+	})
+
+	res.AssertPropsValue(t, "article/ShowArticleList", "flash.error", "記事の読み込みに失敗しました。")
+	res.AssertPartialProps(t, "article/ShowArticleList", "partialSearch", gonertia.Props{
+		"title":       "go",
+		"categoryIds": []uint32{},
+		"page":        1,
+		"totalCount":  0,
+		"totalPages":  1,
+		"articles":    []gonertia.Props{},
+	})
 }
 
 func setUpRecords(
@@ -318,6 +396,30 @@ func callEndpoint(
 ) helper.TestInertiaResponse {
 	t.Helper()
 
+	return helper.RequestInertia(t, server, helper.TestInertiaRequest{
+		Method:      http.MethodGet,
+		Path:        "/article",
+		QueryParams: buildQuery(params),
+	})
+}
+
+func callPartialEndpoint(
+	t *testing.T,
+	server *httptest.Server,
+	params queryParams,
+) helper.TestInertiaResponse {
+	t.Helper()
+
+	return helper.RequestInertia(t, server, helper.TestInertiaRequest{
+		Method:           http.MethodGet,
+		Path:             "/article",
+		QueryParams:      buildQuery(params),
+		PartialComponent: "article/ShowArticleList",
+		PartialData:      []string{"partialSearch", "validationErrors", "flash"},
+	})
+}
+
+func buildQuery(params queryParams) map[string][]string {
 	query := map[string][]string{}
 
 	if params.Title != "" {
@@ -330,9 +432,5 @@ func callEndpoint(
 		query["page"] = []string{params.Page}
 	}
 
-	return helper.RequestInertia(t, server, helper.TestInertiaRequest{
-		Method:      http.MethodGet,
-		Path:        "/article",
-		QueryParams: query,
-	})
+	return query
 }

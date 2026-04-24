@@ -39,7 +39,7 @@ func setUpArticleRoutes(
 	inertiaApp *gonertia.Inertia,
 	container *di.Container,
 ) {
-	mux.Handle("GET /article", inertiaApp.Middleware(http.HandlerFunc(container.SearchArticleHandler.Handle)))
+	mux.Handle("GET /article", InertiaPage(inertiaApp, container.SearchArticleHandler.Handle))
 
 	mux.Handle("GET /article/{articleId}", InertiaPage(inertiaApp, container.ShowArticleHandler.Handle))
 }

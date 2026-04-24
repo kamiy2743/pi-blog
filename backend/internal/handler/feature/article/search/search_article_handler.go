@@ -1,57 +1,79 @@
 package search
 
 import (
-	"context"
 	"net/http"
 
+	"blog/internal/handler/handlererror"
+	"blog/internal/handler/handlerresult"
 	"blog/internal/handler/inertia"
 
 	"github.com/romsar/gonertia/v2"
 )
 
+const component = "article/ShowArticleList"
+
 type Handler struct {
-	inertia *gonertia.Inertia
 	usecase *Usecase
 }
 
-func NewHandler(i *gonertia.Inertia, u *Usecase) *Handler {
+func NewHandler(u *Usecase) *Handler {
 	return &Handler{
-		inertia: i,
 		usecase: u,
 	}
 }
 
-func (h *Handler) Handle(w http.ResponseWriter, r *http.Request) {
-	prepareResult := inertia.PrepareInput(w, r, h.inertia, toInput)
-	if !prepareResult.OK {
-		return
+func (h *Handler) Handle(r *http.Request) (handlerresult.HandlerResult, *handlererror.DisplayableError) {
+	input, validationErrors, err := toInput(r)
+	if err != nil {
+		return nil, err
 	}
-	input := prepareResult.Input
 
-	inertia.Render(w, prepareResult.Request, h.inertia, "article/ShowArticleList", gonertia.Props{
-		"initial": func(ctx context.Context) (any, error) {
-			result, err := h.usecase.runInitial(ctx)
-			if err != nil {
-				return nil, err
-			}
-			return formatInitial(result), nil
-		},
-		"partialSearch": func(ctx context.Context) (any, error) {
-			if prepareResult.HasValidationError {
-				return formatPartialSearch(partialSearchResult{
-					Title:       input.Title,
-					CategoryIDs: input.CategoryIDs,
-					Page:        1,
-					TotalCount:  0,
-					TotalPages:  1,
-				}), nil
-			}
+	props := gonertia.Props{}
+	options := handlerresult.PageOptions{
+		ValidationErrors: validationErrors,
+	}
 
-			result, err := h.usecase.runPartialSearch(ctx, input)
-			if err != nil {
-				return nil, err
-			}
-			return formatPartialSearch(result), nil
-		},
-	})
+	if inertia.ShouldIncludeProp(r, component, "initial") {
+		result, err := h.usecase.runInitial(r.Context())
+		if err != nil {
+			return nil, err
+		}
+		props["initial"] = formatInitial(result)
+	}
+
+	if inertia.ShouldIncludeProp(r, component, "partialSearch") {
+		partialSearchProps, err := h.handlePartialSearch(r, input, len(validationErrors) > 0)
+		props["partialSearch"] = partialSearchProps
+		if err != nil {
+			return handlerresult.Page(component, props, options), err
+		}
+	}
+
+	return handlerresult.Page(component, props, options), nil
+}
+
+func (h *Handler) handlePartialSearch(
+	r *http.Request,
+	input input,
+	hasValidationError bool,
+) (gonertia.Props, *handlererror.DisplayableError) {
+	if hasValidationError {
+		return formatPartialSearch(emptyPartialSearchResult(input)), nil
+	}
+
+	result, err := h.usecase.runPartialSearch(r.Context(), input)
+	if err != nil {
+		return formatPartialSearch(emptyPartialSearchResult(input)), err
+	}
+	return formatPartialSearch(result), nil
+}
+
+func emptyPartialSearchResult(input input) partialSearchResult {
+	return partialSearchResult{
+		Title:       input.Title,
+		CategoryIDs: input.CategoryIDs,
+		Page:        1,
+		TotalCount:  0,
+		TotalPages:  1,
+	}
 }
