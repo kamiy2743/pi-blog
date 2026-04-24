@@ -94,8 +94,8 @@ func (m *SessionManager) PopSessionPayload(r *http.Request) SessionPayload {
 	}
 
 	flash := &Flash{
-		Error:   m.manager.PopString(r.Context(), flashErrorKey),
 		Success: m.manager.PopString(r.Context(), flashSuccessKey),
+		Error:   m.manager.PopString(r.Context(), flashErrorKey),
 	}
 	if flash.IsEmpty() {
 		flash = nil

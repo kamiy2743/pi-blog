@@ -1,12 +1,12 @@
 package session
 
 type Flash struct {
-	Error   string
 	Success string
+	Error   string
 }
 
 func (f Flash) IsEmpty() bool {
-	return f.Error == "" && f.Success == ""
+	return f.Success == "" && f.Error == ""
 }
 
 func FlashToMap(flash *Flash) map[string]string {

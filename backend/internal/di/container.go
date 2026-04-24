@@ -26,10 +26,10 @@ type Container struct {
 	EditArticleHandler     *editArticleHandler.Handler
 	StoreArticleHandler    *storeArticleHandler.Handler
 	UpdateArticleHandler   *updateArticleHandler.Handler
+	DestroyCategoryHandler *destroyCategoryHandler.Handler
 	EditCategoryHandler    *editCategoryHandler.Handler
 	StoreCategoryHandler   *storeCategoryHandler.Handler
 	UpdateCategoryHandler  *updateCategoryHandler.Handler
-	DestroyCategoryHandler *destroyCategoryHandler.Handler
 	ShowAdminHandler       *showAdminHandler.Handler
 	SearchArticleHandler   *searchArticleHandler.Handler
 	ShowArticleHandler     *showArticleHandler.Handler
@@ -68,10 +68,10 @@ func NewContainer(entClient *ent.Client, options *ContainerOptions) *Container {
 		EditArticleHandler:     editArticleHandler.NewHandler(),
 		StoreArticleHandler:    storeArticleHandler.NewHandler(),
 		UpdateArticleHandler:   updateArticleHandler.NewHandler(),
+		DestroyCategoryHandler: destroyCategoryHandler.NewHandler(),
 		EditCategoryHandler:    editCategoryHandler.NewHandler(editCategoryUsecase),
 		StoreCategoryHandler:   storeCategoryHandler.NewHandler(),
 		UpdateCategoryHandler:  updateCategoryHandler.NewHandler(),
-		DestroyCategoryHandler: destroyCategoryHandler.NewHandler(),
 		ShowAdminHandler:       showAdminHandler.NewHandler(showAdminUsecase),
 		SearchArticleHandler:   searchArticleHandler.NewHandler(searchArticleUsecase),
 		ShowArticleHandler:     showArticleHandler.NewHandler(showArticleUsecase),

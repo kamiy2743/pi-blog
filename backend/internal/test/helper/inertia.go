@@ -120,12 +120,6 @@ func (response TestInertiaResponse) AssertError(
 	})
 }
 
-func (response TestInertiaResponse) AssertNotFound(t *testing.T) {
-	t.Helper()
-
-	response.AssertResponse(t, http.StatusNotFound, "NotFound", gonertia.Props{})
-}
-
 func (response TestInertiaResponse) AssertResponse(
 	t *testing.T,
 	expectedStatusCode int,

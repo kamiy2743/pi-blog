@@ -92,11 +92,7 @@ func respondPageResult(
 	props["validationErrors"] = validationErrors
 	props["flash"] = session.FlashToMap(flash)
 
-	if result.StatusCode == http.StatusOK {
-		inertia.Render(w, r, inertiaApp, result.Component, props)
-	} else {
-		inertia.RenderWithStatus(w, r, inertiaApp, result.StatusCode, result.Component, props)
-	}
+	inertia.Render(w, r, inertiaApp, result.StatusCode, result.Component, props)
 }
 
 func respondRedirectResult(
@@ -117,7 +113,7 @@ func respondRedirectBackResult(
 ) {
 	saveValidationErrors(r, result.ValidationErrors)
 	saveFlash(r, result.Flash)
-	inertiaApp.Redirect(w, r, redirectBackURL(r), http.StatusSeeOther)
+	inertiaApp.Redirect(w, r, getRedirectBackURL(r), http.StatusSeeOther)
 }
 
 func respondPageError(
@@ -133,7 +129,7 @@ func respondPageError(
 	}
 
 	log.Print(err)
-	inertia.RenderWithStatus(w, r, inertiaApp, http.StatusInternalServerError, "ErrorPage", gonertia.Props{
+	inertia.Render(w, r, inertiaApp, http.StatusInternalServerError, "ErrorPage", gonertia.Props{
 		"statusCode":  http.StatusInternalServerError,
 		"statusText":  http.StatusText(http.StatusInternalServerError),
 		"message":     "エラーが発生しました。",
@@ -166,14 +162,16 @@ func respondActionError(
 ) {
 	var displayableError *handlererror.DisplayableError
 	if errors.As(err, &displayableError) {
-		saveFlash(r, &session.Flash{Error: displayableError.Message})
-		inertiaApp.Redirect(w, r, redirectBackURL(r), http.StatusSeeOther)
+		respondRedirectBackResult(w, r, inertiaApp, handlerresult.RedirectBackResult{
+			Flash: &session.Flash{Error: displayableError.Message},
+		})
 		return
 	}
 
 	log.Print(err)
-	saveFlash(r, &session.Flash{Error: "エラーが発生しました。"})
-	inertiaApp.Redirect(w, r, redirectBackURL(r), http.StatusSeeOther)
+	respondRedirectBackResult(w, r, inertiaApp, handlerresult.RedirectBackResult{
+		Flash: &session.Flash{Error: "エラーが発生しました。"},
+	})
 }
 
 func saveValidationErrors(r *http.Request, validationErrors []handlererror.ValidationError) {
@@ -200,7 +198,7 @@ func popSessionPayload(r *http.Request) session.SessionPayload {
 	return manager.PopSessionPayload(r)
 }
 
-func redirectBackURL(r *http.Request) string {
+func getRedirectBackURL(r *http.Request) string {
 	referer := r.Referer()
 	if referer != "" {
 		return referer
