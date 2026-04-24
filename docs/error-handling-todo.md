@@ -74,9 +74,9 @@
 
 ### GET /admin/category
 
-- [ ] `EditCategoryHandler` を `func(*http.Request) (handlerresult.HandlerResult, *handlererror.DisplayableError)` に移行する。
-- [ ] route を `handler.InertiaPage(...)` へ差し替える。
-- [ ] `EditCategory` の integration test を更新する。
+- [x] `EditCategoryHandler` を `func(*http.Request) (handlerresult.HandlerResult, *handlererror.DisplayableError)` に移行する。
+- [x] route を `handler.InertiaPage(...)` へ差し替える。
+- [x] `EditCategory` の integration test を更新する。
 
 ## Phase 2: partial reload あり GET を移行
 

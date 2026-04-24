@@ -3,29 +3,25 @@ package edit
 import (
 	"net/http"
 
-	"blog/internal/handler/inertia"
-
-	"github.com/romsar/gonertia/v2"
+	"blog/internal/handler/handlererror"
+	"blog/internal/handler/handlerresult"
 )
 
 type Handler struct {
-	inertia *gonertia.Inertia
 	usecase *Usecase
 }
 
-func NewHandler(i *gonertia.Inertia, u *Usecase) *Handler {
+func NewHandler(u *Usecase) *Handler {
 	return &Handler{
-		inertia: i,
 		usecase: u,
 	}
 }
 
-func (h *Handler) Handle(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) Handle(r *http.Request) (handlerresult.HandlerResult, *handlererror.DisplayableError) {
 	result, err := h.usecase.run(r.Context())
 	if err != nil {
-		inertia.RenderError(w, r, h.inertia, *err)
-		return
+		return nil, err
 	}
 
-	inertia.Render(w, r, h.inertia, "admin/EditCategory", format(result))
+	return handlerresult.Page("admin/EditCategory", format(result)), nil
 }

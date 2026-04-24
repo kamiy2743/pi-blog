@@ -62,7 +62,7 @@ func NewContainer(
 	showTopUsecase := showTopHandler.NewUsecase(articleRepository, categoryRepository)
 
 	return &Container{
-		EditCategoryHandler:    editCategoryHandler.NewHandler(inertiaApp, editCategoryUsecase),
+		EditCategoryHandler:    editCategoryHandler.NewHandler(editCategoryUsecase),
 		StoreCategoryHandler:   storeCategoryHandler.NewHandler(),
 		UpdateCategoryHandler:  updateCategoryHandler.NewHandler(),
 		DestroyCategoryHandler: destroyCategoryHandler.NewHandler(),

@@ -64,7 +64,7 @@ func setUpAdminRoutes(
 	handleAdmin("GET /admin/article/{articleId}", inertiaApp.Middleware(http.HandlerFunc(editArticleHandler.Handle)))
 	handleAdmin("POST /admin/article/{articleId}", http.HandlerFunc(updateArticleHandler.Handle))
 
-	handleAdmin("GET /admin/category", inertiaApp.Middleware(http.HandlerFunc(container.EditCategoryHandler.Handle)))
+	handleAdmin("GET /admin/category", InertiaPage(inertiaApp, container.EditCategoryHandler.Handle))
 	handleAdmin("POST /admin/category", http.HandlerFunc(container.StoreCategoryHandler.Handle))
 	handleAdmin("POST /admin/category/{categoryId}", http.HandlerFunc(container.UpdateCategoryHandler.Handle))
 	handleAdmin("POST /admin/category/{categoryId}/delete", http.HandlerFunc(container.DestroyCategoryHandler.Handle))
