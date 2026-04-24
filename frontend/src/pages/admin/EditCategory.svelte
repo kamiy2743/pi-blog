@@ -5,7 +5,7 @@
   }
 
   export let categories: Category[] = []
-  export let errors: Record<string, string> = {}
+  export let validationErrors: Record<string, string> = {}
 
   let categoryNames: Record<number, string> = {}
   let deleteTarget: Category | null = null
@@ -59,8 +59,8 @@
             type="text"
             autocomplete="off"
           />
-          {#if errors.name}
-            <p class="mt-2 text-sm font-semibold text-red-600">{errors.name}</p>
+          {#if validationErrors.name}
+            <p class="mt-2 text-sm font-semibold text-red-600">{validationErrors.name}</p>
           {/if}
         </label>
 
@@ -95,8 +95,8 @@
                   autocomplete="off"
                   on:input={(event) => updateCategoryName(category, event)}
                 />
-                {#if errors.name}
-                  <p class="mt-2 text-sm font-semibold text-red-600">{errors.name}</p>
+                {#if validationErrors.name}
+                  <p class="mt-2 text-sm font-semibold text-red-600">{validationErrors.name}</p>
                 {/if}
               </label>
               <div class="flex flex-wrap gap-3 self-end">

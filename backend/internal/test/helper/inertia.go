@@ -101,7 +101,7 @@ func (response TestInertiaResponse) AssertFullProps(
 ) {
 	t.Helper()
 
-	response.AssertResponse(t, http.StatusOK, expectedComponent, expectedProps, gonertia.Props{})
+	response.AssertResponse(t, http.StatusOK, expectedComponent, expectedProps)
 }
 
 func (response TestInertiaResponse) AssertError(
@@ -117,13 +117,13 @@ func (response TestInertiaResponse) AssertError(
 		"statusText":  http.StatusText(expectedStatusCode),
 		"message":     expectedMessage,
 		"description": expectedDescription,
-	}, gonertia.Props{})
+	})
 }
 
 func (response TestInertiaResponse) AssertNotFound(t *testing.T) {
 	t.Helper()
 
-	response.AssertResponse(t, http.StatusNotFound, "NotFound", gonertia.Props{}, gonertia.Props{})
+	response.AssertResponse(t, http.StatusNotFound, "NotFound", gonertia.Props{})
 }
 
 func (response TestInertiaResponse) AssertResponse(
@@ -131,7 +131,6 @@ func (response TestInertiaResponse) AssertResponse(
 	expectedStatusCode int,
 	expectedComponent string,
 	expectedProps gonertia.Props,
-	expectedErrors gonertia.Props,
 ) {
 	t.Helper()
 
@@ -147,7 +146,7 @@ func (response TestInertiaResponse) AssertResponse(
 	for key, value := range expectedProps {
 		expectedResponseProps[key] = value
 	}
-	expectedResponseProps["errors"] = expectedErrors
+	expectedResponseProps["errors"] = gonertia.Props{}
 	if _, ok := expectedResponseProps["validationErrors"]; !ok && response.Props["validationErrors"] != nil {
 		expectedResponseProps["validationErrors"] = gonertia.Props{}
 	}
