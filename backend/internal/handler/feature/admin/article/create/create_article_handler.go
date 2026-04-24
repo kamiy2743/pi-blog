@@ -3,13 +3,16 @@ package create
 import (
 	"net/http"
 
-	"github.com/romsar/gonertia/v2"
+	"blog/internal/handler/handlererror"
+	"blog/internal/handler/handlerresult"
 )
 
-func Handle(i *gonertia.Inertia) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		if err := i.Render(w, r, "admin/CreateArticle", nil); err != nil {
-			http.Error(w, "描画エラー", http.StatusInternalServerError)
-		}
-	}
+type Handler struct{}
+
+func NewHandler() *Handler {
+	return &Handler{}
+}
+
+func (h *Handler) Handle(r *http.Request) (handlerresult.HandlerResult, *handlererror.DisplayableError) {
+	return handlerresult.Page("admin/CreateArticle", nil), nil
 }

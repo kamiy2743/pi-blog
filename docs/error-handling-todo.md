@@ -110,39 +110,39 @@
 
 ### POST /admin/category
 
-- [ ] `StoreCategoryHandler` を `func(*http.Request) (handlerresult.HandlerResult, *handlererror.DisplayableError)` に移行する。
+- [x] `StoreCategoryHandler` を `func(*http.Request) (handlerresult.HandlerResult, *handlererror.DisplayableError)` に移行する。
 - [ ] validation error を `RedirectBackResult.ValidationErrors` に載せる。
 - [ ] displayable / unexpected error を `flash.error` に載せる。
 - [ ] success message を必要なら `flash.success` に載せる。
-- [ ] route を `handler.InertiaAction(...)` へ差し替える。
+- [x] route を `handler.InertiaAction(...)` へ差し替える。
 - [ ] integration test を更新する。
 
 ### POST /admin/category/{categoryId}
 
-- [ ] `UpdateCategoryHandler` を `func(*http.Request) (handlerresult.HandlerResult, *handlererror.DisplayableError)` に移行する。
+- [x] `UpdateCategoryHandler` を `func(*http.Request) (handlerresult.HandlerResult, *handlererror.DisplayableError)` に移行する。
 - [ ] 複数 form 用の scoped `validationErrors` を実装する。
   - 例: `update.{categoryId}.name`
-- [ ] route を `handler.InertiaAction(...)` へ差し替える。
+- [x] route を `handler.InertiaAction(...)` へ差し替える。
 - [ ] integration test を更新する。
 
 ### POST /admin/category/{categoryId}/delete
 
-- [ ] `DestroyCategoryHandler` を `func(*http.Request) (handlerresult.HandlerResult, *handlererror.DisplayableError)` に移行する。
-- [ ] route を `handler.InertiaAction(...)` へ差し替える。
+- [x] `DestroyCategoryHandler` を `func(*http.Request) (handlerresult.HandlerResult, *handlererror.DisplayableError)` に移行する。
+- [x] route を `handler.InertiaAction(...)` へ差し替える。
 - [ ] integration test を更新する。
 
 ### POST /admin/article/new
 
-- [ ] `StoreArticleHandler` を `func(*http.Request) (handlerresult.HandlerResult, *handlererror.DisplayableError)` に移行する。
+- [x] `StoreArticleHandler` を `func(*http.Request) (handlerresult.HandlerResult, *handlererror.DisplayableError)` に移行する。
 - [ ] validationErrors / flash / redirect ルールを適用する。
-- [ ] route を `handler.InertiaAction(...)` へ差し替える。
+- [x] route を `handler.InertiaAction(...)` へ差し替える。
 - [ ] integration test を更新する。
 
 ### POST /admin/article/{articleId}
 
-- [ ] `UpdateArticleHandler` を `func(*http.Request) (handlerresult.HandlerResult, *handlererror.DisplayableError)` に移行する。
+- [x] `UpdateArticleHandler` を `func(*http.Request) (handlerresult.HandlerResult, *handlererror.DisplayableError)` に移行する。
 - [ ] validationErrors / flash / redirect ルールを適用する。
-- [ ] route を `handler.InertiaAction(...)` へ差し替える。
+- [x] route を `handler.InertiaAction(...)` へ差し替える。
 - [ ] integration test を更新する。
 
 ## Phase 4: Route 整理

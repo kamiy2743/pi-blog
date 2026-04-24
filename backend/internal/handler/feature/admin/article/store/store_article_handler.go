@@ -1,7 +1,18 @@
 package store
 
-import "net/http"
+import (
+	"net/http"
 
-func Handle(w http.ResponseWriter, r *http.Request) {
-	http.Redirect(w, r, "/admin", http.StatusSeeOther)
+	"blog/internal/handler/handlererror"
+	"blog/internal/handler/handlerresult"
+)
+
+type Handler struct{}
+
+func NewHandler() *Handler {
+	return &Handler{}
+}
+
+func (h *Handler) Handle(r *http.Request) (handlerresult.HandlerResult, *handlererror.DisplayableError) {
+	return handlerresult.Redirect("/admin"), nil
 }

@@ -4,6 +4,10 @@ import (
 	"blog/internal/db/ent"
 	domainArticle "blog/internal/domain/article"
 	domainCategory "blog/internal/domain/category"
+	createArticleHandler "blog/internal/handler/feature/admin/article/create"
+	editArticleHandler "blog/internal/handler/feature/admin/article/edit"
+	storeArticleHandler "blog/internal/handler/feature/admin/article/store"
+	updateArticleHandler "blog/internal/handler/feature/admin/article/update"
 	destroyCategoryHandler "blog/internal/handler/feature/admin/category/destroy"
 	editCategoryHandler "blog/internal/handler/feature/admin/category/edit"
 	storeCategoryHandler "blog/internal/handler/feature/admin/category/store"
@@ -15,11 +19,13 @@ import (
 	healthHandler "blog/internal/handler/health"
 	infraArticle "blog/internal/infra/article"
 	infraCategory "blog/internal/infra/category"
-
-	"github.com/romsar/gonertia/v2"
 )
 
 type Container struct {
+	CreateArticleHandler   *createArticleHandler.Handler
+	EditArticleHandler     *editArticleHandler.Handler
+	StoreArticleHandler    *storeArticleHandler.Handler
+	UpdateArticleHandler   *updateArticleHandler.Handler
 	EditCategoryHandler    *editCategoryHandler.Handler
 	StoreCategoryHandler   *storeCategoryHandler.Handler
 	UpdateCategoryHandler  *updateCategoryHandler.Handler
@@ -36,11 +42,7 @@ type ContainerOptions struct {
 	CategoryRepository domainCategory.CategoryRepository
 }
 
-func NewContainer(
-	entClient *ent.Client,
-	inertiaApp *gonertia.Inertia,
-	options *ContainerOptions,
-) *Container {
+func NewContainer(entClient *ent.Client, options *ContainerOptions) *Container {
 	if options == nil {
 		options = &ContainerOptions{}
 	}
@@ -62,6 +64,10 @@ func NewContainer(
 	showTopUsecase := showTopHandler.NewUsecase(articleRepository, categoryRepository)
 
 	return &Container{
+		CreateArticleHandler:   createArticleHandler.NewHandler(),
+		EditArticleHandler:     editArticleHandler.NewHandler(),
+		StoreArticleHandler:    storeArticleHandler.NewHandler(),
+		UpdateArticleHandler:   updateArticleHandler.NewHandler(),
 		EditCategoryHandler:    editCategoryHandler.NewHandler(editCategoryUsecase),
 		StoreCategoryHandler:   storeCategoryHandler.NewHandler(),
 		UpdateCategoryHandler:  updateCategoryHandler.NewHandler(),

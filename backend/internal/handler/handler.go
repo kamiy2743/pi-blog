@@ -24,7 +24,7 @@ func NewHTTPHandler(entClient *ent.Client, containerOptions ...*di.ContainerOpti
 	if len(containerOptions) > 0 {
 		options = containerOptions[0]
 	}
-	container := di.NewContainer(entClient, inertiaApp, options)
+	container := di.NewContainer(entClient, options)
 	mux := newMux(inertiaApp, container)
 
 	sessionManager := session.NewSessionManager(config.MustGetAppEnv())
