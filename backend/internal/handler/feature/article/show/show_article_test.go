@@ -17,7 +17,7 @@ import (
 	"blog/internal/test/helper"
 	stubArticle "blog/internal/test/stub/article"
 
-	"github.com/romsar/gonertia/v2"
+	"github.com/romsar/gonertia/v3"
 )
 
 func Test記事を表示できる(t *testing.T) {

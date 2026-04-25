@@ -7,7 +7,7 @@ import (
 	"blog/internal/handler/handlerresult"
 	"blog/internal/handler/inertia"
 
-	"github.com/romsar/gonertia/v2"
+	"github.com/romsar/gonertia/v3"
 )
 
 const component = "article/ShowArticleList"

@@ -19,7 +19,7 @@ import (
 	stubArticle "blog/internal/test/stub/article"
 	stubCategory "blog/internal/test/stub/category"
 
-	"github.com/romsar/gonertia/v2"
+	"github.com/romsar/gonertia/v3"
 )
 
 type records struct {

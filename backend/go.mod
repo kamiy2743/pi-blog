@@ -7,7 +7,7 @@ require (
 	github.com/alexedwards/scs/v2 v2.9.0
 	github.com/go-playground/validator/v10 v10.25.0
 	github.com/go-sql-driver/mysql v1.9.3
-	github.com/romsar/gonertia/v2 v2.1.1
+	github.com/romsar/gonertia/v3 v3.0.0
 )
 
 require (

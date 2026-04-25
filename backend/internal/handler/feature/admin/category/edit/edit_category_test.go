@@ -15,7 +15,7 @@ import (
 	"blog/internal/test/helper"
 	stubCategory "blog/internal/test/stub/category"
 
-	"github.com/romsar/gonertia/v2"
+	"github.com/romsar/gonertia/v3"
 )
 
 func Testカテゴリ編集画面を表示できる(t *testing.T) {

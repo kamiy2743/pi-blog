@@ -14,6 +14,7 @@ usage() {
   ./blog back fmt
   ./blog back mod tidy
   ./blog back test [backend path]
+  ./blog front install
   ./blog {dev|prd} migrate {up|down|refresh}
   ./blog {dev|prd} seed <seed_name>
 EOF
@@ -117,6 +118,21 @@ run_go() {
   esac
 }
 
+run_front() {
+  local command="$1"
+  shift
+
+  case "$command" in
+    install)
+      (cd "$SCRIPT_DIR/frontend" && npm install "$@")
+      ;;
+    *)
+      echo "未対応の front コマンドです: $command" >&2
+      exit 1
+      ;;
+  esac
+}
+
 run_migrate() {
   local env="$1"
   local command="$2"
@@ -180,6 +196,13 @@ main() {
         exit 1
       fi
       run_go "$@"
+      ;;
+    front)
+      if [[ $# -lt 1 ]]; then
+        usage
+        exit 1
+      fi
+      run_front "$@"
       ;;
     dev|prd)
       local env="$command"

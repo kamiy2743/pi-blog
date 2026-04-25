@@ -7,7 +7,7 @@ import (
 	"blog/internal/di"
 	"blog/internal/handler/middleware"
 
-	"github.com/romsar/gonertia/v2"
+	"github.com/romsar/gonertia/v3"
 )
 
 func newMux(inertiaApp *gonertia.Inertia, container *di.Container) *http.ServeMux {

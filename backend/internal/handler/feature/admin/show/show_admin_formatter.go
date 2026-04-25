@@ -3,7 +3,7 @@ package show
 import (
 	"time"
 
-	"github.com/romsar/gonertia/v2"
+	"github.com/romsar/gonertia/v3"
 )
 
 func formatInitial(result initialResult) gonertia.Props {

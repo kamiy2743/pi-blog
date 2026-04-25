@@ -19,7 +19,7 @@ import (
 	stubArticle "blog/internal/test/stub/article"
 	stubCategory "blog/internal/test/stub/category"
 
-	"github.com/romsar/gonertia/v2"
+	"github.com/romsar/gonertia/v3"
 )
 
 type records struct {
@@ -33,7 +33,7 @@ func Testトップページを表示できる(t *testing.T) {
 
 	res := callEndpoint(t, initResult.Server)
 
-	res.AssertFullProps(t, "ShowTop", gonertia.Props{
+	res.AssertFullProps(t, "top/ShowTop", gonertia.Props{
 		"latestArticles": []gonertia.Props{
 			{
 				"id":    records.Articles[1].ID,
@@ -83,7 +83,7 @@ func Test最大10件までしか表示されない(t *testing.T) {
 
 	res := callEndpoint(t, initResult.Server)
 
-	res.AssertPropsCount(t, "ShowTop", "latestArticles", 10)
+	res.AssertPropsCount(t, "top/ShowTop", "latestArticles", 10)
 }
 
 func Test記事の取得に失敗した場合は500(t *testing.T) {

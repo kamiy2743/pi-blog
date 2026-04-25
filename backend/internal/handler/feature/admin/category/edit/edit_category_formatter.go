@@ -1,6 +1,6 @@
 package edit
 
-import "github.com/romsar/gonertia/v2"
+import "github.com/romsar/gonertia/v3"
 
 func format(result result) gonertia.Props {
 	categories := make([]gonertia.Props, 0, len(result.Categories))

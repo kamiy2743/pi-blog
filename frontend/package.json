@@ -9,14 +9,14 @@
     "build:ssr:watch": "vite build --ssr src/ssr.ts --config vite.config.ssr.js --watch"
   },
   "dependencies": {
-    "@inertiajs/svelte": "^2.1.6",
-    "@sveltejs/vite-plugin-svelte": "^7.0.0",
-    "@tailwindcss/vite": "^4.2.2",
-    "@types/node": "^22.10.2",
-    "lucide-svelte": "^1.0.1",
-    "svelte": "^5.55.2",
-    "tailwindcss": "^4.2.2",
-    "typescript": "^5.6.3",
-    "vite": "^8.0.8"
+    "typescript": "6.0.3",
+    "vite": "8.0.10",
+    "@types/node": "25.6.0",
+    "@inertiajs/svelte": "3.0.3",
+    "@sveltejs/vite-plugin-svelte": "7.0.0",
+    "svelte": "5.55.4",
+    "lucide-svelte": "1.0.1",
+    "tailwindcss": "4.2.4",
+    "@tailwindcss/vite": "4.2.4"
   }
 }

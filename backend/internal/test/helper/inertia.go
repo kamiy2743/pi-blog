@@ -12,7 +12,7 @@ import (
 
 	"blog/internal/config"
 
-	"github.com/romsar/gonertia/v2"
+	"github.com/romsar/gonertia/v3"
 )
 
 type TestInertiaRequest struct {

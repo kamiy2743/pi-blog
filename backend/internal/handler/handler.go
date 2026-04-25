@@ -11,7 +11,7 @@ import (
 
 	"blog/internal/db/ent"
 
-	"github.com/romsar/gonertia/v2"
+	"github.com/romsar/gonertia/v3"
 )
 
 func NewHTTPHandler(entClient *ent.Client, containerOptions ...*di.ContainerOptions) (http.Handler, error) {

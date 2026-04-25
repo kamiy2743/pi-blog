@@ -6,7 +6,7 @@ import (
 	"blog/internal/handler/handlererror"
 	"blog/internal/handler/handlerresult"
 
-	"github.com/romsar/gonertia/v2"
+	"github.com/romsar/gonertia/v3"
 )
 
 type Handler struct{}

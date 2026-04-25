@@ -10,7 +10,7 @@ import (
 	"blog/internal/handler/inertia"
 	"blog/internal/handler/session"
 
-	"github.com/romsar/gonertia/v2"
+	"github.com/romsar/gonertia/v3"
 )
 
 func InertiaPage(

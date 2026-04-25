@@ -7,7 +7,7 @@ import (
 
 	"blog/internal/handler/handlererror"
 
-	"github.com/romsar/gonertia/v2"
+	"github.com/romsar/gonertia/v3"
 )
 
 const staticErrorPageStatusCode = http.StatusTeapot
