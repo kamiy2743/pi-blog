@@ -4,8 +4,8 @@
 
 <script lang="ts">
   import { Link } from '@inertiajs/svelte'
-  import PublicSiteLink from '../components/PublicSiteLink.svelte'
-  import { formatDate } from '../utils/date'
+  import PublicSiteLink from '../../components/PublicSiteLink.svelte'
+  import { formatDate } from '../../utils/date'
 
   type Article = {
     id: number

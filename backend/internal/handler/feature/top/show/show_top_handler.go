@@ -31,5 +31,5 @@ func (h *Handler) Handle(r *http.Request) (handlerresult.HandlerResult, *handler
 		return nil, err
 	}
 
-	return handlerresult.Page("ShowTop", format(result)), nil
+	return handlerresult.Page("top/ShowTop", format(result)), nil
 }
