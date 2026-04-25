@@ -9,7 +9,7 @@
     "build:ssr:watch": "vite build --ssr src/ssr.ts --config vite.config.ssr.js --watch"
   },
   "dependencies": {
-    "typescript": "6.0.3",
+    "typescript": "5.9.3",
     "vite": "8.0.10",
     "@types/node": "25.6.0",
     "@inertiajs/svelte": "3.0.3",
