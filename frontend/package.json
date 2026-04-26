@@ -3,10 +3,9 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "vite-dev": "vite --config vite.config.vite-dev.js",
+    "vite-dev": "node ./server/dev-server.mjs",
     "build:client": "vite build --config vite.config.client.js",
-    "build:ssr": "vite build --ssr src/ssr.ts --config vite.config.ssr.js",
-    "build:ssr:watch": "vite build --ssr src/ssr.ts --config vite.config.ssr.js --watch"
+    "build:ssr": "vite build --ssr src/ssr.ts --config vite.config.ssr.js"
   },
   "dependencies": {
     "typescript": "5.9.3",

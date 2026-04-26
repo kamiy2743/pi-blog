@@ -1,18 +1,10 @@
 import { createServer, type IncomingMessage, type ServerResponse } from 'http'
-import { createInertiaApp, type ResolvedComponent } from '@inertiajs/svelte'
 import type { Page, PageProps } from '@inertiajs/core'
-import { render as renderSvelte } from 'svelte/server'
-
-type InertiaSSRResponse = {
-  head: string[]
-  body: string
-}
+import { renderPage } from './render'
 
 type JsonObject = Record<string, unknown>
 
 type RouteHandler = (request: IncomingMessage) => Promise<JsonObject>
-
-const pages = import.meta.glob<ResolvedComponent>('./pages/**/*.svelte', { eager: true })
 
 const portRaw = process.env.PORT
 if (!portRaw) {
@@ -33,39 +25,13 @@ const streamToString = (stream: IncomingMessage): Promise<string> =>
     stream.on('error', (err: Error) => reject(err))
   })
 
-const render = async (page: Page<PageProps>): Promise<InertiaSSRResponse> => {
-  const result = await createInertiaApp({
-    page,
-    resolve: (name: string) => {
-      const path = `./pages/${name}.svelte`
-      const pageModule = pages[path]
-      if (!pageModule) {
-        throw new Error(`ページが見つかりません: ${name}`)
-      }
-      return pageModule
-    },
-    setup: ({ App, props }) => {
-      return renderSvelte(App, { props })
-    }
-  })
-
-  if (!result) {
-    throw new Error('SSR レンダリング結果が空です')
-  }
-
-  return {
-    head: result.head,
-    body: result.body
-  }
-}
-
 const routes: Record<string, RouteHandler> = {
   '/health': async () => ({ status: 'OK', timestamp: Date.now() }),
   '/render': async (request: IncomingMessage) => {
     const requestBody = await streamToString(request)
     const payload = JSON.parse(requestBody) as Page<PageProps>
-    const result = await render(payload)
-  
+    const result = await renderPage(payload)
+
     return {
       head: result.head,
       body: result.body

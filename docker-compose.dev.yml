@@ -21,7 +21,6 @@ services:
     depends_on:
       - go
       - vite-dev
-      - ssr
     restart: unless-stopped
 
   go:
@@ -124,22 +123,6 @@ services:
       - private
     restart: unless-stopped
 
-  ssr:
-    build:
-      context: ./frontend/
-      dockerfile: ./Dockerfile.ssr.dev
-    env_file: ./frontend/.env
-    volumes:
-      - ./frontend/:/app/
-      - node_modules:/app/node_modules/
-      - ssr_dist:/app/dist/
-    security_opt:
-      - no-new-privileges:true
-    read_only: true
-    networks:
-      - private
-    restart: unless-stopped
-
 networks:
   private:
     internal: true
@@ -152,7 +135,6 @@ volumes:
   mysql_data:
   mysql_test_data:
   node_modules:
-  ssr_dist:
 
 secrets:
   admin_basic_auth_user:

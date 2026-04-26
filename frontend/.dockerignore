@@ -1,8 +1,6 @@
 **
 !public/
 !src/
-!docker-entrypoint.ssr.sh
-!Dockerfile*
 !package.json
 !package-lock.json
 !svelte.config.js

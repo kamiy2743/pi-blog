@@ -81,7 +81,7 @@ services:
   ssr:
     build:
       context: ./frontend/
-      dockerfile: ./Dockerfile.ssr.prd
+      dockerfile: ./Dockerfile.ssr
     env_file: ./frontend/.env
     cap_drop:
       - ALL

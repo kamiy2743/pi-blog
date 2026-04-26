@@ -12,6 +12,8 @@ export default defineConfig({
     port: 5173,
     strictPort: true,
     hmr: {
+      host: 'localhost',
+      clientPort: 8000,
       path: '/__vite_ws'
     }
   }
