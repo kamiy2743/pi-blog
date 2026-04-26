@@ -18,10 +18,10 @@ func NewHandler(u *Usecase) *Handler {
 	}
 }
 
-func (h *Handler) Handle(r *http.Request) (handlerresult.HandlerResult, error) {
+func (h *Handler) Handle(r *http.Request) (handlerresult.PageResult, error) {
 	articleID, parseErr := article.ParseArticleID(r.PathValue("articleId"))
 	if parseErr != nil {
-		return nil, &handlererror.DisplayableError{
+		return handlerresult.PageResult{}, &handlererror.DisplayableError{
 			StatusCode:  http.StatusNotFound,
 			Message:     "ページが見つかりません。",
 			Description: "URL が変わったか、公開が終了した可能性があります。",
@@ -31,7 +31,7 @@ func (h *Handler) Handle(r *http.Request) (handlerresult.HandlerResult, error) {
 
 	result, usecaseErr := h.usecase.run(r.Context(), articleID)
 	if usecaseErr != nil {
-		return nil, usecaseErr
+		return handlerresult.PageResult{}, usecaseErr
 	}
 
 	return handlerresult.Page("article/ShowArticle", format(result)), nil

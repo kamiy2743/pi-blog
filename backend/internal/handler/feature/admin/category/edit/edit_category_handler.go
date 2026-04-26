@@ -16,10 +16,10 @@ func NewHandler(u *Usecase) *Handler {
 	}
 }
 
-func (h *Handler) Handle(r *http.Request) (handlerresult.HandlerResult, error) {
+func (h *Handler) Handle(r *http.Request) (handlerresult.PageResult, error) {
 	result, err := h.usecase.run(r.Context())
 	if err != nil {
-		return nil, err
+		return handlerresult.PageResult{}, err
 	}
 
 	return handlerresult.Page("admin/EditCategory", format(result)), nil

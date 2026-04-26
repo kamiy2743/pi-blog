@@ -14,7 +14,7 @@ func NewHandler() *Handler {
 	return &Handler{}
 }
 
-func (h *Handler) Handle(r *http.Request) (handlerresult.HandlerResult, error) {
+func (h *Handler) Handle(r *http.Request) (handlerresult.PageResult, error) {
 	return handlerresult.Page("admin/EditArticle", gonertia.Props{
 		"articleId": r.PathValue("articleId"),
 	}), nil
