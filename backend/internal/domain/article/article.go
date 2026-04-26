@@ -2,7 +2,6 @@ package article
 
 import (
 	"errors"
-	"fmt"
 	"strings"
 	"time"
 
@@ -26,19 +25,12 @@ type CreateArticleInput struct {
 	Categories []category.Category
 }
 
-var (
-	errInvalidArticle   = errors.New("記事が不正です")
-	errEmptyTitle       = errors.New("記事タイトルは必須です")
-	errEmptyBody        = errors.New("記事本文は必須です")
-	errInvalidUpdatedAt = errors.New("更新日時が不正です")
-)
-
 func (a Article) Validate() error {
 	if err := validateContent(a.Title, a.Body, a.Categories); err != nil {
 		return err
 	}
 	if a.UpdatedAt.IsZero() {
-		return fmt.Errorf("%w: %w", errInvalidArticle, errInvalidUpdatedAt)
+		return errors.New("更新日時が不正です")
 	}
 	return nil
 }
@@ -52,14 +44,14 @@ func (a CreateArticleInput) Validate() error {
 
 func validateContent(title string, body string, categories []category.Category) error {
 	if strings.TrimSpace(title) == "" {
-		return fmt.Errorf("%w: %w", errInvalidArticle, errEmptyTitle)
+		return errors.New("記事タイトルは必須です")
 	}
 	if strings.TrimSpace(body) == "" {
-		return fmt.Errorf("%w: %w", errInvalidArticle, errEmptyBody)
+		return errors.New("記事本文は必須です")
 	}
 	for _, category := range categories {
 		if err := category.Validate(); err != nil {
-			return fmt.Errorf("%w: %w", errInvalidArticle, err)
+			return err
 		}
 	}
 	return nil

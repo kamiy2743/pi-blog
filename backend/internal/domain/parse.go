@@ -5,11 +5,9 @@ import (
 	"strconv"
 )
 
-var errEmptyString = errors.New("文字列が空です")
-
 func ParseUint32(s string) (uint32, error) {
 	if s == "" {
-		return 0, errEmptyString
+		return 0, errors.New("文字列が空です")
 	}
 
 	id, err := strconv.ParseUint(s, 10, 32)
