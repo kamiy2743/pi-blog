@@ -7,27 +7,18 @@
   export let categories: Category[] = []
   export let validationErrors: Record<string, string> = {}
 
-  let categoryNames: Record<number, string> = {}
+  let categoryDrafts: Record<number, string> = {}
   let deleteTarget: Category | null = null
 
-  function categoryName(category: Category): string {
-    return categoryNames[category.id] ?? category.name
-  }
+  categories.forEach((category) => {
+    categoryDrafts[category.id] = category.name
+  })
 
-  function updateCategoryName(category: Category, event: Event) {
-    const target = event.currentTarget
-    if (!(target instanceof HTMLInputElement)) {
-      return
+  function updateCategoryDraft(categoryId: number, value: string) {
+    categoryDrafts = {
+      ...categoryDrafts,
+      [categoryId]: value,
     }
-
-    categoryNames = {
-      ...categoryNames,
-      [category.id]: target.value,
-    }
-  }
-
-  function isCategoryChanged(category: Category): boolean {
-    return categoryName(category) !== category.name
   }
 
   function openDeleteModal(category: Category) {
@@ -100,9 +91,14 @@
                         class="w-full rounded-lg border px-3 py-2 text-sm"
                         name="name"
                         type="text"
-                        value={categoryName(category)}
+                        value={categoryDrafts[category.id]}
                         autocomplete="off"
-                        on:input={(event) => updateCategoryName(category, event)}
+                        on:input={(event) => {
+                          const target = event.currentTarget
+                          if (target instanceof HTMLInputElement) {
+                            updateCategoryDraft(category.id, target.value)
+                          }
+                        }}
                       />
                     </form>
                     {#if validationErrors.name}
@@ -113,11 +109,11 @@
                     <div class="flex gap-2">
                       <button
                         class={`rounded-lg border px-4 py-2 text-sm font-semibold disabled:cursor-not-allowed disabled:opacity-40 ${
-                          isCategoryChanged(category) ? 'admin-button' : 'admin-secondary-button'
+                          categoryDrafts[category.id] !== category.name ? 'admin-button' : 'admin-secondary-button'
                         }`}
                         type="submit"
                         form={`category-form-${category.id}`}
-                        disabled={!isCategoryChanged(category)}
+                        disabled={categoryDrafts[category.id] === category.name}
                       >
                         更新
                       </button>
