@@ -88,6 +88,7 @@ func respondActionResult(
 	inertiaApp *gonertia.Inertia,
 	result handlerresult.ActionResult,
 ) {
+	saveFlash(r, &session.Flash{Success: result.SuccessMessage})
 	inertiaApp.Redirect(w, r, result.RedirectTo, http.StatusSeeOther)
 }
 

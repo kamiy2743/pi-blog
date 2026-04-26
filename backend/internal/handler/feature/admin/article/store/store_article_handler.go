@@ -13,5 +13,5 @@ func NewHandler() *Handler {
 }
 
 func (h *Handler) Handle(r *http.Request) (handlerresult.ActionResult, error) {
-	return handlerresult.Redirect("/admin"), nil
+	return handlerresult.Redirect("/admin", "Success"), nil
 }

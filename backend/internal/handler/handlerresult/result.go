@@ -17,11 +17,13 @@ func Page(component string, props gonertia.Props) PageResult {
 
 // Action
 type ActionResult struct {
-	RedirectTo string
+	RedirectTo     string
+	SuccessMessage string
 }
 
-func Redirect(redirectTo string) ActionResult {
+func Redirect(to string, successMessage string) ActionResult {
 	return ActionResult{
-		RedirectTo: redirectTo,
+		RedirectTo:     to,
+		SuccessMessage: successMessage,
 	}
 }
