@@ -14,10 +14,7 @@ func ApplyOrder(query *ent.CategoryQuery, orderBy domainCategory.OrderBy) error 
 	}
 	switch orderBy {
 	case domainCategory.OrderByNameAsc:
-		query.Order(
-			entCategory.ByName(),
-			entCategory.ByID(),
-		)
+		query.Order(entCategory.ByName())
 		return nil
 	default:
 		return fmt.Errorf("未対応のカテゴリの並び順です: %s", orderBy)
