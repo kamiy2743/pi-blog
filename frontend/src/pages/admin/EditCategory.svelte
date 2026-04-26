@@ -72,57 +72,72 @@
       </form>
     </div>
 
-    <div class="admin-panel mt-6 rounded-lg border px-6 py-8 sm:px-8">
-      <h2 class="text-xl font-semibold">登録済みカテゴリ</h2>
+    <div class="admin-panel mt-6 rounded-lg border px-4 py-5 sm:px-6">
+      <div class="flex items-end justify-between gap-3 border-b border-[var(--admin-border)] px-2 pb-3">
+        <div>
+          <h2 class="text-xl font-semibold">登録済みカテゴリ</h2>
+          <p class="admin-copy mt-1 text-sm">{categories.length} 件</p>
+        </div>
+      </div>
 
       {#if categories.length === 0}
         <p class="admin-copy mt-4">カテゴリはまだありません。</p>
       {:else}
-        <div class="mt-5 space-y-4">
-          {#each categories as category}
-            <form
-              class="grid gap-3 rounded-lg border border-[var(--admin-border)] p-4 sm:grid-cols-[minmax(0,1fr)_auto]"
-              method="post"
-              action={`/admin/category/${category.id}`}
-            >
-              <label class="block">
-                <span class="text-sm font-semibold">カテゴリ名</span>
-                <input
-                  class="mt-2 w-full rounded-lg border px-4 py-3"
-                  name="name"
-                  type="text"
-                  value={categoryName(category)}
-                  autocomplete="off"
-                  on:input={(event) => updateCategoryName(category, event)}
-                />
-                {#if validationErrors.name}
-                  <p class="mt-2 text-sm font-semibold text-red-600">{validationErrors.name}</p>
-                {/if}
-              </label>
-              <div class="flex flex-wrap gap-3 self-end">
-                <button
-                  class={`rounded-lg border px-5 py-3 text-sm font-semibold disabled:cursor-not-allowed disabled:opacity-40 ${
-                    isCategoryChanged(category) ? 'admin-button' : 'admin-secondary-button'
-                  }`}
-                  type="submit"
-                  disabled={!isCategoryChanged(category)}
-                >
-                  更新
-                </button>
-                <button
-                  class="admin-secondary-button rounded-lg border px-5 py-3 text-sm font-semibold"
-                  type="button"
-                  on:click={() => openDeleteModal(category)}
-                >
-                  削除
-                </button>
-              </div>
-            </form>
-          {/each}
+        <div class="admin-panel mt-3 overflow-x-auto rounded-lg border">
+          <table class="min-w-full border-collapse text-left text-sm">
+            <thead>
+              <tr class="admin-table-head">
+                <th class="px-4 py-3 font-semibold">カテゴリ名</th>
+                <th class="whitespace-nowrap px-4 py-3 font-semibold">操作</th>
+              </tr>
+            </thead>
+            <tbody>
+              {#each categories as category}
+                <tr class="admin-table-row">
+                  <td class="px-4 py-3">
+                    <form id={`category-form-${category.id}`} method="post" action={`/admin/category/${category.id}`}>
+                      <input
+                        class="w-full rounded-lg border px-3 py-2 text-sm"
+                        name="name"
+                        type="text"
+                        value={categoryName(category)}
+                        autocomplete="off"
+                        on:input={(event) => updateCategoryName(category, event)}
+                      />
+                    </form>
+                    {#if validationErrors.name}
+                      <p class="mt-1 text-xs font-semibold text-red-600">{validationErrors.name}</p>
+                    {/if}
+                  </td>
+                  <td class="whitespace-nowrap px-4 py-3">
+                    <div class="flex gap-2">
+                      <button
+                        class={`rounded-lg border px-4 py-2 text-sm font-semibold disabled:cursor-not-allowed disabled:opacity-40 ${
+                          isCategoryChanged(category) ? 'admin-button' : 'admin-secondary-button'
+                        }`}
+                        type="submit"
+                        form={`category-form-${category.id}`}
+                        disabled={!isCategoryChanged(category)}
+                      >
+                        更新
+                      </button>
+                      <button
+                        class="admin-secondary-button rounded-lg border px-4 py-2 text-sm font-semibold"
+                        type="button"
+                        on:click={() => openDeleteModal(category)}
+                      >
+                        削除
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              {/each}
+            </tbody>
+          </table>
         </div>
       {/if}
 
-      <a class="admin-secondary-button mt-6 inline-flex items-center justify-center rounded-lg border px-5 py-3 text-sm font-semibold" href="/admin">
+      <a class="admin-secondary-button mt-5 inline-flex items-center justify-center rounded-lg border px-5 py-3 text-sm font-semibold" href="/admin">
         戻る
       </a>
     </div>
