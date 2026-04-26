@@ -57,6 +57,8 @@ httpServer.on('request', async (request, response) => {
   }
 })
 
+const port = Number.parseInt(process.env.PORT, 10)
+
 httpServer.listen(port, () => {
   console.log(`Vite dev server with SSR listening on :${port}`)
 })
