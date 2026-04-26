@@ -5,22 +5,13 @@ import (
 )
 
 type ValidationError struct {
-	Field   string
-	Message string
+	Messages map[string]string
 }
 
 func (e ValidationError) Error() string {
-	return fmt.Sprintf(
-		"field=%q message=%q",
-		e.Field,
-		e.Message,
-	)
+	return fmt.Sprintf("validation error: %+v", e.Messages)
 }
 
-func ValidationErrorsToMap(validationErrors []ValidationError) map[string]string {
-	errorsMap := make(map[string]string, len(validationErrors))
-	for _, validationError := range validationErrors {
-		errorsMap[validationError.Field] = validationError.Message
-	}
-	return errorsMap
+func (e *ValidationError) IsEmpty() bool {
+	return e == nil || len(e.Messages) == 0
 }

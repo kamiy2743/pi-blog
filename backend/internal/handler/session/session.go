@@ -27,8 +27,8 @@ type SessionManager struct {
 }
 
 type SessionPayload struct {
-	ValidationErrors map[string]string
-	Flash            *Flash
+	ValidationError *handlererror.ValidationError
+	Flash           *Flash
 }
 
 type contextKey struct{}
@@ -61,12 +61,12 @@ func SessionManagerFromContext(ctx context.Context) (*SessionManager, bool) {
 	return manager, ok
 }
 
-func (m *SessionManager) SaveValidationErrors(r *http.Request, validationErrors []handlererror.ValidationError) {
-	if len(validationErrors) == 0 {
+func (m *SessionManager) SaveValidationError(r *http.Request, validationError *handlererror.ValidationError) {
+	if validationError == nil || validationError.IsEmpty() {
 		return
 	}
 
-	validationErrorsJSON, err := json.Marshal(handlererror.ValidationErrorsToMap(validationErrors))
+	validationErrorsJSON, err := json.Marshal(validationError.Messages)
 	if err != nil {
 		return
 	}
@@ -87,10 +87,12 @@ func (m *SessionManager) SaveFlash(r *http.Request, flash *Flash) {
 }
 
 func (m *SessionManager) PopSessionPayload(r *http.Request) SessionPayload {
-	validationErrors := map[string]string{}
+	var validationError *handlererror.ValidationError
 	validationErrorsJSON := m.manager.PopString(r.Context(), validationErrorsKey)
 	if validationErrorsJSON != "" {
+		validationErrors := map[string]string{}
 		json.Unmarshal([]byte(validationErrorsJSON), &validationErrors)
+		validationError = &handlererror.ValidationError{Messages: validationErrors}
 	}
 
 	flash := &Flash{
@@ -102,7 +104,7 @@ func (m *SessionManager) PopSessionPayload(r *http.Request) SessionPayload {
 	}
 
 	return SessionPayload{
-		ValidationErrors: validationErrors,
-		Flash:            flash,
+		ValidationError: validationError,
+		Flash:           flash,
 	}
 }
