@@ -3,7 +3,6 @@ package edit
 import (
 	"net/http"
 
-	"blog/internal/handler/handlererror"
 	"blog/internal/handler/handlerresult"
 
 	"github.com/romsar/gonertia/v3"
@@ -15,7 +14,7 @@ func NewHandler() *Handler {
 	return &Handler{}
 }
 
-func (h *Handler) Handle(r *http.Request) (handlerresult.HandlerResult, *handlererror.DisplayableError) {
+func (h *Handler) Handle(r *http.Request) (handlerresult.HandlerResult, error) {
 	return handlerresult.Page("admin/EditArticle", gonertia.Props{
 		"articleId": r.PathValue("articleId"),
 	}), nil

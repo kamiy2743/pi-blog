@@ -3,7 +3,6 @@ package edit
 import (
 	"net/http"
 
-	"blog/internal/handler/handlererror"
 	"blog/internal/handler/handlerresult"
 )
 
@@ -17,7 +16,7 @@ func NewHandler(u *Usecase) *Handler {
 	}
 }
 
-func (h *Handler) Handle(r *http.Request) (handlerresult.HandlerResult, *handlererror.DisplayableError) {
+func (h *Handler) Handle(r *http.Request) (handlerresult.HandlerResult, error) {
 	result, err := h.usecase.run(r.Context())
 	if err != nil {
 		return nil, err

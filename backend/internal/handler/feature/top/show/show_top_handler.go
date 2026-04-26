@@ -17,7 +17,7 @@ func NewHandler(u *Usecase) *Handler {
 	}
 }
 
-func (h *Handler) Handle(r *http.Request) (handlerresult.HandlerResult, *handlererror.DisplayableError) {
+func (h *Handler) Handle(r *http.Request) (handlerresult.HandlerResult, error) {
 	if r.URL.Path != "/" {
 		return nil, &handlererror.DisplayableError{
 			StatusCode:  http.StatusNotFound,

@@ -18,7 +18,7 @@ func NewHandler(u *Usecase) *Handler {
 	}
 }
 
-func (h *Handler) Handle(r *http.Request) (handlerresult.HandlerResult, *handlererror.DisplayableError) {
+func (h *Handler) Handle(r *http.Request) (handlerresult.HandlerResult, error) {
 	articleID, parseErr := article.ParseArticleID(r.PathValue("articleId"))
 	if parseErr != nil {
 		return nil, &handlererror.DisplayableError{
