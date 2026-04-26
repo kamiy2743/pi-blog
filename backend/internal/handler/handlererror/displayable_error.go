@@ -1,6 +1,9 @@
 package handlererror
 
-import "fmt"
+import (
+	"errors"
+	"fmt"
+)
 
 type DisplayableError struct {
 	StatusCode  int
@@ -17,4 +20,12 @@ func (e DisplayableError) Error() string {
 		e.Description,
 		e.Err,
 	)
+}
+
+func AsDisplayableError(err error) (*DisplayableError, bool) {
+	var displayableError *DisplayableError
+	if !errors.As(err, &displayableError) {
+		return nil, false
+	}
+	return displayableError, true
 }

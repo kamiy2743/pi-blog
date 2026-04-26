@@ -1,6 +1,7 @@
 package handlererror
 
 import (
+	"errors"
 	"fmt"
 )
 
@@ -14,4 +15,12 @@ func (e ValidationError) Error() string {
 
 func (e *ValidationError) IsEmpty() bool {
 	return e == nil || len(e.Messages) == 0
+}
+
+func AsValidationError(err error) (*ValidationError, bool) {
+	var validationError *ValidationError
+	if !errors.As(err, &validationError) {
+		return nil, false
+	}
+	return validationError, true
 }

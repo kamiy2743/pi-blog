@@ -17,13 +17,13 @@ type request struct {
 	Page        string
 }
 
-func toInput(r *http.Request) (input, []handlererror.ValidationError, *handlererror.DisplayableError) {
+func toInput(r *http.Request) (input, *handlererror.ValidationError) {
 	req := request{
 		Title:       r.URL.Query().Get("title"),
 		CategoryIDs: r.URL.Query()["categoryId"],
 		Page:        r.URL.Query().Get("page"),
 	}
-	validationErrs := validator.Validate(req, toValidationError)
+	validationError := validator.Validate(req, getValidationMessage)
 
 	categoryIDs := parseCategoryIDs(req.CategoryIDs)
 	page := parsePage(req.Page)
@@ -33,7 +33,7 @@ func toInput(r *http.Request) (input, []handlererror.ValidationError, *handlerer
 		CategoryIDs: categoryIDs,
 		Page:        page,
 		PerPage:     perPage,
-	}, validationErrs, nil
+	}, validationError
 }
 
 func parseCategoryIDs(categoryIDStrs []string) []category.CategoryID {
@@ -59,15 +59,12 @@ func parsePage(pageStr string) int {
 	return page
 }
 
-func toValidationError(field, tag string) *handlererror.ValidationError {
+func getValidationMessage(field, tag string) string {
 	switch field {
 	case "title":
 		if tag == "max" {
-			return &handlererror.ValidationError{
-				Field:   field,
-				Message: "タイトルは255文字以下で入力してください。",
-			}
+			return "タイトルは255文字以下で入力してください。"
 		}
 	}
-	return nil
+	return "入力内容が不正です。"
 }

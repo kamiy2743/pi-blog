@@ -1,95 +1,27 @@
 package handlerresult
 
-import (
-	"net/http"
+import "github.com/romsar/gonertia/v3"
 
-	"blog/internal/handler/handlererror"
-	"blog/internal/handler/session"
-
-	"github.com/romsar/gonertia/v3"
-)
-
-type HandlerResult interface {
-	isResult()
-}
-
+// Page
 type PageResult struct {
-	Component        string
-	Props            gonertia.Props
-	StatusCode       int
-	ValidationErrors []handlererror.ValidationError
-	Flash            *session.Flash
+	Component string
+	Props     gonertia.Props
 }
 
-func (PageResult) isResult() {}
-
-type RedirectResult struct {
-	To    string
-	Flash *session.Flash
-}
-
-func (RedirectResult) isResult() {}
-
-type RedirectBackResult struct {
-	ValidationErrors []handlererror.ValidationError
-	Flash            *session.Flash
-}
-
-func (RedirectBackResult) isResult() {}
-
-type PageOptions struct {
-	StatusCode       int
-	ValidationErrors []handlererror.ValidationError
-	Flash            *session.Flash
-}
-
-type RedirectOptions struct {
-	Flash *session.Flash
-}
-
-type RedirectBackOptions struct {
-	ValidationErrors []handlererror.ValidationError
-	Flash            *session.Flash
-}
-
-func Page(component string, props gonertia.Props, options ...PageOptions) HandlerResult {
-	var option PageOptions
-	if len(options) > 0 {
-		option = options[0]
-	}
-	if option.StatusCode == 0 {
-		option.StatusCode = http.StatusOK
-	}
-
+func Page(component string, props gonertia.Props) PageResult {
 	return PageResult{
-		Component:        component,
-		Props:            props,
-		StatusCode:       option.StatusCode,
-		ValidationErrors: option.ValidationErrors,
-		Flash:            option.Flash,
+		Component: component,
+		Props:     props,
 	}
 }
 
-func Redirect(to string, options ...RedirectOptions) HandlerResult {
-	var option RedirectOptions
-	if len(options) > 0 {
-		option = options[0]
-	}
-
-	return RedirectResult{
-		To:    to,
-		Flash: option.Flash,
-	}
+// Action
+type ActionResult struct {
+	RedirectTo string
 }
 
-func RedirectBack(options ...RedirectBackOptions) HandlerResult {
-	var option RedirectBackOptions
-	if len(options) > 0 {
-		option = options[0]
-	}
-
-	return RedirectBackResult{
-		ValidationErrors: option.ValidationErrors,
-		Flash:            option.Flash,
+func Redirect(redirectTo string) ActionResult {
+	return ActionResult{
+		RedirectTo: redirectTo,
 	}
 }

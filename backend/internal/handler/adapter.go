@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"errors"
 	"log"
 	"net/http"
 
@@ -15,39 +14,33 @@ import (
 
 func InertiaPage(
 	inertiaApp *gonertia.Inertia,
-	handle func(*http.Request) (handlerresult.HandlerResult, *handlererror.DisplayableError),
+	handle func(*http.Request) (handlerresult.PageResult, error),
 ) http.Handler {
 	return inertiaApp.Middleware(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		result, err := handle(r)
 		if err != nil {
-			if pageResult, ok := result.(handlerresult.PageResult); ok {
-				respondPartialPageError(w, r, inertiaApp, pageResult, err)
+			if validationError, ok := handlererror.AsValidationError(err); ok {
+				respondPageResult(w, r, inertiaApp, result, validationError, nil)
 				return
+			}
+			if inertia.IsPartialReload(r, result.Component) {
+				if displayableError, ok := handlererror.AsDisplayableError(err); ok {
+					respondPageResult(w, r, inertiaApp, result, &handlererror.ValidationError{}, &session.Flash{
+						Error: displayableError.Message,
+					})
+					return
+				}
 			}
 			respondPageError(w, r, inertiaApp, err)
 			return
 		}
-		if result == nil {
-			respondPageError(w, r, inertiaApp, errors.New("result が nil です"))
-			return
-		}
-
-		switch typedResult := result.(type) {
-		case handlerresult.PageResult:
-			respondPageResult(w, r, inertiaApp, typedResult)
-		case handlerresult.RedirectResult:
-			respondRedirectResult(w, r, inertiaApp, typedResult)
-		case handlerresult.RedirectBackResult:
-			respondRedirectBackResult(w, r, inertiaApp, typedResult)
-		default:
-			respondPageError(w, r, inertiaApp, errors.New("未知の result 型です"))
-		}
+		respondPageResult(w, r, inertiaApp, result, nil, nil)
 	}))
 }
 
 func InertiaAction(
 	inertiaApp *gonertia.Inertia,
-	handle func(*http.Request) (handlerresult.HandlerResult, *handlererror.DisplayableError),
+	handle func(*http.Request) (handlerresult.ActionResult, error),
 ) http.Handler {
 	return inertiaApp.Middleware(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		result, err := handle(r)
@@ -55,19 +48,7 @@ func InertiaAction(
 			respondActionError(w, r, inertiaApp, err)
 			return
 		}
-		if result == nil {
-			respondActionError(w, r, inertiaApp, errors.New("result が nil です"))
-			return
-		}
-
-		switch typedResult := result.(type) {
-		case handlerresult.RedirectResult:
-			respondRedirectResult(w, r, inertiaApp, typedResult)
-		case handlerresult.RedirectBackResult:
-			respondRedirectBackResult(w, r, inertiaApp, typedResult)
-		default:
-			respondActionError(w, r, inertiaApp, errors.New("未知の result 型です"))
-		}
+		respondActionResult(w, r, inertiaApp, result)
 	}))
 }
 
@@ -76,6 +57,8 @@ func respondPageResult(
 	r *http.Request,
 	inertiaApp *gonertia.Inertia,
 	result handlerresult.PageResult,
+	resultValidationError *handlererror.ValidationError,
+	resultFlash *session.Flash,
 ) {
 	props := result.Props
 	if props == nil {
@@ -83,37 +66,29 @@ func respondPageResult(
 	}
 
 	sessionPayload := popSessionPayload(r)
-	validationErrors := selectValidationErrors(
-		handlererror.ValidationErrorsToMap(result.ValidationErrors),
-		sessionPayload.ValidationErrors,
+	validationError := selectValidationError(
+		resultValidationError,
+		sessionPayload.ValidationError,
 	)
-	flash := selectFlash(result.Flash, sessionPayload.Flash)
+	flash := selectFlash(resultFlash, sessionPayload.Flash)
 
-	props["validationErrors"] = validationErrors
-	props["flash"] = session.FlashToMap(flash)
+	if validationError != nil && !validationError.IsEmpty() {
+		props["validationErrors"] = validationError.Messages
+	}
+	if flash != nil && !flash.IsEmpty() {
+		props["flash"] = session.FlashToMap(flash)
+	}
 
-	inertia.Render(w, r, inertiaApp, result.StatusCode, result.Component, props)
+	inertia.Render(w, r, inertiaApp, http.StatusOK, result.Component, props)
 }
 
-func respondRedirectResult(
+func respondActionResult(
 	w http.ResponseWriter,
 	r *http.Request,
 	inertiaApp *gonertia.Inertia,
-	result handlerresult.RedirectResult,
+	result handlerresult.ActionResult,
 ) {
-	saveFlash(r, result.Flash)
-	inertiaApp.Redirect(w, r, result.To, http.StatusSeeOther)
-}
-
-func respondRedirectBackResult(
-	w http.ResponseWriter,
-	r *http.Request,
-	inertiaApp *gonertia.Inertia,
-	result handlerresult.RedirectBackResult,
-) {
-	saveValidationErrors(r, result.ValidationErrors)
-	saveFlash(r, result.Flash)
-	inertiaApp.Redirect(w, r, getRedirectBackURL(r), http.StatusSeeOther)
+	inertiaApp.Redirect(w, r, result.RedirectTo, http.StatusSeeOther)
 }
 
 func respondPageError(
@@ -122,8 +97,7 @@ func respondPageError(
 	inertiaApp *gonertia.Inertia,
 	err error,
 ) {
-	var displayableError *handlererror.DisplayableError
-	if errors.As(err, &displayableError) {
+	if displayableError, ok := handlererror.AsDisplayableError(err); ok {
 		inertia.RenderError(w, r, inertiaApp, *displayableError)
 		return
 	}
@@ -137,49 +111,43 @@ func respondPageError(
 	})
 }
 
-func respondPartialPageError(
-	w http.ResponseWriter,
-	r *http.Request,
-	inertiaApp *gonertia.Inertia,
-	result handlerresult.PageResult,
-	err error,
-) {
-	var displayableError *handlererror.DisplayableError
-	if errors.As(err, &displayableError) && inertia.IsPartialReload(r, result.Component) {
-		result.Flash = &session.Flash{Error: displayableError.Message}
-		respondPageResult(w, r, inertiaApp, result)
-		return
-	}
-
-	respondPageError(w, r, inertiaApp, err)
-}
-
 func respondActionError(
 	w http.ResponseWriter,
 	r *http.Request,
 	inertiaApp *gonertia.Inertia,
 	err error,
 ) {
-	var displayableError *handlererror.DisplayableError
-	if errors.As(err, &displayableError) {
-		respondRedirectBackResult(w, r, inertiaApp, handlerresult.RedirectBackResult{
-			Flash: &session.Flash{Error: displayableError.Message},
-		})
+	if validationError, ok := handlererror.AsValidationError(err); ok {
+		saveValidationError(r, validationError)
+		respondRedirectBack(w, r, inertiaApp, nil)
+		return
+	}
+
+	if displayableError, ok := handlererror.AsDisplayableError(err); ok {
+		respondRedirectBack(w, r, inertiaApp, &session.Flash{Error: displayableError.Message})
 		return
 	}
 
 	log.Print(err)
-	respondRedirectBackResult(w, r, inertiaApp, handlerresult.RedirectBackResult{
-		Flash: &session.Flash{Error: "エラーが発生しました。"},
-	})
+	respondRedirectBack(w, r, inertiaApp, &session.Flash{Error: "エラーが発生しました。"})
 }
 
-func saveValidationErrors(r *http.Request, validationErrors []handlererror.ValidationError) {
+func respondRedirectBack(
+	w http.ResponseWriter,
+	r *http.Request,
+	inertiaApp *gonertia.Inertia,
+	flash *session.Flash,
+) {
+	saveFlash(r, flash)
+	inertiaApp.Redirect(w, r, getRedirectBackURL(r), http.StatusSeeOther)
+}
+
+func saveValidationError(r *http.Request, validationError *handlererror.ValidationError) {
 	manager, ok := session.SessionManagerFromContext(r.Context())
 	if !ok {
 		return
 	}
-	manager.SaveValidationErrors(r, validationErrors)
+	manager.SaveValidationError(r, validationError)
 }
 
 func saveFlash(r *http.Request, flash *session.Flash) {
@@ -206,17 +174,17 @@ func getRedirectBackURL(r *http.Request) string {
 	return "/"
 }
 
-func selectValidationErrors(
-	resultValidationErrors map[string]string,
-	sessionValidationErrors map[string]string,
-) map[string]string {
-	if len(resultValidationErrors) > 0 {
-		return resultValidationErrors
+func selectValidationError(
+	resultValidationError *handlererror.ValidationError,
+	sessionValidationError *handlererror.ValidationError,
+) *handlererror.ValidationError {
+	if resultValidationError != nil && !resultValidationError.IsEmpty() {
+		return resultValidationError
 	}
-	if len(sessionValidationErrors) > 0 {
-		return sessionValidationErrors
+	if sessionValidationError != nil && !sessionValidationError.IsEmpty() {
+		return sessionValidationError
 	}
-	return map[string]string{}
+	return &handlererror.ValidationError{Messages: map[string]string{}}
 }
 
 func selectFlash(

@@ -22,34 +22,27 @@ func NewHandler(u *Usecase) *Handler {
 	}
 }
 
-func (h *Handler) Handle(r *http.Request) (handlerresult.HandlerResult, *handlererror.DisplayableError) {
-	input, validationErrors, err := toInput(r)
-	if err != nil {
-		return nil, err
-	}
-
+func (h *Handler) Handle(r *http.Request) (handlerresult.PageResult, error) {
+	input, validationError := toInput(r)
 	props := gonertia.Props{}
-	options := handlerresult.PageOptions{
-		ValidationErrors: validationErrors,
-	}
 
 	if inertia.ShouldIncludeProp(r, component, "initial") {
 		result, err := h.usecase.runInitial(r.Context())
 		if err != nil {
-			return nil, err
+			return handlerresult.PageResult{}, err
 		}
 		props["initial"] = formatInitial(result)
 	}
 
 	if inertia.ShouldIncludeProp(r, component, "partialSearch") {
-		partialSearchProps, err := h.handlePartialSearch(r, input, len(validationErrors) > 0)
+		partialSearchProps, err := h.handlePartialSearch(r, input, validationError != nil)
 		props["partialSearch"] = partialSearchProps
 		if err != nil {
-			return handlerresult.Page(component, props, options), err
+			return handlerresult.Page(component, props), err
 		}
 	}
 
-	return handlerresult.Page(component, props, options), nil
+	return handlerresult.Page(component, props), validationError
 }
 
 func (h *Handler) handlePartialSearch(
