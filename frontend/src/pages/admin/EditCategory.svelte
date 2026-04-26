@@ -137,37 +137,40 @@
         戻る
       </a>
     </div>
+    {#if deleteTarget}
+      <div
+        class="fixed inset-0 z-50 bg-black/50"
+        aria-hidden="true"
+      ></div>
+      <div
+        class="fixed inset-0 z-[60] flex items-center justify-center px-6"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="delete-category-title"
+      >
+        <div class="admin-panel w-full max-w-md rounded-lg border bg-[var(--admin-surface)] px-6 py-6 shadow-2xl">
+          <h2 id="delete-category-title" class="text-xl font-semibold">カテゴリを削除しますか</h2>
+          <p class="admin-copy mt-3 text-sm leading-6">
+            {deleteTarget.name} を削除します。
+          </p>
+
+          <form class="mt-6 flex flex-wrap gap-3" method="post" action={`/admin/category/${deleteTarget.id}/delete`}>
+            <button
+              class="admin-button rounded-lg px-5 py-3 text-sm font-semibold"
+              type="submit"
+            >
+              削除
+            </button>
+            <button
+              class="admin-secondary-button rounded-lg border px-5 py-3 text-sm font-semibold"
+              type="button"
+              on:click={closeDeleteModal}
+            >
+              キャンセル
+            </button>
+          </form>
+        </div>
+      </div>
+    {/if}
   </div>
 </div>
-
-{#if deleteTarget}
-  <div
-    class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-6"
-    role="dialog"
-    aria-modal="true"
-    aria-labelledby="delete-category-title"
-  >
-    <div class="admin-panel w-full max-w-md rounded-lg border px-6 py-6">
-      <h2 id="delete-category-title" class="text-xl font-semibold">カテゴリを削除しますか</h2>
-      <p class="admin-copy mt-3 text-sm leading-6">
-        {deleteTarget.name} を削除します。
-      </p>
-
-      <form class="mt-6 flex flex-wrap gap-3" method="post" action={`/admin/category/${deleteTarget.id}/delete`}>
-        <button
-          class="admin-button rounded-lg px-5 py-3 text-sm font-semibold"
-          type="submit"
-        >
-          削除
-        </button>
-        <button
-          class="admin-secondary-button rounded-lg border px-5 py-3 text-sm font-semibold"
-          type="button"
-          on:click={closeDeleteModal}
-        >
-          キャンセル
-        </button>
-      </form>
-    </div>
-  </div>
-{/if}
