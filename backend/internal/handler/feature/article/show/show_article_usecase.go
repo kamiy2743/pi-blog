@@ -27,17 +27,15 @@ func (u *Usecase) run(ctx context.Context, articleID article.ArticleID) (result,
 	})
 	if err != nil {
 		return result{}, &handlererror.DisplayableError{
-			StatusCode:  500,
-			Message:     "記事の読み込みに失敗しました。",
-			Description: "時間をおいてから、もう一度お試しください。",
-			Err:         err,
+			StatusCode: 500,
+			Message:    "記事の読み込みに失敗しました。",
+			Err:        err,
 		}
 	}
 	if len(articles) == 0 {
 		return result{}, &handlererror.DisplayableError{
-			StatusCode:  404,
-			Message:     "記事が見つかりませんでした。",
-			Description: "URL が変わったか、公開が終了した可能性があります。",
+			StatusCode: 404,
+			Message:    "記事が見つかりませんでした。",
 		}
 	}
 

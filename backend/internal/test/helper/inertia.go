@@ -108,15 +108,13 @@ func (response TestInertiaResponse) AssertError(
 	t *testing.T,
 	expectedStatusCode int,
 	expectedMessage string,
-	expectedDescription string,
 ) {
 	t.Helper()
 
 	response.AssertResponse(t, expectedStatusCode, "ErrorPage", gonertia.Props{
-		"statusCode":  float64(expectedStatusCode),
-		"statusText":  http.StatusText(expectedStatusCode),
-		"message":     expectedMessage,
-		"description": expectedDescription,
+		"statusCode": float64(expectedStatusCode),
+		"statusText": http.StatusText(expectedStatusCode),
+		"message":    expectedMessage,
 	})
 }
 

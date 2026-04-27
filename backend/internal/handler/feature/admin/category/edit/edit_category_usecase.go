@@ -25,10 +25,9 @@ func (u *Usecase) run(ctx context.Context) (result, *handlererror.DisplayableErr
 	categories, err := u.categoryRepository.All(ctx, category.OrderByNameAsc)
 	if err != nil {
 		return result{}, &handlererror.DisplayableError{
-			StatusCode:  500,
-			Message:     "カテゴリの読み込みに失敗しました。",
-			Description: "時間をおいてから、もう一度お試しください。",
-			Err:         err,
+			StatusCode: 500,
+			Message:    "カテゴリの読み込みに失敗しました。",
+			Err:        err,
 		}
 	}
 

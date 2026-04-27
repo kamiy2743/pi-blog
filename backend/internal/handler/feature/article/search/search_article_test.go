@@ -253,7 +253,7 @@ func Testカテゴリの取得に失敗した場合は500(t *testing.T) {
 	setUpRecords(t, initResult.EntClient, 4)
 
 	res := callEndpoint(t, initResult.Server, queryParams{})
-	res.AssertError(t, 500, "カテゴリの読み込みに失敗しました。", "時間をおいてから、もう一度お試しください。")
+	res.AssertError(t, 500, "カテゴリの読み込みに失敗しました。")
 }
 
 func Test記事の取得に失敗した場合は500(t *testing.T) {
@@ -267,7 +267,7 @@ func Test記事の取得に失敗した場合は500(t *testing.T) {
 	setUpRecords(t, initResult.EntClient, 4)
 
 	res := callEndpoint(t, initResult.Server, queryParams{})
-	res.AssertError(t, 500, "記事の読み込みに失敗しました。", "時間をおいてから、もう一度お試しください。")
+	res.AssertError(t, 500, "記事の読み込みに失敗しました。")
 }
 
 func TestPartialReloadで記事の取得に失敗した場合はフラッシュメッセージを表示する(t *testing.T) {

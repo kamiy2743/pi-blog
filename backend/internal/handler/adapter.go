@@ -102,19 +102,17 @@ func respondPageError(
 ) {
 	if displayableError, ok := handlererror.AsDisplayableError(err); ok {
 		inertia.Render(w, r, inertiaApp, displayableError.StatusCode, "ErrorPage", gonertia.Props{
-			"statusCode":  displayableError.StatusCode,
-			"statusText":  http.StatusText(displayableError.StatusCode),
-			"message":     displayableError.Message,
-			"description": displayableError.Description,
+			"statusCode": displayableError.StatusCode,
+			"statusText": http.StatusText(displayableError.StatusCode),
+			"message":    displayableError.Message,
 		})
 		return
 	}
 
 	inertia.Render(w, r, inertiaApp, http.StatusInternalServerError, "ErrorPage", gonertia.Props{
-		"statusCode":  http.StatusInternalServerError,
-		"statusText":  http.StatusText(http.StatusInternalServerError),
-		"message":     "エラーが発生しました。",
-		"description": "時間をおいてから、もう一度お試しください。",
+		"statusCode": http.StatusInternalServerError,
+		"statusText": http.StatusText(http.StatusInternalServerError),
+		"message":    "エラーが発生しました。",
 	})
 }
 

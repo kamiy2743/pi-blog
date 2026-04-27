@@ -47,7 +47,7 @@ func Test記事IDが不正な場合は404(t *testing.T) {
 		Path:   "/article/invalid",
 	})
 
-	res.AssertError(t, 404, "ページが見つかりません。", "URL が変わったか、公開が終了した可能性があります。")
+	res.AssertError(t, 404, "ページが見つかりません。")
 }
 
 func Test記事が見つからない場合は404(t *testing.T) {
@@ -55,7 +55,7 @@ func Test記事が見つからない場合は404(t *testing.T) {
 
 	res := callEndpoint(t, initResult.Server, 999)
 
-	res.AssertError(t, 404, "記事が見つかりませんでした。", "URL が変わったか、公開が終了した可能性があります。")
+	res.AssertError(t, 404, "記事が見つかりませんでした。")
 }
 
 func Test非公開記事は404(t *testing.T) {
@@ -64,7 +64,7 @@ func Test非公開記事は404(t *testing.T) {
 
 	res := callEndpoint(t, initResult.Server, article.ID)
 
-	res.AssertError(t, 404, "記事が見つかりませんでした。", "URL が変わったか、公開が終了した可能性があります。")
+	res.AssertError(t, 404, "記事が見つかりませんでした。")
 }
 
 func Test記事の取得に失敗した場合は500(t *testing.T) {
@@ -79,7 +79,7 @@ func Test記事の取得に失敗した場合は500(t *testing.T) {
 
 	res := callEndpoint(t, initResult.Server, 1)
 
-	res.AssertError(t, 500, "記事の読み込みに失敗しました。", "時間をおいてから、もう一度お試しください。")
+	res.AssertError(t, 500, "記事の読み込みに失敗しました。")
 }
 
 func setUpRecord(t *testing.T, entClient *ent.Client, isPublished bool) *ent.Article {

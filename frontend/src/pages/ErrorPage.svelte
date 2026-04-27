@@ -8,7 +8,6 @@
   export let statusCode: number
   export let statusText: string
   export let message: string
-  export let description: string
 
   function reloadPage(): void {
     window.location.reload()
@@ -23,9 +22,6 @@
         <h1 class="blog-title text-3xl font-semibold tracking-tight sm:text-3xl">
           {message}
         </h1>
-        <p class="blog-copy max-w-2xl text-base leading-8 sm:text-lg">
-          {description}
-        </p>
         <div class="flex flex-wrap gap-3">
           {#if statusCode >= 500 && statusCode < 600}
             <button

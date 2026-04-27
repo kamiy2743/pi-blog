@@ -97,7 +97,7 @@ func Test記事の取得に失敗した場合は500(t *testing.T) {
 	setUpRecords(t, initResult.EntClient)
 
 	res := callEndpoint(t, initResult.Server)
-	res.AssertError(t, 500, "記事の読み込みに失敗しました。", "時間をおいてから、もう一度お試しください。")
+	res.AssertError(t, 500, "記事の読み込みに失敗しました。")
 }
 
 func Testカテゴリの取得に失敗した場合は500(t *testing.T) {
@@ -111,7 +111,7 @@ func Testカテゴリの取得に失敗した場合は500(t *testing.T) {
 	setUpRecords(t, initResult.EntClient)
 
 	res := callEndpoint(t, initResult.Server)
-	res.AssertError(t, 500, "カテゴリの読み込みに失敗しました。", "時間をおいてから、もう一度お試しください。")
+	res.AssertError(t, 500, "カテゴリの読み込みに失敗しました。")
 }
 
 func setUpRecords(t *testing.T, entClient *ent.Client) records {

@@ -48,10 +48,9 @@ func (u *Usecase) runInitial(ctx context.Context) (initialResult, *handlererror.
 	categories, err := u.categoryRepository.All(ctx, category.OrderByNameAsc)
 	if err != nil {
 		return initialResult{}, &handlererror.DisplayableError{
-			StatusCode:  500,
-			Message:     "カテゴリの読み込みに失敗しました。",
-			Description: "時間をおいてから、もう一度お試しください。",
-			Err:         err,
+			StatusCode: 500,
+			Message:    "カテゴリの読み込みに失敗しました。",
+			Err:        err,
 		}
 	}
 
@@ -67,10 +66,9 @@ func (u *Usecase) runPartialSearch(ctx context.Context, input input) (partialSea
 	})
 	if err != nil {
 		return partialSearchResult{}, &handlererror.DisplayableError{
-			StatusCode:  500,
-			Message:     "カテゴリの読み込みに失敗しました。",
-			Description: "時間をおいてから、もう一度お試しください。",
-			Err:         err,
+			StatusCode: 500,
+			Message:    "カテゴリの読み込みに失敗しました。",
+			Err:        err,
 		}
 	}
 	validCategoryIDs := []category.CategoryID{}
@@ -89,10 +87,9 @@ func (u *Usecase) runPartialSearch(ctx context.Context, input input) (partialSea
 	})
 	if err != nil {
 		return partialSearchResult{}, &handlererror.DisplayableError{
-			StatusCode:  500,
-			Message:     "記事の読み込みに失敗しました。",
-			Description: "時間をおいてから、もう一度お試しください。",
-			Err:         err,
+			StatusCode: 500,
+			Message:    "記事の読み込みに失敗しました。",
+			Err:        err,
 		}
 	}
 

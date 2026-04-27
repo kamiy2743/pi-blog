@@ -20,9 +20,8 @@ func NewHandler(u *Usecase) *Handler {
 func (h *Handler) Handle(r *http.Request) (handlerresult.PageResult, error) {
 	if r.URL.Path != "/" {
 		return handlerresult.PageResult{}, &handlererror.DisplayableError{
-			StatusCode:  http.StatusNotFound,
-			Message:     "ページが見つかりません。",
-			Description: "URL が変わったか、公開が終了した可能性があります。",
+			StatusCode: http.StatusNotFound,
+			Message:    "ページが見つかりません。",
 		}
 	}
 
