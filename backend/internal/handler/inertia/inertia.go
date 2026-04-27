@@ -5,8 +5,6 @@ import (
 	"net/http"
 	"net/http/httptest"
 
-	"blog/internal/handler/handlererror"
-
 	"github.com/romsar/gonertia/v3"
 )
 
@@ -23,7 +21,7 @@ func Render(
 	recorder := httptest.NewRecorder()
 	if err := inertiaApp.Render(recorder, r, component, props); err != nil {
 		log.Print(err)
-		triggerStaticErrorPage(w)
+		http.Error(w, http.StatusText(staticErrorPageStatusCode), staticErrorPageStatusCode)
 		return
 	}
 
@@ -34,24 +32,4 @@ func Render(
 	}
 	w.WriteHeader(statusCode)
 	_, _ = w.Write(recorder.Body.Bytes())
-}
-
-func RenderError(
-	w http.ResponseWriter,
-	r *http.Request,
-	inertiaApp *gonertia.Inertia,
-	displayableError handlererror.DisplayableError,
-) {
-	log.Print(displayableError.Err)
-
-	Render(w, r, inertiaApp, displayableError.StatusCode, "ErrorPage", gonertia.Props{
-		"statusCode":  displayableError.StatusCode,
-		"statusText":  http.StatusText(displayableError.StatusCode),
-		"message":     displayableError.Message,
-		"description": displayableError.Description,
-	})
-}
-
-func triggerStaticErrorPage(w http.ResponseWriter) {
-	http.Error(w, http.StatusText(staticErrorPageStatusCode), staticErrorPageStatusCode)
 }

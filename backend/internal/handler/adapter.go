@@ -19,6 +19,7 @@ func InertiaPage(
 	return inertiaApp.Middleware(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		result, err := handle(r)
 		if err != nil {
+			log.Print(err)
 			if validationError, ok := handlererror.AsValidationError(err); ok {
 				respondPageResult(w, r, inertiaApp, result, validationError, nil)
 				return
@@ -45,6 +46,7 @@ func InertiaAction(
 	return inertiaApp.Middleware(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		result, err := handle(r)
 		if err != nil {
+			log.Print(err)
 			respondActionError(w, r, inertiaApp, err)
 			return
 		}
@@ -99,11 +101,15 @@ func respondPageError(
 	err error,
 ) {
 	if displayableError, ok := handlererror.AsDisplayableError(err); ok {
-		inertia.RenderError(w, r, inertiaApp, *displayableError)
+		inertia.Render(w, r, inertiaApp, displayableError.StatusCode, "ErrorPage", gonertia.Props{
+			"statusCode":  displayableError.StatusCode,
+			"statusText":  http.StatusText(displayableError.StatusCode),
+			"message":     displayableError.Message,
+			"description": displayableError.Description,
+		})
 		return
 	}
 
-	log.Print(err)
 	inertia.Render(w, r, inertiaApp, http.StatusInternalServerError, "ErrorPage", gonertia.Props{
 		"statusCode":  http.StatusInternalServerError,
 		"statusText":  http.StatusText(http.StatusInternalServerError),
@@ -129,7 +135,6 @@ func respondActionError(
 		return
 	}
 
-	log.Print(err)
 	respondRedirectBack(w, r, inertiaApp, &session.Flash{Error: "エラーが発生しました。"})
 }
 
