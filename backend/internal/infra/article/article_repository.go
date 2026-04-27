@@ -104,11 +104,9 @@ func applySearchCriteria(
 	}
 
 	if len(criteria.CategoryIDs) > 0 {
-		categoryIDs := make([]uint32, 0, len(criteria.CategoryIDs))
 		for _, categoryID := range criteria.CategoryIDs {
-			categoryIDs = append(categoryIDs, uint32(categoryID))
+			query.Where(entArticle.HasCategoriesWith(entCategory.ID(uint32(categoryID))))
 		}
-		query.Where(entArticle.HasCategoriesWith(entCategory.IDIn(categoryIDs...)))
 	}
 
 	if !criteria.IncludeUnpublished {
