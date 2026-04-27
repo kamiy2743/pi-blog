@@ -60,20 +60,22 @@ func (u *Usecase) runInitial(ctx context.Context) (initialResult, *handlererror.
 }
 
 func (u *Usecase) runPartialSearch(ctx context.Context, input input) (partialSearchResult, *handlererror.DisplayableError) {
-	categories, err := u.categoryRepository.Search(ctx, category.SearchCategoryCriteria{
-		IDs:     input.CategoryIDs,
-		OrderBy: category.OrderByNameAsc,
-	})
-	if err != nil {
-		return partialSearchResult{}, &handlererror.DisplayableError{
-			StatusCode: 500,
-			Message:    "カテゴリの読み込みに失敗しました。",
-			Err:        err,
-		}
-	}
 	validCategoryIDs := []category.CategoryID{}
-	for _, category := range categories {
-		validCategoryIDs = append(validCategoryIDs, category.ID)
+	if len(input.CategoryIDs) > 0 {
+		categories, err := u.categoryRepository.Search(ctx, category.SearchCategoryCriteria{
+			IDs:     input.CategoryIDs,
+			OrderBy: category.OrderByNameAsc,
+		})
+		if err != nil {
+			return partialSearchResult{}, &handlererror.DisplayableError{
+				StatusCode: 500,
+				Message:    "カテゴリの読み込みに失敗しました。",
+				Err:        err,
+			}
+		}
+		for _, category := range categories {
+			validCategoryIDs = append(validCategoryIDs, category.ID)
+		}
 	}
 
 	paginatedArticles, err := u.articleRepository.Paginate(ctx, article.PaginateArticleCriteria{
