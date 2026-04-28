@@ -5,6 +5,8 @@ import (
 
 	"blog/internal/config"
 	"blog/internal/di"
+	"blog/internal/handler/handlererror"
+	"blog/internal/handler/handlerresult"
 	"blog/internal/handler/middleware"
 
 	"github.com/romsar/gonertia/v3"
@@ -25,9 +27,10 @@ func setUpRootRoutes(
 	inertiaApp *gonertia.Inertia,
 	container *di.Container,
 ) {
-	mux.Handle("GET /", InertiaPage(inertiaApp, container.ShowTopHandler.Handle))
+	mux.Handle("GET /{$}", InertiaPage(inertiaApp, container.ShowTopHandler.Handle))
+	mux.Handle("GET /{path...}", InertiaPage(inertiaApp, handleNotFound))
 
-	mux.HandleFunc("GET /health", container.HealthHandler.Handle)
+	mux.HandleFunc("GET /health", handleHealth)
 }
 
 func setUpArticleRoutes(
@@ -64,4 +67,17 @@ func setUpAdminRoutes(
 	handleAdmin("POST /admin/category", InertiaAction(inertiaApp, container.StoreCategoryHandler.Handle))
 	handleAdmin("POST /admin/category/{categoryId}", InertiaAction(inertiaApp, container.UpdateCategoryHandler.Handle))
 	handleAdmin("POST /admin/category/{categoryId}/delete", InertiaAction(inertiaApp, container.DestroyCategoryHandler.Handle))
+}
+
+func handleNotFound(r *http.Request) (handlerresult.PageResult, error) {
+	return handlerresult.PageResult{}, &handlererror.DisplayableError{
+		StatusCode: http.StatusNotFound,
+		Message:    "ページが見つかりません。",
+	}
+}
+
+func handleHealth(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "text/plain; charset=utf-8")
+	w.WriteHeader(http.StatusOK)
+	_, _ = w.Write([]byte("ok"))
 }

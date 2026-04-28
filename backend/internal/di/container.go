@@ -16,7 +16,6 @@ import (
 	searchArticleHandler "blog/internal/handler/feature/article/search"
 	showArticleHandler "blog/internal/handler/feature/article/show"
 	showTopHandler "blog/internal/handler/feature/top/show"
-	healthHandler "blog/internal/handler/health"
 	infraArticle "blog/internal/infra/article"
 	infraCategory "blog/internal/infra/category"
 )
@@ -34,7 +33,6 @@ type Container struct {
 	SearchArticleHandler   *searchArticleHandler.Handler
 	ShowArticleHandler     *showArticleHandler.Handler
 	ShowTopHandler         *showTopHandler.Handler
-	HealthHandler          *healthHandler.Handler
 }
 
 type ContainerOptions struct {
@@ -76,6 +74,5 @@ func NewContainer(entClient *ent.Client, options *ContainerOptions) *Container {
 		SearchArticleHandler:   searchArticleHandler.NewHandler(searchArticleUsecase),
 		ShowArticleHandler:     showArticleHandler.NewHandler(showArticleUsecase),
 		ShowTopHandler:         showTopHandler.NewHandler(showTopUsecase),
-		HealthHandler:          healthHandler.NewHandler(),
 	}
 }
