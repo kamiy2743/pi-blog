@@ -22,5 +22,8 @@ func AsValidationError(err error) (*ValidationError, bool) {
 	if !errors.As(err, &validationError) {
 		return nil, false
 	}
+	if validationError == nil {
+		return nil, false
+	}
 	return validationError, true
 }

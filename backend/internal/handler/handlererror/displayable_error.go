@@ -25,5 +25,8 @@ func AsDisplayableError(err error) (*DisplayableError, bool) {
 	if !errors.As(err, &displayableError) {
 		return nil, false
 	}
+	if displayableError == nil {
+		return nil, false
+	}
 	return displayableError, true
 }

@@ -42,6 +42,9 @@ func (h *Handler) Handle(r *http.Request) (handlerresult.PageResult, error) {
 		}
 	}
 
+	if validationError == nil {
+		return handlerresult.Page(component, props), nil
+	}
 	return handlerresult.Page(component, props), validationError
 }
 
