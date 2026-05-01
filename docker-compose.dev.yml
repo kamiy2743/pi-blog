@@ -123,11 +123,37 @@ services:
     networks:
       - private
     restart: unless-stopped
+    
+  mcp:
+    build:
+      context: ./mcp/
+      dockerfile: ./Dockerfile
+    env_file: ./mcp/.env
+    environment:
+      DOCKER_CONFIG: /tmp/docker-config/
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    read_only: true
+    tmpfs:
+      - /tmp/
+    volumes:
+      - ./:/home/kamiy2743/workspace/blog/
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      mcp:
+        aliases:
+          - blog-mcp
+    restart: unless-stopped
 
 networks:
   private:
     internal: true
   egress:
+  mcp:
+    external: true
+    name: mcp-share
 
 volumes:
   go_test_gocache:

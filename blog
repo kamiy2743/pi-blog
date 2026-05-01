@@ -67,8 +67,22 @@ run_go() {
 
   case "$command" in
     fmt)
-      local backend_dir="$SCRIPT_DIR/backend"
-      mapfile -t go_files < <(find "$backend_dir" -type f -name '*.go' | sort)
+      local -a go_roots=()
+      local root
+      local -a go_files=()
+
+      for root in "$SCRIPT_DIR/backend" "$SCRIPT_DIR/mcp"; do
+        if [[ -d "$root" ]]; then
+          go_roots+=("$root")
+        fi
+      done
+
+      if [[ ${#go_roots[@]} -eq 0 ]]; then
+        echo "整形対象の Go ディレクトリがありません" >&2
+        return 0
+      fi
+
+      mapfile -t go_files < <(find "${go_roots[@]}" -type f -name '*.go' | sort)
       if [[ ${#go_files[@]} -eq 0 ]]; then
         echo "整形対象の Go ファイルがありません" >&2
         return 0
@@ -81,7 +95,23 @@ run_go() {
 
       case "$subcommand" in
         tidy)
-          (cd "$SCRIPT_DIR/backend" && /usr/local/go/bin/go mod tidy "$@")
+          local -a go_mod_dirs=()
+          local mod_dir
+
+          for mod_dir in "$SCRIPT_DIR/backend" "$SCRIPT_DIR/mcp"; do
+            if [[ -f "$mod_dir/go.mod" ]]; then
+              go_mod_dirs+=("$mod_dir")
+            fi
+          done
+
+          if [[ ${#go_mod_dirs[@]} -eq 0 ]]; then
+            echo "go.mod を持つ対象ディレクトリがありません" >&2
+            return 0
+          fi
+
+          for mod_dir in "${go_mod_dirs[@]}"; do
+            (cd "$mod_dir" && /usr/local/go/bin/go mod tidy "$@")
+          done
           ;;
         *)
           echo "未対応の back mod コマンドです: $subcommand" >&2
@@ -109,7 +139,24 @@ run_go() {
       fi
 
       run_compose dev up -d --build go-test
-      run_compose dev exec -T go-test go test -mod=readonly -p 1 "$target"
+      run_compose dev exec -T go-test bash -lc '
+        set -euo pipefail
+
+        cd /app
+        go_bin=/usr/local/go/bin/go
+
+        mapfile -t test_packages < <(
+          "$go_bin" list -f '"'"'{{if or (gt (len .TestGoFiles) 0) (gt (len .XTestGoFiles) 0)}}{{.ImportPath}}{{end}}'"'"' "$1" |
+            sed "/^$/d"
+        )
+
+        if [[ ${#test_packages[@]} -eq 0 ]]; then
+          echo "テスト対象の package がありません: $1" >&2
+          exit 0
+        fi
+
+        "$go_bin" test -mod=readonly -p 1 "${test_packages[@]}"
+      ' bash "$target"
       ;;
     *)
       echo "未対応の back コマンドです: $command" >&2
