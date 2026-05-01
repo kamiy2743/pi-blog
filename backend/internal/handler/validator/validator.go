@@ -9,11 +9,17 @@ import (
 	goValidator "github.com/go-playground/validator/v10"
 )
 
+func newValidator() *goValidator.Validate {
+	validator := goValidator.New()
+	registerNotBlank(validator)
+	return validator
+}
+
 func Validate[T any](
 	req T,
 	getValidationMessage func(field, tag string) string,
 ) *handlererror.ValidationError {
-	err := goValidator.New().Struct(req)
+	err := newValidator().Struct(req)
 	if err == nil {
 		return nil
 	}

@@ -61,11 +61,17 @@ func (r *CategoryRepository) All(ctx context.Context, orderBy domainCategory.Ord
 func (r *CategoryRepository) Search(ctx context.Context, criteria domainCategory.SearchCategoryCriteria) ([]domainCategory.Category, error) {
 	query := r.client.Category.Query()
 
-	categoryIDs := make([]uint32, len(criteria.IDs))
-	for i, id := range criteria.IDs {
-		categoryIDs[i] = uint32(id)
+	if len(criteria.IDs) > 0 {
+		categoryIDs := make([]uint32, 0, len(criteria.IDs))
+		for _, id := range criteria.IDs {
+			categoryIDs = append(categoryIDs, uint32(id))
+		}
+		query.Where(entCategory.IDIn(categoryIDs...))
 	}
-	query = query.Where(entCategory.IDIn(categoryIDs...))
+
+	if criteria.Name != "" {
+		query.Where(entCategory.Name(criteria.Name))
+	}
 
 	if err := ApplyOrder(query, criteria.OrderBy); err != nil {
 		return nil, err

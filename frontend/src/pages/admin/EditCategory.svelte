@@ -1,4 +1,8 @@
 <script lang="ts">
+  import { Form } from '@inertiajs/svelte'
+  import FlashMessage from '../../components/FlashMessage.svelte'
+  import type { Flash } from '../../types/flash'
+
   type Category = {
     id: number
     name: string
@@ -6,13 +10,14 @@
 
   export let categories: Category[] = []
   export let validationErrors: Record<string, string> = {}
+  export let flash: Flash = {}
 
   let categoryDrafts: Record<number, string> = {}
   let deleteTarget: Category | null = null
 
-  categories.forEach((category) => {
-    categoryDrafts[category.id] = category.name
-  })
+  $: categoryDrafts = Object.fromEntries(
+    categories.map((category) => [category.id, category.name]),
+  )
 
   function updateCategoryDraft(categoryId: number, value: string) {
     categoryDrafts = {
@@ -36,12 +41,20 @@
 
 <div class="admin-page px-6 py-8 sm:px-8 lg:px-10 lg:py-10">
   <div class="mx-auto max-w-5xl">
+    <FlashMessage {flash} />
+
     <div class="admin-panel rounded-lg border px-6 py-8 sm:px-8">
       <p class="admin-eyebrow text-sm font-semibold">Category</p>
       <h1 class="mt-3 text-3xl font-semibold tracking-tight">カテゴリ編集</h1>
       <p class="admin-copy mt-3 text-base leading-8">カテゴリの追加と名前の更新を行います。</p>
 
-      <form class="mt-6 space-y-5" method="post" action="/admin/category">
+      <Form
+        class="mt-6 space-y-5"
+        action="/admin/category"
+        method="post"
+        options={{ preserveScroll: true, preserveState: false }}
+        resetOnSuccess={true}
+      >
         <label class="block">
           <span class="text-sm font-semibold">新しいカテゴリ名</span>
           <input
@@ -50,17 +63,20 @@
             type="text"
             autocomplete="off"
           />
-          {#if validationErrors.name}
-            <p class="mt-2 text-sm font-semibold text-red-600">{validationErrors.name}</p>
+          {#if validationErrors['create.name']}
+            <p class="mt-2 text-sm font-semibold text-red-600">{validationErrors['create.name']}</p>
           {/if}
         </label>
 
         <div class="flex flex-wrap gap-3">
-          <button class="admin-button inline-flex items-center justify-center rounded-lg px-5 py-3 text-sm font-semibold" type="submit">
+          <button
+            class="admin-button inline-flex items-center justify-center rounded-lg px-5 py-3 text-sm font-semibold"
+            type="submit"
+          >
             追加
           </button>
         </div>
-      </form>
+      </Form>
     </div>
 
     <div class="admin-panel mt-6 rounded-lg border px-4 py-5 sm:px-6">
@@ -86,7 +102,12 @@
               {#each categories as category}
                 <tr class="admin-table-row">
                   <td class="px-4 py-3">
-                    <form id={`category-form-${category.id}`} method="post" action={`/admin/category/${category.id}`}>
+                    <Form
+                      id={`category-form-${category.id}`}
+                      action={`/admin/category/${category.id}`}
+                      method="post"
+                      options={{ preserveScroll: true, preserveState: false }}
+                    >
                       <input
                         class="w-full rounded-lg border px-3 py-2 text-sm"
                         name="name"
@@ -100,9 +121,9 @@
                           }
                         }}
                       />
-                    </form>
-                    {#if validationErrors.name}
-                      <p class="mt-1 text-xs font-semibold text-red-600">{validationErrors.name}</p>
+                    </Form>
+                    {#if validationErrors['update.name']}
+                      <p class="mt-1 text-xs font-semibold text-red-600">{validationErrors['update.name']}</p>
                     {/if}
                   </td>
                   <td class="whitespace-nowrap px-4 py-3">
@@ -154,7 +175,13 @@
             {deleteTarget.name} を削除します。
           </p>
 
-          <form class="mt-6 flex flex-wrap gap-3" method="post" action={`/admin/category/${deleteTarget.id}/delete`}>
+          <Form
+            class="mt-6 flex flex-wrap gap-3"
+            action={`/admin/category/${deleteTarget.id}/delete`}
+            method="post"
+            options={{ preserveScroll: true, preserveState: false }}
+            onSuccess={closeDeleteModal}
+          >
             <button
               class="admin-button rounded-lg px-5 py-3 text-sm font-semibold"
               type="submit"
@@ -168,7 +195,7 @@
             >
               キャンセル
             </button>
-          </form>
+          </Form>
         </div>
       </div>
     {/if}
