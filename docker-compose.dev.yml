@@ -45,7 +45,9 @@ services:
     restart: unless-stopped
 
   go-test:
-    image: golang:1.26-bookworm
+    build:
+      context: ./backend/
+      dockerfile: ./Dockerfile.test
     working_dir: /app
     command: ["sleep", "infinity"]
     env_file: ./backend/.env.test
@@ -60,11 +62,9 @@ services:
       - no-new-privileges:true
     volumes:
       - ./backend/:/app/
-      - go_test_modcache:/go/pkg/mod/
       - go_test_gocache:/root/.cache/go-build/
     networks:
       - private
-      - egress
     depends_on:
       - mysql-test
     restart: unless-stopped
@@ -130,7 +130,6 @@ networks:
   egress:
 
 volumes:
-  go_test_modcache:
   go_test_gocache:
   go_test_gotmp:
   mysql_data:
