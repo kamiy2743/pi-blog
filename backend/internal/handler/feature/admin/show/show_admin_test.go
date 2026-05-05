@@ -16,6 +16,7 @@ import (
 	fixtureArticle "blog/internal/test/fixture/article"
 	fixtureCategory "blog/internal/test/fixture/category"
 	"blog/internal/test/helper"
+	inertiaPage "blog/internal/test/helper/inertia/page"
 	stubArticle "blog/internal/test/stub/article"
 	stubCategory "blog/internal/test/stub/category"
 
@@ -387,10 +388,10 @@ func callEndpoint(
 	t *testing.T,
 	server *httptest.Server,
 	params queryParams,
-) helper.TestInertiaResponse {
+) inertiaPage.TestPageResponse {
 	t.Helper()
 
-	return helper.RequestInertia(t, server, helper.TestInertiaRequest{
+	return inertiaPage.Send(t, server, inertiaPage.TestPageRequest{
 		Method:       http.MethodGet,
 		Path:         "/admin",
 		QueryParams:  buildQuery(params),
@@ -402,10 +403,10 @@ func callPartialEndpoint(
 	t *testing.T,
 	server *httptest.Server,
 	params queryParams,
-) helper.TestInertiaResponse {
+) inertiaPage.TestPageResponse {
 	t.Helper()
 
-	return helper.RequestInertia(t, server, helper.TestInertiaRequest{
+	return inertiaPage.Send(t, server, inertiaPage.TestPageRequest{
 		Method:           http.MethodGet,
 		Path:             "/admin",
 		QueryParams:      buildQuery(params),

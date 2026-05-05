@@ -131,7 +131,11 @@ run_go() {
           exit 1
         fi
 
-        if [[ "$target" == "$backend_dir" ]]; then
+        if [[ "$target" == "backend" ]]; then
+          target="."
+        elif [[ "$target" == "backend/"* ]]; then
+          target="./${target#"backend/"}"
+        elif [[ "$target" == "$backend_dir" ]]; then
           target="."
         elif [[ "$target" == "$backend_dir"/* ]]; then
           target=".${target#"$backend_dir"}"

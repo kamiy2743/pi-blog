@@ -1,4 +1,4 @@
-package helper
+package page
 
 import (
 	"encoding/json"
@@ -15,7 +15,7 @@ import (
 	"github.com/romsar/gonertia/v3"
 )
 
-type TestInertiaRequest struct {
+type TestPageRequest struct {
 	Method           string
 	Path             string
 	QueryParams      map[string][]string
@@ -25,32 +25,28 @@ type TestInertiaRequest struct {
 	PartialData      []string
 }
 
-type TestInertiaResponse struct {
+type TestPageResponse struct {
 	StatusCode int            `json:"-"`
 	Component  string         `json:"component"`
 	Props      gonertia.Props `json:"props"`
 	URL        string         `json:"url"`
 }
 
-func RequestInertia(
-	t *testing.T,
-	server *httptest.Server,
-	inertiaRequest TestInertiaRequest,
-) TestInertiaResponse {
+func Send(t *testing.T, server *httptest.Server, request TestPageRequest) TestPageResponse {
 	t.Helper()
 
-	if inertiaRequest.Method == "" {
-		t.Fatalf("Inertia リクエストの Method は必須です")
+	if request.Method == "" {
+		t.Fatalf("Inertia page リクエストの Method は必須です")
 	}
 
-	requestURL, err := url.JoinPath(server.URL, inertiaRequest.Path)
+	requestURL, err := url.JoinPath(server.URL, request.Path)
 	if err != nil {
-		t.Fatalf("Inertia リクエスト URL の組み立てに失敗しました: %v", err)
+		t.Fatalf("Inertia page リクエスト URL の組み立てに失敗しました: %v", err)
 	}
 
-	if len(inertiaRequest.QueryParams) > 0 {
+	if len(request.QueryParams) > 0 {
 		values := url.Values{}
-		for key, valueList := range inertiaRequest.QueryParams {
+		for key, valueList := range request.QueryParams {
 			for _, value := range valueList {
 				values.Add(key, value)
 			}
@@ -58,43 +54,43 @@ func RequestInertia(
 		requestURL += "?" + values.Encode()
 	}
 
-	req, err := http.NewRequest(inertiaRequest.Method, requestURL, inertiaRequest.Body)
+	req, err := http.NewRequest(request.Method, requestURL, request.Body)
 	if err != nil {
-		t.Fatalf("Inertia リクエストの作成に失敗しました: %v", err)
+		t.Fatalf("Inertia page リクエストの作成に失敗しました: %v", err)
 	}
 	req.Header.Set("X-Inertia", "true")
-	if inertiaRequest.PartialComponent != "" {
-		req.Header.Set("X-Inertia-Partial-Component", inertiaRequest.PartialComponent)
+	if request.PartialComponent != "" {
+		req.Header.Set("X-Inertia-Partial-Component", request.PartialComponent)
 	}
-	if len(inertiaRequest.PartialData) > 0 {
-		req.Header.Set("X-Inertia-Partial-Data", strings.Join(inertiaRequest.PartialData, ","))
+	if len(request.PartialData) > 0 {
+		req.Header.Set("X-Inertia-Partial-Data", strings.Join(request.PartialData, ","))
 	}
 
-	if inertiaRequest.UseBasicAuth {
+	if request.UseBasicAuth {
 		req.SetBasicAuth(config.MustGetAdminBasicAuthUser(), config.MustGetAdminBasicAuthPass())
 	}
 
 	res, err := server.Client().Do(req)
 	if err != nil {
-		t.Fatalf("Inertia リクエストの送信に失敗しました: %v", err)
+		t.Fatalf("Inertia page リクエストの送信に失敗しました: %v", err)
 	}
 
 	bodyBytes, err := io.ReadAll(res.Body)
 	res.Body.Close()
 	if err != nil {
-		t.Fatalf("Inertia レスポンスボディの読み取りに失敗しました: %v", err)
+		t.Fatalf("Inertia page レスポンスボディの読み取りに失敗しました: %v", err)
 	}
 
-	var inertiaResponse TestInertiaResponse
-	inertiaResponse.StatusCode = res.StatusCode
-	if err := json.Unmarshal(bodyBytes, &inertiaResponse); err != nil {
-		t.Fatalf("Inertia レスポンス JSON のデコードに失敗しました: %v", err)
+	var response TestPageResponse
+	response.StatusCode = res.StatusCode
+	if err := json.Unmarshal(bodyBytes, &response); err != nil {
+		t.Fatalf("Inertia page レスポンス JSON のデコードに失敗しました: %v", err)
 	}
 
-	return inertiaResponse
+	return response
 }
 
-func (response TestInertiaResponse) AssertFullProps(
+func (response TestPageResponse) AssertFullProps(
 	t *testing.T,
 	expectedComponent string,
 	expectedProps gonertia.Props,
@@ -104,7 +100,7 @@ func (response TestInertiaResponse) AssertFullProps(
 	response.AssertResponse(t, http.StatusOK, expectedComponent, expectedProps)
 }
 
-func (response TestInertiaResponse) AssertError(
+func (response TestPageResponse) AssertError(
 	t *testing.T,
 	expectedStatusCode int,
 	expectedMessage string,
@@ -118,7 +114,7 @@ func (response TestInertiaResponse) AssertError(
 	})
 }
 
-func (response TestInertiaResponse) AssertResponse(
+func (response TestPageResponse) AssertResponse(
 	t *testing.T,
 	expectedStatusCode int,
 	expectedComponent string,
@@ -163,7 +159,7 @@ func (response TestInertiaResponse) AssertResponse(
 	}
 }
 
-func (response TestInertiaResponse) AssertPartialProps(
+func (response TestPageResponse) AssertPartialProps(
 	t *testing.T,
 	expectedComponent string,
 	propPath string,
@@ -187,7 +183,7 @@ func (response TestInertiaResponse) AssertPartialProps(
 	assertPartialJSON(t, "props."+propPath, actualProps, expectedProps)
 }
 
-func (response TestInertiaResponse) AssertPropsCount(
+func (response TestPageResponse) AssertPropsCount(
 	t *testing.T,
 	componentName string,
 	propName string,
@@ -218,7 +214,7 @@ func (response TestInertiaResponse) AssertPropsCount(
 	}
 }
 
-func (response TestInertiaResponse) AssertPropsValue(
+func (response TestPageResponse) AssertPropsValue(
 	t *testing.T,
 	componentName string,
 	propPath string,

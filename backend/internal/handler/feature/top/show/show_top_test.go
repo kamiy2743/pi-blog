@@ -16,6 +16,7 @@ import (
 	fixtureArticle "blog/internal/test/fixture/article"
 	fixtureCategory "blog/internal/test/fixture/category"
 	"blog/internal/test/helper"
+	inertiaPage "blog/internal/test/helper/inertia/page"
 	stubArticle "blog/internal/test/stub/article"
 	stubCategory "blog/internal/test/stub/category"
 
@@ -155,8 +156,8 @@ func setUpRecords(t *testing.T, entClient *ent.Client) records {
 	}
 }
 
-func callEndpoint(t *testing.T, server *httptest.Server) helper.TestInertiaResponse {
-	return helper.RequestInertia(t, server, helper.TestInertiaRequest{
+func callEndpoint(t *testing.T, server *httptest.Server) inertiaPage.TestPageResponse {
+	return inertiaPage.Send(t, server, inertiaPage.TestPageRequest{
 		Method: http.MethodGet,
 		Path:   "/",
 	})

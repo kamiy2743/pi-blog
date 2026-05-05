@@ -14,7 +14,11 @@ import (
 	"github.com/romsar/gonertia/v3"
 )
 
-func NewHTTPHandler(entClient *ent.Client, containerOptions ...*di.ContainerOptions) (http.Handler, error) {
+func NewHTTPHandler(
+	entClient *ent.Client,
+	sessionManager *session.SessionManager,
+	containerOptions ...*di.ContainerOptions,
+) (http.Handler, error) {
 	inertiaApp, err := newInertiaApp()
 	if err != nil {
 		return nil, err
@@ -26,8 +30,6 @@ func NewHTTPHandler(entClient *ent.Client, containerOptions ...*di.ContainerOpti
 	}
 	container := di.NewContainer(entClient, options)
 	mux := newMux(inertiaApp, container)
-
-	sessionManager := session.NewSessionManager(config.MustGetAppEnv())
 
 	return middleware.Chain(
 		http.NewCrossOriginProtection().Handler(mux),

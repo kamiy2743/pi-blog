@@ -6,19 +6,22 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	"blog/internal/config"
 	"blog/internal/db"
 	"blog/internal/db/ent"
 	"blog/internal/db/ent/enttest"
 	"blog/internal/db/ent/migrate"
 	"blog/internal/di"
 	"blog/internal/handler"
+	"blog/internal/handler/session"
 
 	_ "github.com/go-sql-driver/mysql"
 )
 
 type InitResult struct {
-	EntClient *ent.Client
-	Server    *httptest.Server
+	EntClient      *ent.Client
+	Server         *httptest.Server
+	SessionManager *session.SessionManager
 }
 
 func Init(t *testing.T, containerOptions ...*di.ContainerOptions) InitResult {
@@ -33,7 +36,8 @@ func Init(t *testing.T, containerOptions ...*di.ContainerOptions) InitResult {
 		_ = entClient.Close()
 	})
 
-	httpHandler, err := handler.NewHTTPHandler(entClient, containerOptions...)
+	sessionManager := session.NewSessionManager(config.MustGetAppEnv())
+	httpHandler, err := handler.NewHTTPHandler(entClient, sessionManager, containerOptions...)
 	if err != nil {
 		t.Fatalf("HTTP ハンドラーの初期化に失敗しました: %v", err)
 	}
@@ -43,8 +47,9 @@ func Init(t *testing.T, containerOptions ...*di.ContainerOptions) InitResult {
 	})
 
 	return InitResult{
-		EntClient: entClient,
-		Server:    server,
+		EntClient:      entClient,
+		Server:         server,
+		SessionManager: sessionManager,
 	}
 }
 

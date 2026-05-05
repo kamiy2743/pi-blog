@@ -7,6 +7,7 @@ import (
 	"blog/internal/config"
 	"blog/internal/db"
 	"blog/internal/handler"
+	"blog/internal/handler/session"
 )
 
 func main() {
@@ -18,7 +19,9 @@ func main() {
 	}
 	defer entClient.Close()
 
-	handler, err := handler.NewHTTPHandler(entClient)
+	sessionManager := session.NewSessionManager(config.MustGetAppEnv())
+
+	handler, err := handler.NewHTTPHandler(entClient, sessionManager)
 	if err != nil {
 		log.Fatalf("HTTP handler 初期化に失敗しました: %v", err)
 	}

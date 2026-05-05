@@ -87,8 +87,19 @@ func (m *SessionManager) SaveFlash(r *http.Request, flash *Flash) {
 }
 
 func (m *SessionManager) PopSessionPayload(r *http.Request) SessionPayload {
+	return m.sessionPayload(r, true)
+}
+
+func (m *SessionManager) GetSessionPayload(r *http.Request) SessionPayload {
+	return m.sessionPayload(r, false)
+}
+
+func (m *SessionManager) sessionPayload(r *http.Request, pop bool) SessionPayload {
 	var validationError *handlererror.ValidationError
-	validationErrorsJSON := m.manager.PopString(r.Context(), validationErrorsKey)
+	validationErrorsJSON := m.manager.GetString(r.Context(), validationErrorsKey)
+	if pop {
+		validationErrorsJSON = m.manager.PopString(r.Context(), validationErrorsKey)
+	}
 	if validationErrorsJSON != "" {
 		validationErrors := map[string]string{}
 		json.Unmarshal([]byte(validationErrorsJSON), &validationErrors)
@@ -96,8 +107,14 @@ func (m *SessionManager) PopSessionPayload(r *http.Request) SessionPayload {
 	}
 
 	flash := &Flash{
-		Success: m.manager.PopString(r.Context(), flashSuccessKey),
-		Error:   m.manager.PopString(r.Context(), flashErrorKey),
+		Success: m.manager.GetString(r.Context(), flashSuccessKey),
+		Error:   m.manager.GetString(r.Context(), flashErrorKey),
+	}
+	if pop {
+		flash = &Flash{
+			Success: m.manager.PopString(r.Context(), flashSuccessKey),
+			Error:   m.manager.PopString(r.Context(), flashErrorKey),
+		}
 	}
 	if flash.IsEmpty() {
 		flash = nil

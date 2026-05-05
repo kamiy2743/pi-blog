@@ -12,7 +12,7 @@ import (
 	domainCategory "blog/internal/domain/category"
 	"blog/internal/test"
 	fixtureCategory "blog/internal/test/fixture/category"
-	"blog/internal/test/helper"
+	inertiaPage "blog/internal/test/helper/inertia/page"
 	stubCategory "blog/internal/test/stub/category"
 
 	"github.com/romsar/gonertia/v3"
@@ -64,10 +64,10 @@ func setUpRecords(t *testing.T, entClient *ent.Client) []*ent.Category {
 	}
 }
 
-func callEndpoint(t *testing.T, server *httptest.Server) helper.TestInertiaResponse {
+func callEndpoint(t *testing.T, server *httptest.Server) inertiaPage.TestPageResponse {
 	t.Helper()
 
-	return helper.RequestInertia(t, server, helper.TestInertiaRequest{
+	return inertiaPage.Send(t, server, inertiaPage.TestPageRequest{
 		Method:       http.MethodGet,
 		Path:         "/admin/category",
 		UseBasicAuth: true,

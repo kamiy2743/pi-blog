@@ -15,6 +15,7 @@ import (
 	fixtureArticle "blog/internal/test/fixture/article"
 	fixtureCategory "blog/internal/test/fixture/category"
 	"blog/internal/test/helper"
+	inertiaPage "blog/internal/test/helper/inertia/page"
 	stubArticle "blog/internal/test/stub/article"
 
 	"github.com/romsar/gonertia/v3"
@@ -42,7 +43,7 @@ func Test記事を表示できる(t *testing.T) {
 func Test記事IDが不正な場合は404(t *testing.T) {
 	initResult := test.Init(t)
 
-	res := helper.RequestInertia(t, initResult.Server, helper.TestInertiaRequest{
+	res := inertiaPage.Send(t, initResult.Server, inertiaPage.TestPageRequest{
 		Method: http.MethodGet,
 		Path:   "/article/invalid",
 	})
@@ -102,10 +103,10 @@ func setUpRecord(t *testing.T, entClient *ent.Client, isPublished bool) *ent.Art
 	)
 }
 
-func callEndpoint(t *testing.T, server *httptest.Server, articleID uint32) helper.TestInertiaResponse {
+func callEndpoint(t *testing.T, server *httptest.Server, articleID uint32) inertiaPage.TestPageResponse {
 	t.Helper()
 
-	return helper.RequestInertia(t, server, helper.TestInertiaRequest{
+	return inertiaPage.Send(t, server, inertiaPage.TestPageRequest{
 		Method: http.MethodGet,
 		Path:   fmt.Sprintf("/article/%d", articleID),
 	})
