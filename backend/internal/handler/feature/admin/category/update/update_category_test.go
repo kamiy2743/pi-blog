@@ -37,8 +37,12 @@ func Testカテゴリ名が空ならバリデーションエラー(t *testing.T)
 	res := callEndpoint(t, initResult.Server, category.ID, "")
 	res.AssertRedirectTo(t, "/admin/category")
 
+	res.AssertOldInput(t, initResult.Server, initResult.SessionManager, map[string]string{
+		"formKey": "category.update." + strconv.FormatUint(uint64(category.ID), 10),
+		"name":    "",
+	})
 	res.AssertValidationError(t, initResult.Server, initResult.SessionManager, map[string]string{
-		"update.name." + strconv.FormatUint(uint64(category.ID), 10): "カテゴリ名を入力してください。",
+		"name": "カテゴリ名を入力してください。",
 	})
 
 	categories := fetchCategories(t, initResult.EntClient)
@@ -49,11 +53,16 @@ func Testカテゴリ名が64文字を超えたらバリデーションエラー
 	initResult := test.Init(t)
 	category := setUpRecord(t, initResult.EntClient)
 
-	res := callEndpoint(t, initResult.Server, category.ID, helper.StringOfLength(65))
+	name := helper.StringOfLength(65)
+	res := callEndpoint(t, initResult.Server, category.ID, name)
 	res.AssertRedirectTo(t, "/admin/category")
 
+	res.AssertOldInput(t, initResult.Server, initResult.SessionManager, map[string]string{
+		"formKey": "category.update." + strconv.FormatUint(uint64(category.ID), 10),
+		"name":    name,
+	})
 	res.AssertValidationError(t, initResult.Server, initResult.SessionManager, map[string]string{
-		"update.name." + strconv.FormatUint(uint64(category.ID), 10): "カテゴリ名は64文字以下で入力してください。",
+		"name": "カテゴリ名は64文字以下で入力してください。",
 	})
 
 	categories := fetchCategories(t, initResult.EntClient)
@@ -67,6 +76,11 @@ func Testカテゴリ名が重複した場合はエラー(t *testing.T) {
 
 	res := callEndpoint(t, initResult.Server, category.ID, "Go")
 	res.AssertRedirectTo(t, "/admin/category")
+
+	res.AssertOldInput(t, initResult.Server, initResult.SessionManager, map[string]string{
+		"formKey": "category.update." + strconv.FormatUint(uint64(category.ID), 10),
+		"name":    "Go",
+	})
 	res.AssertFlashError(t, initResult.Server, initResult.SessionManager, "同じ名前のカテゴリが既に存在しています。")
 
 	categories := fetchCategories(t, initResult.EntClient)
@@ -126,7 +140,8 @@ func callEndpoint(t *testing.T, server *httptest.Server, categoryID uint32, name
 		Method: http.MethodPost,
 		Path:   "/admin/category/" + strconv.FormatUint(uint64(categoryID), 10),
 		Body: map[string]any{
-			"name": name,
+			"formKey": "category.update." + strconv.FormatUint(uint64(categoryID), 10),
+			"name":    name,
 		},
 		UseBasicAuth: true,
 		Referer:      "/admin/category",

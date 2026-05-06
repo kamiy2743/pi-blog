@@ -17,6 +17,7 @@ const (
 	cookieName          = "blog_session"
 	lifetime            = 5 * time.Minute
 	idleTimeout         = 3 * time.Minute
+	oldInputKey         = "oldInput"
 	validationErrorsKey = "validationErrors"
 	flashSuccessKey     = "flash.success"
 	flashErrorKey       = "flash.error"
@@ -27,6 +28,7 @@ type SessionManager struct {
 }
 
 type SessionPayload struct {
+	OldInput        map[string]string
 	ValidationError *handlererror.ValidationError
 	Flash           *Flash
 }
@@ -59,6 +61,18 @@ func (m *SessionManager) Middleware() middleware.Middleware {
 func SessionManagerFromContext(ctx context.Context) (*SessionManager, bool) {
 	manager, ok := ctx.Value(contextKey{}).(*SessionManager)
 	return manager, ok
+}
+
+func (m *SessionManager) SaveOldInput(r *http.Request, oldInput map[string]string) {
+	if len(oldInput) == 0 {
+		return
+	}
+
+	oldInputJSON, err := json.Marshal(oldInput)
+	if err != nil {
+		return
+	}
+	m.manager.Put(r.Context(), oldInputKey, string(oldInputJSON))
 }
 
 func (m *SessionManager) SaveValidationError(r *http.Request, validationError *handlererror.ValidationError) {
@@ -95,6 +109,15 @@ func (m *SessionManager) GetSessionPayload(r *http.Request) SessionPayload {
 }
 
 func (m *SessionManager) sessionPayload(r *http.Request, pop bool) SessionPayload {
+	oldInput := map[string]string{}
+	oldInputJSON := m.manager.GetString(r.Context(), oldInputKey)
+	if pop {
+		oldInputJSON = m.manager.PopString(r.Context(), oldInputKey)
+	}
+	if oldInputJSON != "" {
+		json.Unmarshal([]byte(oldInputJSON), &oldInput)
+	}
+
 	var validationError *handlererror.ValidationError
 	validationErrorsJSON := m.manager.GetString(r.Context(), validationErrorsKey)
 	if pop {
@@ -121,6 +144,7 @@ func (m *SessionManager) sessionPayload(r *http.Request, pop bool) SessionPayloa
 	}
 
 	return SessionPayload{
+		OldInput:        oldInput,
 		ValidationError: validationError,
 		Flash:           flash,
 	}

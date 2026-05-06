@@ -30,7 +30,7 @@ func (h *Handler) Handle(r *http.Request) (handlerresult.ActionResult, error) {
 
 	input, validationError := toInput(r)
 	if validationError != nil {
-		return handlerresult.ActionResult{}, formatValidationError(validationError, categoryID)
+		return handlerresult.ActionResult{}, validationError
 	}
 
 	if err := h.usecase.run(r.Context(), categoryID, input); err != nil {

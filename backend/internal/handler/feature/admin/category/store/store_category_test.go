@@ -34,8 +34,12 @@ func Testカテゴリ名が空ならバリデーションエラー(t *testing.T)
 	res := callEndpoint(t, initResult.Server, "")
 	res.AssertRedirectTo(t, "/admin/category")
 
+	res.AssertOldInput(t, initResult.Server, initResult.SessionManager, map[string]string{
+		"formKey": "category.create",
+		"name":    "",
+	})
 	res.AssertValidationError(t, initResult.Server, initResult.SessionManager, map[string]string{
-		"create.name": "カテゴリ名を入力してください。",
+		"name": "カテゴリ名を入力してください。",
 	})
 
 	assertCategoryCount(t, initResult.EntClient, 0)
@@ -44,11 +48,16 @@ func Testカテゴリ名が空ならバリデーションエラー(t *testing.T)
 func Testカテゴリ名が64文字を超えたらバリデーションエラー(t *testing.T) {
 	initResult := test.Init(t)
 
-	res := callEndpoint(t, initResult.Server, helper.StringOfLength(65))
+	name := helper.StringOfLength(65)
+	res := callEndpoint(t, initResult.Server, name)
 	res.AssertRedirectTo(t, "/admin/category")
 
+	res.AssertOldInput(t, initResult.Server, initResult.SessionManager, map[string]string{
+		"formKey": "category.create",
+		"name":    name,
+	})
 	res.AssertValidationError(t, initResult.Server, initResult.SessionManager, map[string]string{
-		"create.name": "カテゴリ名は64文字以下で入力してください。",
+		"name": "カテゴリ名は64文字以下で入力してください。",
 	})
 
 	assertCategoryCount(t, initResult.EntClient, 0)
@@ -60,6 +69,11 @@ func Testカテゴリ名が重複した場合はエラー(t *testing.T) {
 
 	res := callEndpoint(t, initResult.Server, "Go")
 	res.AssertRedirectTo(t, "/admin/category")
+
+	res.AssertOldInput(t, initResult.Server, initResult.SessionManager, map[string]string{
+		"formKey": "category.create",
+		"name":    "Go",
+	})
 	res.AssertFlashError(t, initResult.Server, initResult.SessionManager, "同じ名前のカテゴリが既に存在しています。")
 
 	assertCategoryCount(t, initResult.EntClient, 1)
@@ -104,7 +118,8 @@ func callEndpoint(t *testing.T, server *httptest.Server, name string) inertiaAct
 		Method: http.MethodPost,
 		Path:   "/admin/category",
 		Body: map[string]any{
-			"name": name,
+			"formKey": "category.create",
+			"name":    name,
 		},
 		UseBasicAuth: true,
 		Referer:      "/admin/category",

@@ -19,7 +19,7 @@ func NewHandler(u *Usecase) *Handler {
 func (h *Handler) Handle(r *http.Request) (handlerresult.ActionResult, error) {
 	input, validationError := toInput(r)
 	if validationError != nil {
-		return handlerresult.ActionResult{}, formatValidationError(validationError)
+		return handlerresult.ActionResult{}, validationError
 	}
 
 	if err := h.usecase.run(r.Context(), input); err != nil {

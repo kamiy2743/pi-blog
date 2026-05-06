@@ -111,6 +111,18 @@ func (response TestActionResponse) AssertRedirectTo(t *testing.T, expectedLocati
 	}
 }
 
+func (response TestActionResponse) AssertOldInput(
+	t *testing.T,
+	server *httptest.Server,
+	manager *session.SessionManager,
+	expectedOldInput map[string]string,
+) {
+	t.Helper()
+
+	payload := response.getSessionPayload(t, server, manager)
+	helper.AssertEqual(t, expectedOldInput, payload.OldInput, "old input が不正です")
+}
+
 func (response TestActionResponse) AssertValidationError(
 	t *testing.T,
 	server *httptest.Server,

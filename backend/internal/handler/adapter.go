@@ -1,6 +1,9 @@
 package handler
 
 import (
+	"bytes"
+	"encoding/json"
+	"io"
 	"log"
 	"net/http"
 
@@ -44,9 +47,11 @@ func InertiaAction(
 	handle func(*http.Request) (handlerresult.ActionResult, error),
 ) http.Handler {
 	return inertiaApp.Middleware(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		oldInput := captureOldInput(r)
 		result, err := handle(r)
 		if err != nil {
 			log.Print(err)
+			saveOldInput(r, oldInput)
 			respondActionError(w, r, inertiaApp, err)
 			return
 		}
@@ -74,6 +79,9 @@ func respondPageResult(
 	)
 	flash := selectFlash(resultFlash, sessionPayload.Flash)
 
+	if len(sessionPayload.OldInput) > 0 {
+		props["oldInput"] = sessionPayload.OldInput
+	}
 	if validationError != nil && !validationError.IsEmpty() {
 		props["validationErrors"] = validationError.Messages
 	}
@@ -144,6 +152,37 @@ func respondRedirectBack(
 ) {
 	saveFlash(r, flash)
 	inertiaApp.Redirect(w, r, getRedirectBackURL(r), 303)
+}
+
+func captureOldInput(r *http.Request) map[string]string {
+	oldInput := map[string]string{}
+
+	body, err := io.ReadAll(r.Body)
+	if err != nil {
+		return oldInput
+	}
+	r.Body = io.NopCloser(bytes.NewReader(body))
+
+	formInput := map[string]any{}
+	if err := json.Unmarshal(body, &formInput); err != nil {
+		return oldInput
+	}
+
+	for key, value := range formInput {
+		if stringValue, ok := value.(string); ok {
+			oldInput[key] = stringValue
+		}
+	}
+
+	return oldInput
+}
+
+func saveOldInput(r *http.Request, oldInput map[string]string) {
+	manager, ok := session.SessionManagerFromContext(r.Context())
+	if !ok {
+		return
+	}
+	manager.SaveOldInput(r, oldInput)
 }
 
 func saveValidationError(r *http.Request, validationError *handlererror.ValidationError) {

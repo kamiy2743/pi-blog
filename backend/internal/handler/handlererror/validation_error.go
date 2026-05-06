@@ -27,21 +27,3 @@ func AsValidationError(err error) (*ValidationError, bool) {
 	}
 	return validationError, true
 }
-
-func RemapValidationError(
-	validationError *ValidationError,
-	remap func(field string) string,
-) *ValidationError {
-	if validationError == nil {
-		return nil
-	}
-
-	remappedMessages := make(map[string]string, len(validationError.Messages))
-	for field, message := range validationError.Messages {
-		remappedMessages[remap(field)] = message
-	}
-
-	return &ValidationError{
-		Messages: remappedMessages,
-	}
-}

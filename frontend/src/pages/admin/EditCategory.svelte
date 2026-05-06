@@ -9,14 +9,30 @@
   }
 
   export let categories: Category[] = []
+  export let oldInput: Record<string, string> = {}
   export let validationErrors: Record<string, string> = {}
   export let flash: Flash = {}
 
   let categoryDrafts: Record<number, string> = {}
   let deleteTarget: Category | null = null
 
+  function hasCreateFormOldInput() {
+    return oldInput.formKey === 'category.create'
+  }
+
+  function getUpdateFormKey(categoryId: number) {
+    return `category.update.${categoryId}`
+  }
+
+  function hasUpdateFormOldInput(categoryId: number) {
+    return oldInput.formKey === getUpdateFormKey(categoryId)
+  }
+
   $: categoryDrafts = Object.fromEntries(
-    categories.map((category) => [category.id, category.name]),
+    categories.map((category) => [
+      category.id,
+      hasUpdateFormOldInput(category.id) ? (oldInput.name ?? '') : category.name,
+    ]),
   )
 
   function updateCategoryDraft(categoryId: number, value: string) {
@@ -55,16 +71,18 @@
         options={{ preserveScroll: true, preserveState: false }}
         resetOnSuccess={true}
       >
+        <input type="hidden" name="formKey" value="category.create" />
         <label class="block">
           <span class="text-sm font-semibold">新しいカテゴリ名</span>
           <input
             class="mt-2 w-full rounded-lg border px-4 py-3"
             name="name"
             type="text"
+            value={hasCreateFormOldInput() ? (oldInput.name ?? '') : ''}
             autocomplete="off"
           />
-          {#if validationErrors['create.name']}
-            <p class="mt-2 text-sm font-semibold text-red-600">{validationErrors['create.name']}</p>
+          {#if hasCreateFormOldInput() && validationErrors.name}
+            <p class="mt-2 text-sm font-semibold text-red-600">{validationErrors.name}</p>
           {/if}
         </label>
 
@@ -108,6 +126,7 @@
                       method="post"
                       options={{ preserveScroll: true, preserveState: false }}
                     >
+                      <input type="hidden" name="formKey" value={getUpdateFormKey(category.id)} />
                       <input
                         class="w-full rounded-lg border px-3 py-2 text-sm"
                         name="name"
@@ -122,8 +141,8 @@
                         }}
                       />
                     </Form>
-                    {#if validationErrors[`update.name.${category.id}`]}
-                      <p class="mt-1 text-xs font-semibold text-red-600">{validationErrors[`update.name.${category.id}`]}</p>
+                    {#if hasUpdateFormOldInput(category.id) && validationErrors.name}
+                      <p class="mt-1 text-xs font-semibold text-red-600">{validationErrors.name}</p>
                     {/if}
                   </td>
                   <td class="whitespace-nowrap px-4 py-3">
