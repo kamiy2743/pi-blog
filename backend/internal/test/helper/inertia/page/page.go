@@ -97,7 +97,7 @@ func (response TestPageResponse) AssertFullProps(
 ) {
 	t.Helper()
 
-	response.AssertResponse(t, http.StatusOK, expectedComponent, expectedProps)
+	response.AssertResponse(t, 200, expectedComponent, expectedProps)
 }
 
 func (response TestPageResponse) AssertError(
@@ -167,8 +167,8 @@ func (response TestPageResponse) AssertPartialProps(
 ) {
 	t.Helper()
 
-	if response.StatusCode != http.StatusOK {
-		t.Fatalf("ステータスコードが不正です: expected=%d actual=%d", http.StatusOK, response.StatusCode)
+	if response.StatusCode != 200 {
+		t.Fatalf("ステータスコードが不正です: expected=%d actual=%d", 200, response.StatusCode)
 	}
 
 	if response.Component != expectedComponent {
@@ -191,8 +191,8 @@ func (response TestPageResponse) AssertPropsCount(
 ) {
 	t.Helper()
 
-	if response.StatusCode != http.StatusOK {
-		t.Fatalf("ステータスコードが不正です: expected=%d actual=%d", http.StatusOK, response.StatusCode)
+	if response.StatusCode != 200 {
+		t.Fatalf("ステータスコードが不正です: expected=%d actual=%d", 200, response.StatusCode)
 	}
 
 	if response.Component != componentName {
@@ -222,8 +222,8 @@ func (response TestPageResponse) AssertPropsValue(
 ) {
 	t.Helper()
 
-	if response.StatusCode != http.StatusOK {
-		t.Fatalf("ステータスコードが不正です: expected=%d actual=%d", http.StatusOK, response.StatusCode)
+	if response.StatusCode != 200 {
+		t.Fatalf("ステータスコードが不正です: expected=%d actual=%d", 200, response.StatusCode)
 	}
 
 	if response.Component != componentName {

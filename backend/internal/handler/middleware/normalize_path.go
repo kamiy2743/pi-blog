@@ -15,7 +15,7 @@ func NormalizePath() Middleware {
 					normalizedPath += "?" + r.URL.RawQuery
 				}
 
-				http.Redirect(w, r, normalizedPath, http.StatusPermanentRedirect)
+				http.Redirect(w, r, normalizedPath, 308)
 				return
 			}
 

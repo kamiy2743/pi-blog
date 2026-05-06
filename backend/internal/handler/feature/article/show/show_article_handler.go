@@ -22,7 +22,7 @@ func (h *Handler) Handle(r *http.Request) (handlerresult.PageResult, error) {
 	articleID, parseErr := article.ParseArticleID(r.PathValue("articleId"))
 	if parseErr != nil {
 		return handlerresult.PageResult{}, &handlererror.DisplayableError{
-			StatusCode: http.StatusNotFound,
+			StatusCode: 404,
 			Message:    "ページが見つかりません。",
 			Err:        parseErr,
 		}

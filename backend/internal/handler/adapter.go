@@ -81,7 +81,7 @@ func respondPageResult(
 		props["flash"] = session.FlashToMap(flash)
 	}
 
-	inertia.Render(w, r, inertiaApp, http.StatusOK, result.Component, props)
+	inertia.Render(w, r, inertiaApp, 200, result.Component, props)
 }
 
 func respondActionResult(
@@ -91,7 +91,7 @@ func respondActionResult(
 	result handlerresult.ActionResult,
 ) {
 	saveFlash(r, &session.Flash{Success: result.SuccessMessage})
-	inertiaApp.Redirect(w, r, result.RedirectTo, http.StatusSeeOther)
+	inertiaApp.Redirect(w, r, result.RedirectTo, 303)
 }
 
 func respondPageError(
@@ -109,9 +109,9 @@ func respondPageError(
 		return
 	}
 
-	inertia.Render(w, r, inertiaApp, http.StatusInternalServerError, "ErrorPage", gonertia.Props{
-		"statusCode": http.StatusInternalServerError,
-		"statusText": http.StatusText(http.StatusInternalServerError),
+	inertia.Render(w, r, inertiaApp, 500, "ErrorPage", gonertia.Props{
+		"statusCode": 500,
+		"statusText": http.StatusText(500),
 		"message":    "エラーが発生しました。",
 	})
 }
@@ -143,7 +143,7 @@ func respondRedirectBack(
 	flash *session.Flash,
 ) {
 	saveFlash(r, flash)
-	inertiaApp.Redirect(w, r, getRedirectBackURL(r), http.StatusSeeOther)
+	inertiaApp.Redirect(w, r, getRedirectBackURL(r), 303)
 }
 
 func saveValidationError(r *http.Request, validationError *handlererror.ValidationError) {

@@ -102,8 +102,8 @@ func toJSONBody(t *testing.T, value any) io.Reader {
 func (response TestActionResponse) AssertRedirectTo(t *testing.T, expectedLocation string) {
 	t.Helper()
 
-	if response.StatusCode != http.StatusSeeOther {
-		t.Fatalf("ステータスコードが不正です: expected=%d actual=%d", http.StatusSeeOther, response.StatusCode)
+	if response.StatusCode != 303 {
+		t.Fatalf("ステータスコードが不正です: expected=%d actual=%d", 303, response.StatusCode)
 	}
 
 	if response.Location != expectedLocation && !strings.HasSuffix(response.Location, expectedLocation) {

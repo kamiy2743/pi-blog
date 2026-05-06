@@ -71,13 +71,13 @@ func setUpAdminRoutes(
 
 func handleNotFound(r *http.Request) (handlerresult.PageResult, error) {
 	return handlerresult.PageResult{}, &handlererror.DisplayableError{
-		StatusCode: http.StatusNotFound,
+		StatusCode: 404,
 		Message:    "ページが見つかりません。",
 	}
 }
 
 func handleHealth(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/plain; charset=utf-8")
-	w.WriteHeader(http.StatusOK)
+	w.WriteHeader(200)
 	_, _ = w.Write([]byte("ok"))
 }
