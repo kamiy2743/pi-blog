@@ -84,9 +84,6 @@ func Testカテゴリの検索に失敗した場合はエラー(t *testing.T) {
 func Testカテゴリの作成に失敗した場合はエラー(t *testing.T) {
 	initResult := test.Init(t, &di.ContainerOptions{
 		CategoryRepository: stubCategory.CategoryRepositoryStub{
-			SearchFunc: func(ctx context.Context, criteria domainCategory.SearchCategoryCriteria) ([]domainCategory.Category, error) {
-				return []domainCategory.Category{}, nil
-			},
 			CreateFunc: func(ctx context.Context, input domainCategory.CreateCategoryInput) error {
 				return errors.New("test")
 			},

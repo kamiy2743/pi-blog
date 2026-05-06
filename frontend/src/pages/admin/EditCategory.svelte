@@ -122,8 +122,8 @@
                         }}
                       />
                     </Form>
-                    {#if validationErrors['update.name']}
-                      <p class="mt-1 text-xs font-semibold text-red-600">{validationErrors['update.name']}</p>
+                    {#if validationErrors[`update.name.${category.id}`]}
+                      <p class="mt-1 text-xs font-semibold text-red-600">{validationErrors[`update.name.${category.id}`]}</p>
                     {/if}
                   </td>
                   <td class="whitespace-nowrap px-4 py-3">

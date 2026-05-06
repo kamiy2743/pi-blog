@@ -1,4 +1,4 @@
-package store
+package update
 
 import (
 	"context"
@@ -17,15 +17,33 @@ func NewUsecase(categoryRepository category.CategoryRepository) *Usecase {
 	}
 }
 
-func (u *Usecase) run(ctx context.Context, input input) error {
-	createInput := category.CreateCategoryInput{
+func (u *Usecase) run(ctx context.Context, categoryID category.CategoryID, input input) error {
+	entity := category.Category{
+		ID:   categoryID,
 		Name: input.Name,
 	}
-	if err := createInput.Validate(); err != nil {
+	if err := entity.Validate(); err != nil {
 		return &handlererror.DisplayableError{
 			StatusCode: 400,
 			Message:    err.Error(),
 			Err:        err,
+		}
+	}
+
+	currentCategories, err := u.categoryRepository.Search(ctx, category.SearchCategoryCriteria{
+		IDs: []category.CategoryID{categoryID},
+	})
+	if err != nil {
+		return &handlererror.DisplayableError{
+			StatusCode: 500,
+			Message:    "カテゴリの更新に失敗しました。",
+			Err:        err,
+		}
+	}
+	if len(currentCategories) == 0 {
+		return &handlererror.DisplayableError{
+			StatusCode: 404,
+			Message:    "カテゴリが見つかりません。",
 		}
 	}
 
@@ -35,7 +53,7 @@ func (u *Usecase) run(ctx context.Context, input input) error {
 	if err != nil {
 		return &handlererror.DisplayableError{
 			StatusCode: 500,
-			Message:    "カテゴリの作成に失敗しました。",
+			Message:    "カテゴリの更新に失敗しました。",
 			Err:        err,
 		}
 	}
@@ -46,10 +64,10 @@ func (u *Usecase) run(ctx context.Context, input input) error {
 		}
 	}
 
-	if err := u.categoryRepository.Create(ctx, createInput); err != nil {
+	if err := u.categoryRepository.Update(ctx, entity); err != nil {
 		return &handlererror.DisplayableError{
 			StatusCode: 500,
-			Message:    "カテゴリの作成に失敗しました。",
+			Message:    "カテゴリの更新に失敗しました。",
 			Err:        err,
 		}
 	}
