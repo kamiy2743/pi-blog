@@ -17,6 +17,14 @@
     --color-text-muted: #94a3b8;
     /* セクション見出しやメタ情報に使うアクセント色。 */
     --color-accent: #059669;
+    /* 成功や完了状態に使う色。 */
+    --color-success: #22c994;
+    /* エラーや破壊的操作に使う色。 */
+    --color-danger: #ff3b3b;
+    /* 通知領域の文字色。 */
+    --color-flash-text: #ffffff;
+    /* 通知領域の罫線色。 */
+    --color-flash-border: rgba(255, 255, 255, 0.28);
     /* メインボタンの背景色。 */
     --color-button-bg: #1e293b;
     /* メインボタン hover 時の背景色。 */
@@ -137,6 +145,19 @@
     border-color: var(--color-accent);
     background: color-mix(in srgb, var(--color-accent) 12%, white);
     color: var(--color-accent);
+  }
+
+  .flash-message {
+    border-color: var(--color-flash-border);
+    color: var(--color-flash-text);
+  }
+
+  .flash-message-success {
+    background: var(--color-success);
+  }
+
+  .flash-message-error {
+    background: var(--color-danger);
   }
 
   .admin-page {

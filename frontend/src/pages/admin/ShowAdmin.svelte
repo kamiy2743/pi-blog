@@ -1,8 +1,6 @@
 <script lang="ts">
   import { Link, router } from '@inertiajs/svelte'
   import { ChevronRight } from 'lucide-svelte'
-  import FlashMessage from '../../components/FlashMessage.svelte'
-  import type { Flash } from '../../types/flash'
   import { formatDate } from '../../utils/date'
 
   type Article = {
@@ -43,7 +41,6 @@
     articles: [],
   }
   export let validationErrors: Record<string, string> = {}
-  export let flash: Flash = {}
 
   let titleInput = partialSearch.title
   let selectedCategoryIds: number[] = [...partialSearch.categoryIds]
@@ -112,8 +109,6 @@
 
     <main class="mt-6 grid gap-6 lg:grid-cols-[minmax(0,1fr)_320px]">
       <section class="space-y-4">
-        <FlashMessage {flash} />
-
         <div class="flex flex-wrap items-center justify-between gap-3">
           <div>
             <h2 class="text-2xl font-semibold">記事一覧</h2>

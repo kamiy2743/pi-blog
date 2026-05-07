@@ -1,9 +1,7 @@
 <script lang="ts">
   import { Link, router } from '@inertiajs/svelte'
   import { ChevronRight } from 'lucide-svelte'
-  import FlashMessage from '../../components/FlashMessage.svelte'
   import PublicSiteLink from '../../components/PublicSiteLink.svelte'
-  import type { Flash } from '../../types/flash'
   import { formatDate } from '../../utils/date'
 
   type Article = {
@@ -43,7 +41,6 @@
     articles: [],
   }
   export let validationErrors: Record<string, string> = {}
-  export let flash: Flash = {}
 
   let titleInput = partialSearch.title
   let selectedCategoryIds: number[] = [...partialSearch.categoryIds]
@@ -111,8 +108,6 @@
     </div>
 
     <div class="space-y-6 px-6 py-8 sm:px-8 lg:px-10 lg:py-10">
-      <FlashMessage {flash} />
-
       <details class="blog-side-card mx-auto max-w-4xl rounded-[1.5rem] border p-6 group">
         <summary class="flex cursor-pointer list-none items-center gap-3">
           <ChevronRight class="h-4 w-4 transition-transform group-open:rotate-90" aria-hidden="true" />

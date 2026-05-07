@@ -1,5 +1,6 @@
 import './app.css'
 import { createInertiaApp, type ResolvedComponent } from '@inertiajs/svelte'
+import AppLayout from './components/AppLayout.svelte'
 
 const pages = import.meta.glob<ResolvedComponent>('./pages/**/*.svelte')
 
@@ -11,5 +12,6 @@ createInertiaApp({
       throw new Error(`ページが見つかりません: ${name}`)
     }
     return pageImporter()
-  }
+  },
+  layout: () => AppLayout,
 })

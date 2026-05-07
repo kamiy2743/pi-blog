@@ -1,7 +1,5 @@
 <script lang="ts">
   import { Form } from '@inertiajs/svelte'
-  import FlashMessage from '../../components/FlashMessage.svelte'
-  import type { Flash } from '../../types/flash'
 
   type Category = {
     id: number
@@ -11,7 +9,6 @@
   export let categories: Category[] = []
   export let oldInput: Record<string, string> = {}
   export let validationErrors: Record<string, string> = {}
-  export let flash: Flash = {}
 
   let categoryDrafts: Record<number, string> = {}
   let deleteTarget: Category | null = null
@@ -57,8 +54,6 @@
 
 <div class="admin-page px-6 py-8 sm:px-8 lg:px-10 lg:py-10">
   <div class="mx-auto max-w-5xl">
-    <FlashMessage {flash} />
-
     <div class="admin-panel rounded-lg border px-6 py-8 sm:px-8">
       <p class="admin-eyebrow text-sm font-semibold">Category</p>
       <h1 class="mt-3 text-3xl font-semibold tracking-tight">カテゴリ編集</h1>
