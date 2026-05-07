@@ -5,7 +5,7 @@
   "scripts": {
     "vite-dev": "node ./server/dev-server.mjs",
     "build:client": "vite build --config vite.config.client.js",
-    "build:ssr": "vite build --ssr src/ssr.ts --config vite.config.ssr.js"
+    "build:ssr": "vite build --ssr server/ssr-server.ts --config vite.config.ssr.js"
   },
   "dependencies": {
     "typescript": "5.9.3",

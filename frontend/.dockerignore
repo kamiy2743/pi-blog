@@ -1,5 +1,6 @@
 **
 !public/
+!server/
 !src/
 !package.json
 !package-lock.json
