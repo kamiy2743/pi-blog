@@ -11,7 +11,9 @@
   let { flash = {}, children }: Props = $props()
 </script>
 
-{#if children}
-  {@render children()}
-{/if}
-<FlashMessage {flash} />
+<div>
+  {#if children}
+    {@render children()}
+  {/if}
+  <FlashMessage {flash} />
+</div>
