@@ -3,7 +3,6 @@ package show_test
 import (
 	"context"
 	"errors"
-	"net/http"
 	"net/http/httptest"
 	"strconv"
 	"testing"
@@ -392,7 +391,6 @@ func callEndpoint(
 	t.Helper()
 
 	return inertiaPage.Send(t, server, inertiaPage.TestPageRequest{
-		Method:       http.MethodGet,
 		Path:         "/admin",
 		QueryParams:  buildQuery(params),
 		UseBasicAuth: true,
@@ -407,7 +405,6 @@ func callPartialEndpoint(
 	t.Helper()
 
 	return inertiaPage.Send(t, server, inertiaPage.TestPageRequest{
-		Method:           http.MethodGet,
 		Path:             "/admin",
 		QueryParams:      buildQuery(params),
 		UseBasicAuth:     true,

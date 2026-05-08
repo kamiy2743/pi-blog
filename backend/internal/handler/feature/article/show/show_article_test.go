@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"net/http"
 	"net/http/httptest"
 	"testing"
 
@@ -44,8 +43,7 @@ func Test記事IDが不正な場合は404(t *testing.T) {
 	initResult := test.Init(t)
 
 	res := inertiaPage.Send(t, initResult.Server, inertiaPage.TestPageRequest{
-		Method: http.MethodGet,
-		Path:   "/article/invalid",
+		Path: "/article/invalid",
 	})
 
 	res.AssertError(t, 404, "ページが見つかりません。")
@@ -107,7 +105,6 @@ func callEndpoint(t *testing.T, server *httptest.Server, articleID uint32) inert
 	t.Helper()
 
 	return inertiaPage.Send(t, server, inertiaPage.TestPageRequest{
-		Method: http.MethodGet,
-		Path:   fmt.Sprintf("/article/%d", articleID),
+		Path: fmt.Sprintf("/article/%d", articleID),
 	})
 }

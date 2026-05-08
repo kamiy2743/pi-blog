@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"net/http"
 	"net/http/httptest"
 	"testing"
 
@@ -158,7 +157,6 @@ func setUpRecords(t *testing.T, entClient *ent.Client) records {
 
 func callEndpoint(t *testing.T, server *httptest.Server) inertiaPage.TestPageResponse {
 	return inertiaPage.Send(t, server, inertiaPage.TestPageRequest{
-		Method: http.MethodGet,
-		Path:   "/",
+		Path: "/",
 	})
 }

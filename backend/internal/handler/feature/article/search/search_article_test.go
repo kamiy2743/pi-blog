@@ -3,7 +3,6 @@ package search_test
 import (
 	"context"
 	"errors"
-	"net/http"
 	"net/http/httptest"
 	"strconv"
 	"testing"
@@ -398,7 +397,6 @@ func callEndpoint(
 	t.Helper()
 
 	return inertiaPage.Send(t, server, inertiaPage.TestPageRequest{
-		Method:      http.MethodGet,
 		Path:        "/article",
 		QueryParams: buildQuery(params),
 	})
@@ -412,7 +410,6 @@ func callPartialEndpoint(
 	t.Helper()
 
 	return inertiaPage.Send(t, server, inertiaPage.TestPageRequest{
-		Method:           http.MethodGet,
 		Path:             "/article",
 		QueryParams:      buildQuery(params),
 		PartialComponent: "article/ShowArticleList",

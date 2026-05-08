@@ -3,7 +3,6 @@ package edit_test
 import (
 	"context"
 	"errors"
-	"net/http"
 	"net/http/httptest"
 	"testing"
 
@@ -68,7 +67,6 @@ func callEndpoint(t *testing.T, server *httptest.Server) inertiaPage.TestPageRes
 	t.Helper()
 
 	return inertiaPage.Send(t, server, inertiaPage.TestPageRequest{
-		Method:       http.MethodGet,
 		Path:         "/admin/category",
 		UseBasicAuth: true,
 	})
