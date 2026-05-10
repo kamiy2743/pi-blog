@@ -7,15 +7,15 @@ import (
 )
 
 type ArticleRepositoryStub struct {
-	CreateFunc   func(ctx context.Context, input domainArticle.CreateArticleInput) (domainArticle.Article, error)
+	CreateFunc   func(ctx context.Context, input domainArticle.CreateArticleInput) error
 	UpdateFunc   func(ctx context.Context, article domainArticle.Article) error
 	SearchFunc   func(ctx context.Context, criteria domainArticle.SearchArticleCriteria) ([]domainArticle.Article, error)
 	PaginateFunc func(ctx context.Context, criteria domainArticle.PaginateArticleCriteria) (domainArticle.PaginatedArticles, error)
 }
 
-func (s ArticleRepositoryStub) Create(ctx context.Context, input domainArticle.CreateArticleInput) (domainArticle.Article, error) {
+func (s ArticleRepositoryStub) Create(ctx context.Context, input domainArticle.CreateArticleInput) error {
 	if s.CreateFunc == nil {
-		return domainArticle.Article{}, nil
+		return nil
 	}
 	return s.CreateFunc(ctx, input)
 }

@@ -16,10 +16,8 @@ import (
 )
 
 type TestPageRequest struct {
-	Method           string
 	Path             string
 	QueryParams      map[string][]string
-	Body             io.Reader
 	UseBasicAuth     bool
 	PartialComponent string
 	PartialData      []string
@@ -34,10 +32,6 @@ type TestPageResponse struct {
 
 func Send(t *testing.T, server *httptest.Server, request TestPageRequest) TestPageResponse {
 	t.Helper()
-
-	if request.Method == "" {
-		t.Fatalf("Inertia page リクエストの Method は必須です")
-	}
 
 	requestURL, err := url.JoinPath(server.URL, request.Path)
 	if err != nil {
@@ -54,7 +48,7 @@ func Send(t *testing.T, server *httptest.Server, request TestPageRequest) TestPa
 		requestURL += "?" + values.Encode()
 	}
 
-	req, err := http.NewRequest(request.Method, requestURL, request.Body)
+	req, err := http.NewRequest(http.MethodGet, requestURL, nil)
 	if err != nil {
 		t.Fatalf("Inertia page リクエストの作成に失敗しました: %v", err)
 	}

@@ -20,13 +20,16 @@ type Article struct {
 }
 
 type CreateArticleInput struct {
-	Title      string
-	Body       string
-	Categories []category.Category
+	Title          string
+	Body           string
+	IsPublished    bool
+	PublishStartAt *time.Time
+	PublishEndAt   *time.Time
+	Categories     []category.Category
 }
 
 func (a Article) Validate() error {
-	if err := validateContent(a.Title, a.Body, a.Categories); err != nil {
+	if err := validateContent(a.Title, a.Body, a.PublishStartAt, a.PublishEndAt, a.Categories); err != nil {
 		return err
 	}
 	if a.UpdatedAt.IsZero() {
@@ -36,18 +39,27 @@ func (a Article) Validate() error {
 }
 
 func (a CreateArticleInput) Validate() error {
-	if err := validateContent(a.Title, a.Body, a.Categories); err != nil {
+	if err := validateContent(a.Title, a.Body, a.PublishStartAt, a.PublishEndAt, a.Categories); err != nil {
 		return err
 	}
 	return nil
 }
 
-func validateContent(title string, body string, categories []category.Category) error {
+func validateContent(
+	title string,
+	body string,
+	publishStartAt *time.Time,
+	publishEndAt *time.Time,
+	categories []category.Category,
+) error {
 	if strings.TrimSpace(title) == "" {
 		return errors.New("記事タイトルは必須です")
 	}
 	if strings.TrimSpace(body) == "" {
 		return errors.New("記事本文は必須です")
+	}
+	if publishStartAt != nil && publishEndAt != nil && publishEndAt.Before(*publishStartAt) {
+		return errors.New("公開終了時刻は公開開始時刻以降を指定してください")
 	}
 	for _, category := range categories {
 		if err := category.Validate(); err != nil {

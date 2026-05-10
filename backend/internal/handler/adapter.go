@@ -6,6 +6,7 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"strings"
 
 	"blog/internal/handler/handlererror"
 	"blog/internal/handler/handlerresult"
@@ -171,10 +172,31 @@ func captureOldInput(r *http.Request) map[string]string {
 	for key, value := range formInput {
 		if stringValue, ok := value.(string); ok {
 			oldInput[key] = stringValue
+			continue
+		}
+		if stringValues, ok := toStringSlice(value); ok {
+			oldInput[key] = strings.Join(stringValues, ",")
 		}
 	}
 
 	return oldInput
+}
+
+func toStringSlice(value any) ([]string, bool) {
+	values, ok := value.([]any)
+	if !ok {
+		return nil, false
+	}
+
+	stringValues := make([]string, 0, len(values))
+	for _, value := range values {
+		stringValue, ok := value.(string)
+		if !ok {
+			return nil, false
+		}
+		stringValues = append(stringValues, stringValue)
+	}
+	return stringValues, true
 }
 
 func saveOldInput(r *http.Request, oldInput map[string]string) {

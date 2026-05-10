@@ -19,8 +19,28 @@ func NewArticleRepository(client *ent.Client) *ArticleRepository {
 	return &ArticleRepository{client: client}
 }
 
-func (r *ArticleRepository) Create(ctx context.Context, input domainArticle.CreateArticleInput) (domainArticle.Article, error) {
-	return domainArticle.Article{}, nil
+func (r *ArticleRepository) Create(ctx context.Context, input domainArticle.CreateArticleInput) error {
+	if err := input.Validate(); err != nil {
+		return err
+	}
+
+	builder := r.client.Article.Create().
+		SetTitle(input.Title).
+		SetBody(input.Body).
+		SetIsPublished(input.IsPublished).
+		SetNillablePublishStartAt(input.PublishStartAt).
+		SetNillablePublishEndAt(input.PublishEndAt)
+
+	if len(input.Categories) > 0 {
+		categoryIDs := make([]uint32, 0, len(input.Categories))
+		for _, category := range input.Categories {
+			categoryIDs = append(categoryIDs, uint32(category.ID))
+		}
+		builder.AddCategoryIDs(categoryIDs...)
+	}
+
+	_, err := builder.Save(ctx)
+	return err
 }
 
 func (r *ArticleRepository) Update(ctx context.Context, input domainArticle.Article) error {

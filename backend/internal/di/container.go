@@ -59,15 +59,17 @@ func NewContainer(entClient *ent.Client, options *ContainerOptions) *Container {
 	storeCategoryUsecase := storeCategoryHandler.NewUsecase(categoryRepository)
 	updateCategoryUsecase := updateCategoryHandler.NewUsecase(categoryRepository)
 	destroyCategoryUsecase := destroyCategoryHandler.NewUsecase(categoryRepository)
+	createArticleUsecase := createArticleHandler.NewUsecase(categoryRepository)
+	storeArticleUsecase := storeArticleHandler.NewUsecase(articleRepository, categoryRepository)
 	showAdminUsecase := showAdminHandler.NewUsecase(articleRepository, categoryRepository)
 	searchArticleUsecase := searchArticleHandler.NewUsecase(articleRepository, categoryRepository)
 	showArticleUsecase := showArticleHandler.NewUsecase(articleRepository)
 	showTopUsecase := showTopHandler.NewUsecase(articleRepository, categoryRepository)
 
 	return &Container{
-		CreateArticleHandler:   createArticleHandler.NewHandler(),
+		CreateArticleHandler:   createArticleHandler.NewHandler(createArticleUsecase),
 		EditArticleHandler:     editArticleHandler.NewHandler(),
-		StoreArticleHandler:    storeArticleHandler.NewHandler(),
+		StoreArticleHandler:    storeArticleHandler.NewHandler(storeArticleUsecase),
 		UpdateArticleHandler:   updateArticleHandler.NewHandler(),
 		DestroyCategoryHandler: destroyCategoryHandler.NewHandler(destroyCategoryUsecase),
 		EditCategoryHandler:    editCategoryHandler.NewHandler(editCategoryUsecase),

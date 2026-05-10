@@ -6,12 +6,21 @@ import (
 	"blog/internal/handler/handlerresult"
 )
 
-type Handler struct{}
+type Handler struct {
+	usecase *Usecase
+}
 
-func NewHandler() *Handler {
-	return &Handler{}
+func NewHandler(u *Usecase) *Handler {
+	return &Handler{
+		usecase: u,
+	}
 }
 
 func (h *Handler) Handle(r *http.Request) (handlerresult.PageResult, error) {
-	return handlerresult.Page("admin/CreateArticle", nil), nil
+	result, err := h.usecase.run(r.Context())
+	if err != nil {
+		return handlerresult.PageResult{}, err
+	}
+
+	return handlerresult.Page("admin/CreateArticle", format(result)), nil
 }
