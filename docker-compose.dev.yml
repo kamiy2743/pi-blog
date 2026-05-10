@@ -114,14 +114,19 @@ services:
     working_dir: /app
     command: ["bash", "-lc", "if [ ! -x node_modules/.bin/vite ]; then npm ci; fi && npm run vite-dev"]
     env_file: ./frontend/.env
+    environment:
+      HOME: /tmp/
     volumes:
       - ./frontend/:/app/
       - node_modules:/app/node_modules/
     security_opt:
       - no-new-privileges:true
     read_only: true
+    tmpfs:
+      - /tmp/
     networks:
       - private
+      - egress
     restart: unless-stopped
     
   mcp:
