@@ -29,7 +29,7 @@ func (u *Usecase) run(ctx context.Context, input input) error {
 		return err
 	}
 
-	bodyHTML, err := article.RenderMarkdownToHTML(input.Body)
+	bodyHTML, err := article.ConvertMarkdownToHTML(input.Body)
 	if err != nil {
 		return &handlererror.DisplayableError{
 			StatusCode: 400,

@@ -30,7 +30,7 @@ func Test記事を表示できる(t *testing.T) {
 		"article": gonertia.Props{
 			"id":       article.ID,
 			"title":    "title",
-			"bodyHTML": "body",
+			"bodyHTML": "bodyHTML",
 			"date":     "2026-01-01T00:00:00Z",
 			"categoryNames": []string{
 				"Go",
@@ -91,7 +91,8 @@ func setUpRecord(t *testing.T, entClient *ent.Client, isPublished bool) *ent.Art
 		entClient,
 		fixtureArticle.CreateArticleInput{
 			Title:        "title",
-			BodyMarkdown: "body",
+			BodyMarkdown: "bodyMarkdown",
+			BodyHTML:     "bodyHTML",
 			IsPublished:  isPublished,
 			UpdatedAt:    helper.TimePtr(t, "2026-01-01 00:00"),
 			Categories: []*ent.Category{
