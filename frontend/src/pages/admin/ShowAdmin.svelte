@@ -1,6 +1,7 @@
 <script lang="ts">
   import { Link, router } from '@inertiajs/svelte'
   import { ChevronRight } from 'lucide-svelte'
+  import type { ValidationErrors } from '../../types/form'
   import { formatDate } from '../../utils/date'
 
   type Article = {
@@ -40,7 +41,7 @@
     totalPages: 1,
     articles: [],
   }
-  export let validationErrors: Record<string, string> = {}
+  export let validationErrors: ValidationErrors = {}
 
   let titleInput = partialSearch.title
   let selectedCategoryIds: number[] = [...partialSearch.categoryIds]

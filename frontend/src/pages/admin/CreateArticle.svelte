@@ -1,5 +1,6 @@
 <script lang="ts">
   import { Form, Link } from '@inertiajs/svelte'
+  import { getOldInputString, getOldInputStringList, type OldInput, type ValidationErrors } from '../../types/form'
 
   type Category = {
     id: number
@@ -7,13 +8,11 @@
   }
 
   export let categories: Category[] = []
-  export let oldInput: Record<string, string> = {}
-  export let validationErrors: Record<string, string> = {}
+  export let oldInput: OldInput = {}
+  export let validationErrors: ValidationErrors = {}
 
-  let isPublished = oldInput.isPublished === 'true'
-  let selectedCategoryIds = oldInput.categoryIds
-    ? oldInput.categoryIds.split(',').filter((categoryId) => categoryId !== '')
-    : []
+  let isPublished = getOldInputString(oldInput, 'isPublished') === 'true'
+  let selectedCategoryIds = getOldInputStringList(oldInput, 'categoryIds')
 </script>
 
 <svelte:head>
@@ -35,11 +34,12 @@
       action="/admin/article/new"
       method="post"
       options={{ preserveScroll: true, preserveState: false }}
+      transform={(data: Record<string, unknown>) => ({
+        ...data,
+        categoryIds: selectedCategoryIds,
+      })}
     >
       <input type="hidden" name="isPublished" value={isPublished ? 'true' : 'false'} />
-      {#each selectedCategoryIds as categoryId}
-        <input type="hidden" name="categoryIds" value={categoryId} />
-      {/each}
 
       <section class="admin-panel rounded-lg border px-6 py-6 sm:px-8">
         <div class="space-y-6">
@@ -49,7 +49,7 @@
               class="mt-2 w-full rounded-lg border px-4 py-3"
               name="title"
               type="text"
-              value={oldInput.title ?? ''}
+              value={getOldInputString(oldInput, 'title')}
               autocomplete="off"
             />
             {#if validationErrors.title}
@@ -62,7 +62,7 @@
             <textarea
               class="mt-2 min-h-96 w-full resize-y rounded-lg border px-4 py-3 font-mono text-sm leading-7"
               name="body"
-              value={oldInput.body ?? ''}
+              value={getOldInputString(oldInput, 'body')}
               placeholder="Markdown"
             ></textarea>
             {#if validationErrors.body}
@@ -91,7 +91,7 @@
               class="mt-2 w-full rounded-lg border px-3 py-2 text-sm"
               name="publishStartAt"
               type="datetime-local"
-              value={oldInput.publishStartAt ?? ''}
+              value={getOldInputString(oldInput, 'publishStartAt')}
             />
             {#if validationErrors.publishStartAt}
               <p class="mt-2 text-sm font-semibold text-red-600">{validationErrors.publishStartAt}</p>
@@ -104,7 +104,7 @@
               class="mt-2 w-full rounded-lg border px-3 py-2 text-sm"
               name="publishEndAt"
               type="datetime-local"
-              value={oldInput.publishEndAt ?? ''}
+              value={getOldInputString(oldInput, 'publishEndAt')}
             />
             {#if validationErrors.publishEndAt}
               <p class="mt-2 text-sm font-semibold text-red-600">{validationErrors.publishEndAt}</p>

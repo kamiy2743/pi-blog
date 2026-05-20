@@ -1,5 +1,6 @@
 <script lang="ts">
   import { Form } from '@inertiajs/svelte'
+  import { getOldInputString, type OldInput, type ValidationErrors } from '../../types/form'
 
   type Category = {
     id: number
@@ -7,14 +8,14 @@
   }
 
   export let categories: Category[] = []
-  export let oldInput: Record<string, string> = {}
-  export let validationErrors: Record<string, string> = {}
+  export let oldInput: OldInput = {}
+  export let validationErrors: ValidationErrors = {}
 
   let categoryDrafts: Record<number, string> = {}
   let deleteTarget: Category | null = null
 
   function hasCreateFormOldInput() {
-    return oldInput.formKey === 'category.create'
+    return getOldInputString(oldInput, 'formKey') === 'category.create'
   }
 
   function getUpdateFormKey(categoryId: number) {
@@ -22,13 +23,13 @@
   }
 
   function hasUpdateFormOldInput(categoryId: number) {
-    return oldInput.formKey === getUpdateFormKey(categoryId)
+    return getOldInputString(oldInput, 'formKey') === getUpdateFormKey(categoryId)
   }
 
   $: categoryDrafts = Object.fromEntries(
     categories.map((category) => [
       category.id,
-      hasUpdateFormOldInput(category.id) ? (oldInput.name ?? '') : category.name,
+      hasUpdateFormOldInput(category.id) ? getOldInputString(oldInput, 'name') : category.name,
     ]),
   )
 
@@ -73,7 +74,7 @@
             class="mt-2 w-full rounded-lg border px-4 py-3"
             name="name"
             type="text"
-            value={hasCreateFormOldInput() ? (oldInput.name ?? '') : ''}
+            value={hasCreateFormOldInput() ? getOldInputString(oldInput, 'name') : ''}
             autocomplete="off"
           />
           {#if hasCreateFormOldInput() && validationErrors.name}
