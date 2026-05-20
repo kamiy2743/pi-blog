@@ -27,8 +27,10 @@ type SessionManager struct {
 	manager *scs.SessionManager
 }
 
+type OldInput map[string]any
+
 type SessionPayload struct {
-	OldInput        map[string]string
+	OldInput        OldInput
 	ValidationError *handlererror.ValidationError
 	Flash           *Flash
 }
@@ -63,7 +65,7 @@ func SessionManagerFromContext(ctx context.Context) (*SessionManager, bool) {
 	return manager, ok
 }
 
-func (m *SessionManager) SaveOldInput(r *http.Request, oldInput map[string]string) {
+func (m *SessionManager) SaveOldInput(r *http.Request, oldInput OldInput) {
 	if len(oldInput) == 0 {
 		return
 	}
@@ -109,7 +111,7 @@ func (m *SessionManager) GetSessionPayload(r *http.Request) SessionPayload {
 }
 
 func (m *SessionManager) sessionPayload(r *http.Request, pop bool) SessionPayload {
-	oldInput := map[string]string{}
+	oldInput := OldInput{}
 	oldInputJSON := m.manager.GetString(r.Context(), oldInputKey)
 	if pop {
 		oldInputJSON = m.manager.PopString(r.Context(), oldInputKey)

@@ -13,6 +13,8 @@ import (
 	"blog/internal/di"
 	domainArticle "blog/internal/domain/article"
 	domainCategory "blog/internal/domain/category"
+	"blog/internal/handler/handlererror"
+	"blog/internal/handler/session"
 	"blog/internal/test"
 	fixtureCategory "blog/internal/test/fixture/category"
 	"blog/internal/test/helper"
@@ -57,17 +59,17 @@ func Testタイトルが空ならバリデーションエラー(t *testing.T) {
 		"isPublished":    "false",
 		"publishStartAt": "",
 		"publishEndAt":   "",
-		"categoryIds":    []string{"1", "2"},
+		"categoryIds":    []any{"1", "2"},
 	})
 
 	res.AssertRedirectTo(t, "/admin/article/new")
-	res.AssertOldInput(t, initResult.Server, initResult.SessionManager, map[string]string{
+	res.AssertOldInput(t, initResult.Server, initResult.SessionManager, session.OldInput{
 		"title":          "",
 		"body":           "content",
 		"isPublished":    "false",
 		"publishStartAt": "",
 		"publishEndAt":   "",
-		"categoryIds":    "1,2",
+		"categoryIds":    []any{"1", "2"},
 	})
 	res.AssertValidationError(t, initResult.Server, initResult.SessionManager, handlererror.ValidationErrorMessages{
 		"title": "タイトルを入力してください。",
@@ -85,17 +87,17 @@ func Test本文が空ならバリデーションエラー(t *testing.T) {
 		"isPublished":    "false",
 		"publishStartAt": "",
 		"publishEndAt":   "",
-		"categoryIds":    []string{},
+		"categoryIds":    []any{},
 	})
 
 	res.AssertRedirectTo(t, "/admin/article/new")
-	res.AssertOldInput(t, initResult.Server, initResult.SessionManager, map[string]string{
+	res.AssertOldInput(t, initResult.Server, initResult.SessionManager, session.OldInput{
 		"title":          "title",
 		"body":           "",
 		"isPublished":    "false",
 		"publishStartAt": "",
 		"publishEndAt":   "",
-		"categoryIds":    "",
+		"categoryIds":    []any{},
 	})
 	res.AssertValidationError(t, initResult.Server, initResult.SessionManager, handlererror.ValidationErrorMessages{
 		"body": "本文を入力してください。",
@@ -113,7 +115,7 @@ func Test公開状態がboolでなければバリデーションエラー(t *tes
 		"isPublished":    "invalid",
 		"publishStartAt": "",
 		"publishEndAt":   "",
-		"categoryIds":    []string{},
+		"categoryIds":    []any{},
 	})
 
 	res.AssertRedirectTo(t, "/admin/article/new")
@@ -133,17 +135,17 @@ func Test公開終了時刻が公開開始時刻より前ならバリデーシ�
 		"isPublished":    "false",
 		"publishStartAt": "2026-01-03T04:05",
 		"publishEndAt":   "2026-01-02T03:04",
-		"categoryIds":    []string{},
+		"categoryIds":    []any{},
 	})
 
 	res.AssertRedirectTo(t, "/admin/article/new")
-	res.AssertOldInput(t, initResult.Server, initResult.SessionManager, map[string]string{
+	res.AssertOldInput(t, initResult.Server, initResult.SessionManager, session.OldInput{
 		"title":          "title",
 		"body":           "content",
 		"isPublished":    "false",
 		"publishStartAt": "2026-01-03T04:05",
 		"publishEndAt":   "2026-01-02T03:04",
-		"categoryIds":    "",
+		"categoryIds":    []any{},
 	})
 	res.AssertValidationError(t, initResult.Server, initResult.SessionManager, handlererror.ValidationErrorMessages{
 		"publishStartAt": "公開開始時刻は公開終了時刻より前を指定してください。",

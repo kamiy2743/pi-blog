@@ -116,7 +116,7 @@ func (response TestActionResponse) AssertOldInput(
 	t *testing.T,
 	server *httptest.Server,
 	manager *session.SessionManager,
-	expectedOldInput map[string]string,
+	expectedOldInput session.OldInput,
 ) {
 	t.Helper()
 

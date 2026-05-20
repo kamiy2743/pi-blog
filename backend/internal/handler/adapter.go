@@ -6,7 +6,6 @@ import (
 	"io"
 	"log"
 	"net/http"
-	"strings"
 
 	"blog/internal/handler/handlererror"
 	"blog/internal/handler/handlerresult"
@@ -155,8 +154,8 @@ func respondRedirectBack(
 	inertiaApp.Redirect(w, r, getRedirectBackURL(r), 303)
 }
 
-func captureOldInput(r *http.Request) map[string]string {
-	oldInput := map[string]string{}
+func captureOldInput(r *http.Request) session.OldInput {
+	oldInput := session.OldInput{}
 
 	body, err := io.ReadAll(r.Body)
 	if err != nil {
@@ -164,42 +163,14 @@ func captureOldInput(r *http.Request) map[string]string {
 	}
 	r.Body = io.NopCloser(bytes.NewReader(body))
 
-	formInput := map[string]any{}
-	if err := json.Unmarshal(body, &formInput); err != nil {
+	if err := json.Unmarshal(body, &oldInput); err != nil {
 		return oldInput
-	}
-
-	for key, value := range formInput {
-		if stringValue, ok := value.(string); ok {
-			oldInput[key] = stringValue
-			continue
-		}
-		if stringValues, ok := toStringSlice(value); ok {
-			oldInput[key] = strings.Join(stringValues, ",")
-		}
 	}
 
 	return oldInput
 }
 
-func toStringSlice(value any) ([]string, bool) {
-	values, ok := value.([]any)
-	if !ok {
-		return nil, false
-	}
-
-	stringValues := make([]string, 0, len(values))
-	for _, value := range values {
-		stringValue, ok := value.(string)
-		if !ok {
-			return nil, false
-		}
-		stringValues = append(stringValues, stringValue)
-	}
-	return stringValues, true
-}
-
-func saveOldInput(r *http.Request, oldInput map[string]string) {
+func saveOldInput(r *http.Request, oldInput session.OldInput) {
 	manager, ok := session.SessionManagerFromContext(r.Context())
 	if !ok {
 		return

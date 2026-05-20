@@ -68,7 +68,7 @@ func parseCategoryIDs(values []string) ([]category.CategoryID, *handlererror.Val
 		}
 		categoryID, err := category.ParseCategoryID(strings.TrimSpace(rawID))
 		if err != nil {
-			return nil, &handlererror.ValidationError{Messages: map[string]string{
+			return nil, &handlererror.ValidationError{Messages: handlererror.ValidationErrorMessages{
 				"categoryIds": "選択したカテゴリが不正です。",
 			}}
 		}

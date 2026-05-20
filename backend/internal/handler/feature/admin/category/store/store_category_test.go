@@ -11,6 +11,7 @@ import (
 	"blog/internal/di"
 	domainCategory "blog/internal/domain/category"
 	"blog/internal/handler/handlererror"
+	"blog/internal/handler/session"
 	"blog/internal/test"
 	fixtureCategory "blog/internal/test/fixture/category"
 	"blog/internal/test/helper"
@@ -35,7 +36,7 @@ func Testカテゴリ名が空ならバリデーションエラー(t *testing.T)
 	res := callEndpoint(t, initResult.Server, "")
 	res.AssertRedirectTo(t, "/admin/category")
 
-	res.AssertOldInput(t, initResult.Server, initResult.SessionManager, map[string]string{
+	res.AssertOldInput(t, initResult.Server, initResult.SessionManager, session.OldInput{
 		"formKey": "category.create",
 		"name":    "",
 	})
@@ -53,7 +54,7 @@ func Testカテゴリ名が64文字を超えたらバリデーションエラー
 	res := callEndpoint(t, initResult.Server, name)
 	res.AssertRedirectTo(t, "/admin/category")
 
-	res.AssertOldInput(t, initResult.Server, initResult.SessionManager, map[string]string{
+	res.AssertOldInput(t, initResult.Server, initResult.SessionManager, session.OldInput{
 		"formKey": "category.create",
 		"name":    name,
 	})
@@ -71,7 +72,7 @@ func Testカテゴリ名が重複した場合はエラー(t *testing.T) {
 	res := callEndpoint(t, initResult.Server, "Go")
 	res.AssertRedirectTo(t, "/admin/category")
 
-	res.AssertOldInput(t, initResult.Server, initResult.SessionManager, map[string]string{
+	res.AssertOldInput(t, initResult.Server, initResult.SessionManager, session.OldInput{
 		"formKey": "category.create",
 		"name":    "Go",
 	})
