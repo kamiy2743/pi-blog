@@ -124,7 +124,7 @@ func (m *SessionManager) sessionPayload(r *http.Request, pop bool) SessionPayloa
 		validationErrorsJSON = m.manager.PopString(r.Context(), validationErrorsKey)
 	}
 	if validationErrorsJSON != "" {
-		validationErrors := map[string]string{}
+		validationErrors := handlererror.ValidationErrorMessages{}
 		json.Unmarshal([]byte(validationErrorsJSON), &validationErrors)
 		validationError = &handlererror.ValidationError{Messages: validationErrors}
 	}

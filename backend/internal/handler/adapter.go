@@ -249,7 +249,7 @@ func selectValidationError(
 	if sessionValidationError != nil && !sessionValidationError.IsEmpty() {
 		return sessionValidationError
 	}
-	return &handlererror.ValidationError{Messages: map[string]string{}}
+	return &handlererror.ValidationError{Messages: handlererror.ValidationErrorMessages{}}
 }
 
 func selectFlash(

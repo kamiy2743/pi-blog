@@ -12,6 +12,7 @@ import (
 	"testing"
 
 	"blog/internal/config"
+	"blog/internal/handler/handlererror"
 	"blog/internal/handler/session"
 	"blog/internal/test/helper"
 )
@@ -127,7 +128,7 @@ func (response TestActionResponse) AssertValidationError(
 	t *testing.T,
 	server *httptest.Server,
 	manager *session.SessionManager,
-	expectedMessages map[string]string,
+	expectedMessages handlererror.ValidationErrorMessages,
 ) {
 	t.Helper()
 

@@ -31,7 +31,7 @@ func Validate[T any](
 	var validationErrors goValidator.ValidationErrors
 	errors.As(err, &validationErrors)
 
-	messages := make(map[string]string, len(validationErrors))
+	messages := make(handlererror.ValidationErrorMessages, len(validationErrors))
 	for _, validationError := range validationErrors {
 		field := validationError.Field()
 		message := getValidationMessage(field, validationError.Tag())

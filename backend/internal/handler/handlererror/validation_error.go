@@ -6,8 +6,10 @@ import (
 )
 
 type ValidationError struct {
-	Messages map[string]string
+	Messages ValidationErrorMessages
 }
+
+type ValidationErrorMessages map[string]string
 
 func (e ValidationError) Error() string {
 	return fmt.Sprintf("validation error: %+v", e.Messages)

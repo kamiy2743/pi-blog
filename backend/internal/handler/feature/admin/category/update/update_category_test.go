@@ -11,6 +11,7 @@ import (
 	"blog/internal/db/ent"
 	"blog/internal/di"
 	domainCategory "blog/internal/domain/category"
+	"blog/internal/handler/handlererror"
 	"blog/internal/test"
 	fixtureCategory "blog/internal/test/fixture/category"
 	"blog/internal/test/helper"
@@ -41,7 +42,7 @@ func Testカテゴリ名が空ならバリデーションエラー(t *testing.T)
 		"formKey": "category.update." + strconv.FormatUint(uint64(category.ID), 10),
 		"name":    "",
 	})
-	res.AssertValidationError(t, initResult.Server, initResult.SessionManager, map[string]string{
+	res.AssertValidationError(t, initResult.Server, initResult.SessionManager, handlererror.ValidationErrorMessages{
 		"name": "カテゴリ名を入力してください。",
 	})
 
@@ -61,7 +62,7 @@ func Testカテゴリ名が64文字を超えたらバリデーションエラー
 		"formKey": "category.update." + strconv.FormatUint(uint64(category.ID), 10),
 		"name":    name,
 	})
-	res.AssertValidationError(t, initResult.Server, initResult.SessionManager, map[string]string{
+	res.AssertValidationError(t, initResult.Server, initResult.SessionManager, handlererror.ValidationErrorMessages{
 		"name": "カテゴリ名は64文字以下で入力してください。",
 	})
 
