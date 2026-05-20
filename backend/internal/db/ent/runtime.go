@@ -21,15 +21,15 @@ func init() {
 	// article.TitleValidator is a validator for the "title" field. It is called by the builders before save.
 	article.TitleValidator = articleDescTitle.Validators[0].(func(string) error)
 	// articleDescIsPublished is the schema descriptor for is_published field.
-	articleDescIsPublished := articleFields[3].Descriptor()
+	articleDescIsPublished := articleFields[4].Descriptor()
 	// article.DefaultIsPublished holds the default value on creation for the is_published field.
 	article.DefaultIsPublished = articleDescIsPublished.Default.(bool)
 	// articleDescCreatedAt is the schema descriptor for created_at field.
-	articleDescCreatedAt := articleFields[6].Descriptor()
+	articleDescCreatedAt := articleFields[7].Descriptor()
 	// article.DefaultCreatedAt holds the default value on creation for the created_at field.
 	article.DefaultCreatedAt = articleDescCreatedAt.Default.(func() time.Time)
 	// articleDescUpdatedAt is the schema descriptor for updated_at field.
-	articleDescUpdatedAt := articleFields[7].Descriptor()
+	articleDescUpdatedAt := articleFields[8].Descriptor()
 	// article.DefaultUpdatedAt holds the default value on creation for the updated_at field.
 	article.DefaultUpdatedAt = articleDescUpdatedAt.Default.(func() time.Time)
 	// article.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.

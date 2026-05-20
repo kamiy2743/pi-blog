@@ -29,9 +29,19 @@ func (u *Usecase) run(ctx context.Context, input input) error {
 		return err
 	}
 
+	bodyHTML, err := article.RenderMarkdownToHTML(input.Body)
+	if err != nil {
+		return &handlererror.DisplayableError{
+			StatusCode: 400,
+			Message:    "本文のHTML変換に失敗しました。",
+			Err:        err,
+		}
+	}
+
 	createInput := article.CreateArticleInput{
 		Title:          input.Title,
-		Body:           input.Body,
+		BodyMarkdown:   input.Body,
+		BodyHTML:       bodyHTML,
 		IsPublished:    input.IsPublished,
 		PublishStartAt: input.PublishStartAt,
 		PublishEndAt:   input.PublishEndAt,

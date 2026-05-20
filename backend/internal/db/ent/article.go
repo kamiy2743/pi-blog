@@ -19,8 +19,10 @@ type Article struct {
 	ID uint32 `json:"id,omitempty"`
 	// Title holds the value of the "title" field.
 	Title string `json:"title,omitempty"`
-	// Body holds the value of the "body" field.
-	Body string `json:"body,omitempty"`
+	// BodyMarkdown holds the value of the "body_markdown" field.
+	BodyMarkdown string `json:"body_markdown,omitempty"`
+	// BodyHTML holds the value of the "body_html" field.
+	BodyHTML string `json:"body_html,omitempty"`
 	// IsPublished holds the value of the "is_published" field.
 	IsPublished bool `json:"is_published,omitempty"`
 	// PublishStartAt holds the value of the "publish_start_at" field.
@@ -75,7 +77,7 @@ func (*Article) scanValues(columns []string) ([]any, error) {
 			values[i] = new(sql.NullBool)
 		case article.FieldID:
 			values[i] = new(sql.NullInt64)
-		case article.FieldTitle, article.FieldBody:
+		case article.FieldTitle, article.FieldBodyMarkdown, article.FieldBodyHTML:
 			values[i] = new(sql.NullString)
 		case article.FieldPublishStartAt, article.FieldPublishEndAt, article.FieldCreatedAt, article.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
@@ -106,11 +108,17 @@ func (_m *Article) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				_m.Title = value.String
 			}
-		case article.FieldBody:
+		case article.FieldBodyMarkdown:
 			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field body", values[i])
+				return fmt.Errorf("unexpected type %T for field body_markdown", values[i])
 			} else if value.Valid {
-				_m.Body = value.String
+				_m.BodyMarkdown = value.String
+			}
+		case article.FieldBodyHTML:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field body_html", values[i])
+			} else if value.Valid {
+				_m.BodyHTML = value.String
 			}
 		case article.FieldIsPublished:
 			if value, ok := values[i].(*sql.NullBool); !ok {
@@ -193,8 +201,11 @@ func (_m *Article) String() string {
 	builder.WriteString("title=")
 	builder.WriteString(_m.Title)
 	builder.WriteString(", ")
-	builder.WriteString("body=")
-	builder.WriteString(_m.Body)
+	builder.WriteString("body_markdown=")
+	builder.WriteString(_m.BodyMarkdown)
+	builder.WriteString(", ")
+	builder.WriteString("body_html=")
+	builder.WriteString(_m.BodyHTML)
 	builder.WriteString(", ")
 	builder.WriteString("is_published=")
 	builder.WriteString(fmt.Sprintf("%v", _m.IsPublished))

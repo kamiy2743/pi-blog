@@ -313,10 +313,10 @@ func setUpRecords(
 		t,
 		entClient,
 		fixtureArticle.CreateArticleInput{
-			Title:       "Go Docker 公開",
-			Body:        "content",
-			IsPublished: true,
-			UpdatedAt:   helper.TimePtr(t, "2026-01-01 00:00"),
+			Title:        "Go Docker 公開",
+			BodyMarkdown: "content",
+			IsPublished:  true,
+			UpdatedAt:    helper.TimePtr(t, "2026-01-01 00:00"),
 			Categories: []*ent.Category{
 				categoryDocker,
 				categoryGo,
@@ -327,21 +327,21 @@ func setUpRecords(
 		t,
 		entClient,
 		fixtureArticle.CreateArticleInput{
-			Title:       "no category",
-			Body:        "content",
-			IsPublished: false,
-			UpdatedAt:   helper.TimePtr(t, "2026-01-02 00:00"),
-			Categories:  []*ent.Category{},
+			Title:        "no category",
+			BodyMarkdown: "content",
+			IsPublished:  false,
+			UpdatedAt:    helper.TimePtr(t, "2026-01-02 00:00"),
+			Categories:   []*ent.Category{},
 		},
 	))
 	articles = append(articles, fixtureArticle.CreateArticle(
 		t,
 		entClient,
 		fixtureArticle.CreateArticleInput{
-			Title:       "Go 公開",
-			Body:        "content",
-			IsPublished: true,
-			UpdatedAt:   helper.TimePtr(t, "2026-01-03 00:00"),
+			Title:        "Go 公開",
+			BodyMarkdown: "content",
+			IsPublished:  true,
+			UpdatedAt:    helper.TimePtr(t, "2026-01-03 00:00"),
 			Categories: []*ent.Category{
 				categoryGo,
 			},
@@ -351,10 +351,10 @@ func setUpRecords(
 		t,
 		entClient,
 		fixtureArticle.CreateArticleInput{
-			Title:       "Docker 非公開",
-			Body:        "content",
-			IsPublished: false,
-			UpdatedAt:   helper.TimePtr(t, "2026-01-04 00:00"),
+			Title:        "Docker 非公開",
+			BodyMarkdown: "content",
+			IsPublished:  false,
+			UpdatedAt:    helper.TimePtr(t, "2026-01-04 00:00"),
 			Categories: []*ent.Category{
 				categoryDocker,
 			},

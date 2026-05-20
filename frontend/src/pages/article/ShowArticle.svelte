@@ -5,7 +5,7 @@
   type Article = {
     id: number
     title: string
-    body: string
+    bodyHTML: string
     date: string
     categoryNames: string[]
   }
@@ -44,7 +44,9 @@
       </div>
 
       <div class="mt-8 max-w-3xl">
-        <p class="whitespace-pre-wrap text-base leading-8">{article.body}</p>
+        <div class="prose max-w-none text-base leading-8">
+          {@html article.bodyHTML}
+        </div>
       </div>
 
       <div class="mt-8">

@@ -26,7 +26,8 @@ func (r *ArticleRepository) Create(ctx context.Context, input domainArticle.Crea
 
 	builder := r.client.Article.Create().
 		SetTitle(input.Title).
-		SetBody(input.Body).
+		SetBodyMarkdown(input.BodyMarkdown).
+		SetBodyHTML(input.BodyHTML).
 		SetIsPublished(input.IsPublished).
 		SetNillablePublishStartAt(input.PublishStartAt).
 		SetNillablePublishEndAt(input.PublishEndAt)

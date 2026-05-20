@@ -13,7 +13,8 @@ var (
 	ArticlesColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeUint32, Increment: true},
 		{Name: "title", Type: field.TypeString, Size: 255},
-		{Name: "body", Type: field.TypeString, Size: 2147483647},
+		{Name: "body_markdown", Type: field.TypeString, Size: 2147483647},
+		{Name: "body_html", Type: field.TypeString, Size: 2147483647},
 		{Name: "is_published", Type: field.TypeBool, Default: false},
 		{Name: "publish_start_at", Type: field.TypeTime, Nullable: true},
 		{Name: "publish_end_at", Type: field.TypeTime, Nullable: true},

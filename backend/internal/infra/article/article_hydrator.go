@@ -10,7 +10,8 @@ func hydrateArticle(model *ent.Article) domainArticle.Article {
 	return domainArticle.Article{
 		ID:             domainArticle.ArticleID(model.ID),
 		Title:          model.Title,
-		Body:           model.Body,
+		BodyMarkdown:   model.BodyMarkdown,
+		BodyHTML:       model.BodyHTML,
 		IsPublished:    model.IsPublished,
 		PublishStartAt: model.PublishStartAt,
 		PublishEndAt:   model.PublishEndAt,

@@ -48,9 +48,11 @@ func RunDefault(ctx context.Context, client *ent.Client) error {
 	}
 
 	for i := 1; i <= 100; i++ {
+		body := "記事の件数を増やすためのかさまし記事です。内容は適当です。"
 		article, err := tx.Article.Create().
 			SetTitle(fmt.Sprintf("かさまし記事%d", i)).
-			SetBody("記事の件数を増やすためのかさまし記事です。内容は適当です。").
+			SetBodyMarkdown(body).
+			SetBodyHTML(body).
 			SetIsPublished(i%2 == 0).
 			SetPublishStartAt(publishStartAt).
 			Save(ctx)

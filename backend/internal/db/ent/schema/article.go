@@ -24,7 +24,8 @@ func (Article) Fields() []ent.Field {
 	return []ent.Field{
 		field.Uint32("id"),
 		field.String("title").MaxLen(255),
-		field.Text("body"),
+		field.Text("body_markdown"),
+		field.Text("body_html"),
 		field.Bool("is_published").Default(false),
 		field.Time("publish_start_at").Optional().Nillable(),
 		field.Time("publish_end_at").Optional().Nillable(),

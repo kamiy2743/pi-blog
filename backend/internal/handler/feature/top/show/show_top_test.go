@@ -126,10 +126,10 @@ func setUpRecords(t *testing.T, entClient *ent.Client) records {
 			t,
 			entClient,
 			fixtureArticle.CreateArticleInput{
-				Title:       fmt.Sprintf("title%d", i),
-				Body:        "content",
-				IsPublished: true,
-				UpdatedAt:   helper.TimePtr(t, fmt.Sprintf("2026-01-0%d 00:00", i+1)),
+				Title:        fmt.Sprintf("title%d", i),
+				BodyMarkdown: "content",
+				IsPublished:  true,
+				UpdatedAt:    helper.TimePtr(t, fmt.Sprintf("2026-01-0%d 00:00", i+1)),
 				Categories: []*ent.Category{
 					categoryB,
 					categoryA,

@@ -16,8 +16,12 @@ const (
 	FieldID = "id"
 	// FieldTitle holds the string denoting the title field in the database.
 	FieldTitle = "title"
-	// FieldBody holds the string denoting the body field in the database.
-	FieldBody = "body"
+	// FieldBodyMarkdown holds the string denoting the body_markdown field in the database.
+	FieldBodyMarkdown = "body_markdown"
+	// FieldBodyHTML holds the string denoting the body_html field in the database.
+	FieldBodyHTML = "body_html"
+	// FieldBody holds the string denoting the old body field in generated compatibility helpers.
+	FieldBody = FieldBodyMarkdown
 	// FieldIsPublished holds the string denoting the is_published field in the database.
 	FieldIsPublished = "is_published"
 	// FieldPublishStartAt holds the string denoting the publish_start_at field in the database.
@@ -52,7 +56,8 @@ const (
 var Columns = []string{
 	FieldID,
 	FieldTitle,
-	FieldBody,
+	FieldBodyMarkdown,
+	FieldBodyHTML,
 	FieldIsPublished,
 	FieldPublishStartAt,
 	FieldPublishEndAt,
@@ -102,9 +107,14 @@ func ByTitle(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldTitle, opts...).ToFunc()
 }
 
-// ByBody orders the results by the body field.
-func ByBody(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldBody, opts...).ToFunc()
+// ByBodyMarkdown orders the results by the body_markdown field.
+func ByBodyMarkdown(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldBodyMarkdown, opts...).ToFunc()
+}
+
+// ByBodyHTML orders the results by the body_html field.
+func ByBodyHTML(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldBodyHTML, opts...).ToFunc()
 }
 
 // ByIsPublished orders the results by the is_published field.

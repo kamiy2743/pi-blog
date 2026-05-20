@@ -11,7 +11,8 @@ import (
 type Article struct {
 	ID             ArticleID
 	Title          string
-	Body           string
+	BodyMarkdown   string
+	BodyHTML       string
 	IsPublished    bool
 	PublishStartAt *time.Time
 	PublishEndAt   *time.Time
@@ -21,7 +22,8 @@ type Article struct {
 
 type CreateArticleInput struct {
 	Title          string
-	Body           string
+	BodyMarkdown   string
+	BodyHTML       string
 	IsPublished    bool
 	PublishStartAt *time.Time
 	PublishEndAt   *time.Time
@@ -29,7 +31,7 @@ type CreateArticleInput struct {
 }
 
 func (a Article) Validate() error {
-	if err := validateContent(a.Title, a.Body, a.PublishStartAt, a.PublishEndAt, a.Categories); err != nil {
+	if err := validateContent(a.Title, a.BodyMarkdown, a.BodyHTML, a.PublishStartAt, a.PublishEndAt, a.Categories); err != nil {
 		return err
 	}
 	if a.UpdatedAt.IsZero() {
@@ -39,7 +41,7 @@ func (a Article) Validate() error {
 }
 
 func (a CreateArticleInput) Validate() error {
-	if err := validateContent(a.Title, a.Body, a.PublishStartAt, a.PublishEndAt, a.Categories); err != nil {
+	if err := validateContent(a.Title, a.BodyMarkdown, a.BodyHTML, a.PublishStartAt, a.PublishEndAt, a.Categories); err != nil {
 		return err
 	}
 	return nil
@@ -47,7 +49,8 @@ func (a CreateArticleInput) Validate() error {
 
 func validateContent(
 	title string,
-	body string,
+	bodyMarkdown string,
+	bodyHTML string,
 	publishStartAt *time.Time,
 	publishEndAt *time.Time,
 	categories []category.Category,
@@ -55,8 +58,11 @@ func validateContent(
 	if strings.TrimSpace(title) == "" {
 		return errors.New("記事タイトルは必須です")
 	}
-	if strings.TrimSpace(body) == "" {
+	if strings.TrimSpace(bodyMarkdown) == "" {
 		return errors.New("記事本文は必須です")
+	}
+	if strings.TrimSpace(bodyHTML) == "" {
+		return errors.New("記事本文HTMLは必須です")
 	}
 	if publishStartAt != nil && publishEndAt != nil && publishEndAt.Before(*publishStartAt) {
 		return errors.New("公開終了時刻は公開開始時刻以降を指定してください")

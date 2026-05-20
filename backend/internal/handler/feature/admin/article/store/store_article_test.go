@@ -43,7 +43,8 @@ func Test記事を作成できる(t *testing.T) {
 
 	articles := fetchArticles(t, initResult.EntClient)
 	helper.AssertEqual(t, "Go on Raspberry Pi", articles[0].Title, "タイトルが不正です")
-	helper.AssertEqual(t, "# hello", articles[0].Body, "本文が不正です")
+	helper.AssertEqual(t, "# hello", articles[0].BodyMarkdown, "Markdown 本文が不正です")
+	helper.AssertEqual(t, "<h1>hello</h1>", articles[0].BodyHTML, "HTML 本文が不正です")
 	helper.AssertEqual(t, true, articles[0].IsPublished, "公開状態が不正です")
 	helper.AssertEqual(t, helper.TimePtr(t, "2026-01-02 03:04"), articles[0].PublishStartAt, "公開開始時刻が不正です")
 	helper.AssertEqual(t, helper.TimePtr(t, "2026-01-03 04:05"), articles[0].PublishEndAt, "公開終了時刻が不正です")

@@ -9,7 +9,8 @@ import (
 
 type CreateArticleInput struct {
 	Title          string
-	Body           string
+	BodyMarkdown   string
+	BodyHTML       string
 	IsPublished    bool
 	PublishStartAt *time.Time
 	PublishEndAt   *time.Time
@@ -26,7 +27,8 @@ func CreateArticle(
 
 	builder := entClient.Article.Create().
 		SetTitle(input.Title).
-		SetBody(input.Body).
+		SetBodyMarkdown(input.BodyMarkdown).
+		SetBodyHTML(input.BodyHTML).
 		SetIsPublished(input.IsPublished).
 		SetNillablePublishStartAt(input.PublishStartAt).
 		SetNillablePublishEndAt(input.PublishEndAt).

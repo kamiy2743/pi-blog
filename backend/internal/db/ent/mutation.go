@@ -38,7 +38,8 @@ type ArticleMutation struct {
 	typ               string
 	id                *uint32
 	title             *string
-	body              *string
+	body_markdown     *string
+	body_html         *string
 	is_published      *bool
 	publish_start_at  *time.Time
 	publish_end_at    *time.Time
@@ -196,40 +197,96 @@ func (m *ArticleMutation) ResetTitle() {
 	m.title = nil
 }
 
-// SetBody sets the "body" field.
-func (m *ArticleMutation) SetBody(s string) {
-	m.body = &s
+// SetBodyMarkdown sets the "body_markdown" field.
+func (m *ArticleMutation) SetBodyMarkdown(s string) {
+	m.body_markdown = &s
 }
 
-// Body returns the value of the "body" field in the mutation.
-func (m *ArticleMutation) Body() (r string, exists bool) {
-	v := m.body
+// BodyMarkdown returns the value of the "body_markdown" field in the mutation.
+func (m *ArticleMutation) BodyMarkdown() (r string, exists bool) {
+	v := m.body_markdown
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// OldBody returns the old "body" field's value of the Article entity.
+// OldBodyMarkdown returns the old "body_markdown" field's value of the Article entity.
 // If the Article object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *ArticleMutation) OldBody(ctx context.Context) (v string, err error) {
+func (m *ArticleMutation) OldBodyMarkdown(ctx context.Context) (v string, err error) {
 	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldBody is only allowed on UpdateOne operations")
+		return v, errors.New("OldBodyMarkdown is only allowed on UpdateOne operations")
 	}
 	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldBody requires an ID field in the mutation")
+		return v, errors.New("OldBodyMarkdown requires an ID field in the mutation")
 	}
 	oldValue, err := m.oldValue(ctx)
 	if err != nil {
-		return v, fmt.Errorf("querying old value for OldBody: %w", err)
+		return v, fmt.Errorf("querying old value for OldBodyMarkdown: %w", err)
 	}
-	return oldValue.Body, nil
+	return oldValue.BodyMarkdown, nil
 }
 
-// ResetBody resets all changes to the "body" field.
+// ResetBodyMarkdown resets all changes to the "body_markdown" field.
+func (m *ArticleMutation) ResetBodyMarkdown() {
+	m.body_markdown = nil
+}
+
+// SetBody sets the "body_markdown" field. It exists for generated compatibility.
+func (m *ArticleMutation) SetBody(s string) {
+	m.SetBodyMarkdown(s)
+}
+
+// Body returns the value of the "body_markdown" field in the mutation.
+func (m *ArticleMutation) Body() (r string, exists bool) {
+	return m.BodyMarkdown()
+}
+
+// OldBody returns the old "body_markdown" field's value of the Article entity.
+func (m *ArticleMutation) OldBody(ctx context.Context) (v string, err error) {
+	return m.OldBodyMarkdown(ctx)
+}
+
+// ResetBody resets all changes to the "body_markdown" field.
 func (m *ArticleMutation) ResetBody() {
-	m.body = nil
+	m.ResetBodyMarkdown()
+}
+
+// SetBodyHTML sets the "body_html" field.
+func (m *ArticleMutation) SetBodyHTML(s string) {
+	m.body_html = &s
+}
+
+// BodyHTML returns the value of the "body_html" field in the mutation.
+func (m *ArticleMutation) BodyHTML() (r string, exists bool) {
+	v := m.body_html
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldBodyHTML returns the old "body_html" field's value of the Article entity.
+// If the Article object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ArticleMutation) OldBodyHTML(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldBodyHTML is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldBodyHTML requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldBodyHTML: %w", err)
+	}
+	return oldValue.BodyHTML, nil
+}
+
+// ResetBodyHTML resets all changes to the "body_html" field.
+func (m *ArticleMutation) ResetBodyHTML() {
+	m.body_html = nil
 }
 
 // SetIsPublished sets the "is_published" field.
@@ -584,8 +641,11 @@ func (m *ArticleMutation) Fields() []string {
 	if m.title != nil {
 		fields = append(fields, article.FieldTitle)
 	}
-	if m.body != nil {
-		fields = append(fields, article.FieldBody)
+	if m.body_markdown != nil {
+		fields = append(fields, article.FieldBodyMarkdown)
+	}
+	if m.body_html != nil {
+		fields = append(fields, article.FieldBodyHTML)
 	}
 	if m.is_published != nil {
 		fields = append(fields, article.FieldIsPublished)
@@ -612,8 +672,10 @@ func (m *ArticleMutation) Field(name string) (ent.Value, bool) {
 	switch name {
 	case article.FieldTitle:
 		return m.Title()
-	case article.FieldBody:
-		return m.Body()
+	case article.FieldBodyMarkdown:
+		return m.BodyMarkdown()
+	case article.FieldBodyHTML:
+		return m.BodyHTML()
 	case article.FieldIsPublished:
 		return m.IsPublished()
 	case article.FieldPublishStartAt:
@@ -635,8 +697,10 @@ func (m *ArticleMutation) OldField(ctx context.Context, name string) (ent.Value,
 	switch name {
 	case article.FieldTitle:
 		return m.OldTitle(ctx)
-	case article.FieldBody:
-		return m.OldBody(ctx)
+	case article.FieldBodyMarkdown:
+		return m.OldBodyMarkdown(ctx)
+	case article.FieldBodyHTML:
+		return m.OldBodyHTML(ctx)
 	case article.FieldIsPublished:
 		return m.OldIsPublished(ctx)
 	case article.FieldPublishStartAt:
@@ -663,12 +727,19 @@ func (m *ArticleMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetTitle(v)
 		return nil
-	case article.FieldBody:
+	case article.FieldBodyMarkdown:
 		v, ok := value.(string)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.SetBody(v)
+		m.SetBodyMarkdown(v)
+		return nil
+	case article.FieldBodyHTML:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetBodyHTML(v)
 		return nil
 	case article.FieldIsPublished:
 		v, ok := value.(bool)
@@ -772,8 +843,11 @@ func (m *ArticleMutation) ResetField(name string) error {
 	case article.FieldTitle:
 		m.ResetTitle()
 		return nil
-	case article.FieldBody:
-		m.ResetBody()
+	case article.FieldBodyMarkdown:
+		m.ResetBodyMarkdown()
+		return nil
+	case article.FieldBodyHTML:
+		m.ResetBodyHTML()
 		return nil
 	case article.FieldIsPublished:
 		m.ResetIsPublished()

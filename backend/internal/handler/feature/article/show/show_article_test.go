@@ -28,10 +28,10 @@ func Test記事を表示できる(t *testing.T) {
 
 	res.AssertFullProps(t, "article/ShowArticle", gonertia.Props{
 		"article": gonertia.Props{
-			"id":    article.ID,
-			"title": "title",
-			"body":  "body",
-			"date":  "2026-01-01T00:00:00Z",
+			"id":       article.ID,
+			"title":    "title",
+			"bodyHTML": "body",
+			"date":     "2026-01-01T00:00:00Z",
 			"categoryNames": []string{
 				"Go",
 			},
@@ -90,10 +90,10 @@ func setUpRecord(t *testing.T, entClient *ent.Client, isPublished bool) *ent.Art
 		t,
 		entClient,
 		fixtureArticle.CreateArticleInput{
-			Title:       "title",
-			Body:        "body",
-			IsPublished: isPublished,
-			UpdatedAt:   helper.TimePtr(t, "2026-01-01 00:00"),
+			Title:        "title",
+			BodyMarkdown: "body",
+			IsPublished:  isPublished,
+			UpdatedAt:    helper.TimePtr(t, "2026-01-01 00:00"),
 			Categories: []*ent.Category{
 				category,
 			},

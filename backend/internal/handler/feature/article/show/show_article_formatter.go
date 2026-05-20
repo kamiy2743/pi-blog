@@ -16,7 +16,7 @@ func format(result result) gonertia.Props {
 		"article": gonertia.Props{
 			"id":            result.Article.ID,
 			"title":         result.Article.Title,
-			"body":          result.Article.Body,
+			"bodyHTML":      result.Article.BodyHTML,
 			"date":          result.Article.UpdatedAt.Format(time.RFC3339),
 			"categoryNames": categoryNames,
 		},

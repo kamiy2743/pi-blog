@@ -28,9 +28,15 @@ func (_c *ArticleCreate) SetTitle(v string) *ArticleCreate {
 	return _c
 }
 
-// SetBody sets the "body" field.
-func (_c *ArticleCreate) SetBody(v string) *ArticleCreate {
-	_c.mutation.SetBody(v)
+// SetBodyMarkdown sets the "body_markdown" field.
+func (_c *ArticleCreate) SetBodyMarkdown(v string) *ArticleCreate {
+	_c.mutation.SetBodyMarkdown(v)
+	return _c
+}
+
+// SetBodyHTML sets the "body_html" field.
+func (_c *ArticleCreate) SetBodyHTML(v string) *ArticleCreate {
+	_c.mutation.SetBodyHTML(v)
 	return _c
 }
 
@@ -199,8 +205,11 @@ func (_c *ArticleCreate) check() error {
 			return &ValidationError{Name: "title", err: fmt.Errorf(`ent: validator failed for field "Article.title": %w`, err)}
 		}
 	}
-	if _, ok := _c.mutation.Body(); !ok {
-		return &ValidationError{Name: "body", err: errors.New(`ent: missing required field "Article.body"`)}
+	if _, ok := _c.mutation.BodyMarkdown(); !ok {
+		return &ValidationError{Name: "body_markdown", err: errors.New(`ent: missing required field "Article.body_markdown"`)}
+	}
+	if _, ok := _c.mutation.BodyHTML(); !ok {
+		return &ValidationError{Name: "body_html", err: errors.New(`ent: missing required field "Article.body_html"`)}
 	}
 	if _, ok := _c.mutation.IsPublished(); !ok {
 		return &ValidationError{Name: "is_published", err: errors.New(`ent: missing required field "Article.is_published"`)}
@@ -247,9 +256,13 @@ func (_c *ArticleCreate) createSpec() (*Article, *sqlgraph.CreateSpec) {
 		_spec.SetField(article.FieldTitle, field.TypeString, value)
 		_node.Title = value
 	}
-	if value, ok := _c.mutation.Body(); ok {
-		_spec.SetField(article.FieldBody, field.TypeString, value)
-		_node.Body = value
+	if value, ok := _c.mutation.BodyMarkdown(); ok {
+		_spec.SetField(article.FieldBodyMarkdown, field.TypeString, value)
+		_node.BodyMarkdown = value
+	}
+	if value, ok := _c.mutation.BodyHTML(); ok {
+		_spec.SetField(article.FieldBodyHTML, field.TypeString, value)
+		_node.BodyHTML = value
 	}
 	if value, ok := _c.mutation.IsPublished(); ok {
 		_spec.SetField(article.FieldIsPublished, field.TypeBool, value)

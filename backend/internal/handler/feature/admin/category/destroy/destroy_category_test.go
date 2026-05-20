@@ -33,9 +33,9 @@ func Test記事に紐づくカテゴリを削除できる(t *testing.T) {
 	initResult := test.Init(t)
 	category := setUpRecord(t, initResult.EntClient)
 	fixtureArticle.CreateArticle(t, initResult.EntClient, fixtureArticle.CreateArticleInput{
-		Title:      "Go",
-		Body:       "本文",
-		Categories: []*ent.Category{category},
+		Title:        "Go",
+		BodyMarkdown: "本文",
+		Categories:   []*ent.Category{category},
 	})
 
 	res := callEndpoint(t, initResult.Server, category.ID)
