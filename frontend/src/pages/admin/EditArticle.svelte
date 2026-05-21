@@ -1,32 +1,179 @@
 <script lang="ts">
-  export let articleId: string
+  import { Form, Link } from '@inertiajs/svelte'
+  import { getOldInputString, getOldInputStringList, type OldInput, type ValidationErrors } from '../../types/form'
+  import { toDatetimeLocalValue } from '../../utils/date'
+
+  type Article = {
+    id: number
+    title: string
+    bodyMarkdown: string
+    isPublished: boolean
+    publishStartAt: string
+    publishEndAt: string
+    categoryIds: number[]
+  }
+
+  type Category = {
+    id: number
+    name: string
+  }
+
+  export let article: Article
+  export let categories: Category[] = []
+  export let oldInput: OldInput = {}
+  export let validationErrors: ValidationErrors = {}
+
+  function hasOldInput(field: string) {
+    return Object.prototype.hasOwnProperty.call(oldInput, field)
+  }
+
+  let isPublished = hasOldInput('isPublished')
+    ? getOldInputString(oldInput, 'isPublished') === 'true'
+    : article.isPublished
+  let selectedCategoryIds = hasOldInput('categoryIds')
+    ? getOldInputStringList(oldInput, 'categoryIds')
+    : article.categoryIds.map(String)
 </script>
 
 <svelte:head>
-  <title>管理 - 編集 {articleId}</title>
+  <title>管理 - 記事編集</title>
 </svelte:head>
 
-<div class="container">
-  <div class="card">
-    <h1>編集: {articleId}</h1>
-    <p class="muted">記事を更新します。</p>
+<div class="admin-page px-6 py-8 sm:px-8 lg:px-10 lg:py-10">
+  <div class="mx-auto max-w-6xl">
+    <header class="admin-hero rounded-lg border px-6 py-8 sm:px-8">
+      <p class="admin-eyebrow text-sm font-semibold">Article</p>
+      <h1 class="mt-3 text-3xl font-semibold tracking-tight">記事編集</h1>
+      <p class="admin-copy mt-3 text-base leading-8">
+        Markdown 本文と公開条件を更新します。
+      </p>
+    </header>
 
-    <form method="post" action={`/admin/article/${articleId}`} style="margin-top: 24px;">
-      <div style="display: grid; gap: 12px;">
-        <label>
-          <div class="muted">タイトル</div>
-          <input name="title" type="text" style="width: 100%; padding: 10px; border-radius: 10px; border: 1px solid #e2d8cc;" />
-        </label>
-        <label>
-          <div class="muted">本文 (Markdown)</div>
-          <textarea name="content_md" rows="10" style="width: 100%; padding: 10px; border-radius: 10px; border: 1px solid #e2d8cc;"></textarea>
-        </label>
-        <label style="display: flex; align-items: center; gap: 8px;">
-          <input name="is_published" type="checkbox" />
-          <span class="muted">公開する</span>
-        </label>
-        <button class="cta" type="submit">更新</button>
-      </div>
-    </form>
+    <Form
+      class="mt-6 grid gap-6 lg:grid-cols-[minmax(0,1fr)_320px]"
+      action={`/admin/article/${article.id}`}
+      method="post"
+      options={{ preserveScroll: true, preserveState: false }}
+      transform={(data: Record<string, unknown>) => ({
+        ...data,
+        categoryIds: selectedCategoryIds,
+      })}
+    >
+      <input type="hidden" name="isPublished" value={isPublished ? 'true' : 'false'} />
+
+      <section class="admin-panel rounded-lg border px-6 py-6 sm:px-8">
+        <div class="space-y-6">
+          <label class="block">
+            <span class="text-sm font-semibold">タイトル</span>
+            <input
+              class="mt-2 w-full rounded-lg border px-4 py-3"
+              name="title"
+              type="text"
+              value={hasOldInput('title') ? getOldInputString(oldInput, 'title') : article.title}
+              autocomplete="off"
+            />
+            {#if validationErrors.title}
+              <p class="mt-2 text-sm font-semibold text-red-600">{validationErrors.title}</p>
+            {/if}
+          </label>
+
+          <label class="block">
+            <span class="text-sm font-semibold">本文</span>
+            <textarea
+              class="mt-2 min-h-96 w-full resize-y rounded-lg border px-4 py-3 font-mono text-sm leading-7"
+              name="body"
+              value={hasOldInput('body') ? getOldInputString(oldInput, 'body') : article.bodyMarkdown}
+              placeholder="Markdown"
+            ></textarea>
+            {#if validationErrors.body}
+              <p class="mt-2 text-sm font-semibold text-red-600">{validationErrors.body}</p>
+            {/if}
+          </label>
+        </div>
+      </section>
+
+      <aside class="space-y-4">
+        <section class="admin-panel rounded-lg border px-5 py-5">
+          <h2 class="text-lg font-semibold">公開設定</h2>
+
+          <label class="mt-5 flex items-center gap-3 text-sm font-semibold">
+            <input
+              class="h-4 w-4"
+              type="checkbox"
+              bind:checked={isPublished}
+            />
+            <span>公開する</span>
+          </label>
+
+          <label class="mt-5 block">
+            <span class="text-sm font-semibold">公開開始時刻</span>
+            <input
+              class="mt-2 w-full rounded-lg border px-3 py-2 text-sm"
+              name="publishStartAt"
+              type="datetime-local"
+              value={hasOldInput('publishStartAt') ? getOldInputString(oldInput, 'publishStartAt') : toDatetimeLocalValue(article.publishStartAt)}
+            />
+            {#if validationErrors.publishStartAt}
+              <p class="mt-2 text-sm font-semibold text-red-600">{validationErrors.publishStartAt}</p>
+            {/if}
+          </label>
+
+          <label class="mt-5 block">
+            <span class="text-sm font-semibold">公開終了時刻</span>
+            <input
+              class="mt-2 w-full rounded-lg border px-3 py-2 text-sm"
+              name="publishEndAt"
+              type="datetime-local"
+              value={hasOldInput('publishEndAt') ? getOldInputString(oldInput, 'publishEndAt') : toDatetimeLocalValue(article.publishEndAt)}
+            />
+            {#if validationErrors.publishEndAt}
+              <p class="mt-2 text-sm font-semibold text-red-600">{validationErrors.publishEndAt}</p>
+            {/if}
+          </label>
+        </section>
+
+        <section class="admin-panel rounded-lg border px-5 py-5">
+          <h2 class="text-lg font-semibold">カテゴリ</h2>
+          {#if categories.length === 0}
+            <p class="admin-copy mt-3 text-sm leading-6">カテゴリはまだありません。</p>
+          {:else}
+            <div class="mt-4 flex flex-wrap gap-2">
+              {#each categories as category}
+                <label
+                  class={`admin-filter-chip inline-flex items-center gap-2 rounded-lg border px-3 py-2 text-sm font-semibold transition ${
+                    selectedCategoryIds.includes(String(category.id)) ? 'admin-filter-chip-selected' : ''
+                  }`}
+                >
+                  <input
+                    type="checkbox"
+                    value={String(category.id)}
+                    bind:group={selectedCategoryIds}
+                  />
+                  <span>{category.name}</span>
+                </label>
+              {/each}
+            </div>
+          {/if}
+          {#if validationErrors.categoryIds}
+            <p class="mt-2 text-sm font-semibold text-red-600">{validationErrors.categoryIds}</p>
+          {/if}
+        </section>
+
+        <section class="admin-panel rounded-lg border px-5 py-5">
+          <button
+            class="admin-button inline-flex w-full items-center justify-center rounded-lg px-5 py-3 text-sm font-semibold"
+            type="submit"
+          >
+            更新
+          </button>
+          <Link
+            class="admin-secondary-button mt-3 inline-flex w-full items-center justify-center rounded-lg border px-5 py-3 text-sm font-semibold"
+            href="/admin"
+          >
+            戻る
+          </Link>
+        </section>
+      </aside>
+    </Form>
   </div>
 </div>

@@ -20,8 +20,6 @@ const (
 	FieldBodyMarkdown = "body_markdown"
 	// FieldBodyHTML holds the string denoting the body_html field in the database.
 	FieldBodyHTML = "body_html"
-	// FieldBody holds the string denoting the old body field in generated compatibility helpers.
-	FieldBody = FieldBodyMarkdown
 	// FieldIsPublished holds the string denoting the is_published field in the database.
 	FieldIsPublished = "is_published"
 	// FieldPublishStartAt holds the string denoting the publish_start_at field in the database.

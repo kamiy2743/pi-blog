@@ -30,18 +30,18 @@ func (r *CategoryRepository) Create(ctx context.Context, input domainCategory.Cr
 	return nil
 }
 
-func (r *CategoryRepository) Update(ctx context.Context, entity domainCategory.Category) error {
-	if err := entity.Validate(); err != nil {
+func (r *CategoryRepository) Update(ctx context.Context, category domainCategory.Category) error {
+	if err := category.Validate(); err != nil {
 		return err
 	}
 
-	return r.client.Category.UpdateOneID(uint32(entity.ID)).
-		SetName(entity.Name).
+	return r.client.Category.UpdateOneID(uint32(category.ID)).
+		SetName(category.Name).
 		Exec(ctx)
 }
 
-func (r *CategoryRepository) Delete(ctx context.Context, entity domainCategory.Category) error {
-	return r.client.Category.DeleteOneID(uint32(entity.ID)).Exec(ctx)
+func (r *CategoryRepository) Delete(ctx context.Context, category domainCategory.Category) error {
+	return r.client.Category.DeleteOneID(uint32(category.ID)).Exec(ctx)
 }
 
 func (r *CategoryRepository) All(ctx context.Context, orderBy domainCategory.OrderBy) ([]domainCategory.Category, error) {

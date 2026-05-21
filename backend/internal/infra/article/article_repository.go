@@ -44,8 +44,40 @@ func (r *ArticleRepository) Create(ctx context.Context, input domainArticle.Crea
 	return err
 }
 
-func (r *ArticleRepository) Update(ctx context.Context, input domainArticle.Article) error {
-	return nil
+func (r *ArticleRepository) Update(ctx context.Context, article domainArticle.Article) error {
+	if err := article.Validate(); err != nil {
+		return err
+	}
+
+	builder := r.client.Article.UpdateOneID(uint32(article.ID)).
+		SetTitle(article.Title).
+		SetBodyMarkdown(article.BodyMarkdown).
+		SetBodyHTML(article.BodyHTML).
+		SetIsPublished(article.IsPublished).
+		ClearCategories()
+
+	if article.PublishStartAt == nil {
+		builder.ClearPublishStartAt()
+	} else {
+		builder.SetPublishStartAt(*article.PublishStartAt)
+	}
+
+	if article.PublishEndAt == nil {
+		builder.ClearPublishEndAt()
+	} else {
+		builder.SetPublishEndAt(*article.PublishEndAt)
+	}
+
+	if len(article.Categories) > 0 {
+		categoryIDs := make([]uint32, 0, len(article.Categories))
+		for _, category := range article.Categories {
+			categoryIDs = append(categoryIDs, uint32(category.ID))
+		}
+		builder.AddCategoryIDs(categoryIDs...)
+	}
+
+	_, err := builder.Save(ctx)
+	return err
 }
 
 func (r *ArticleRepository) Search(ctx context.Context, criteria domainArticle.SearchArticleCriteria) ([]domainArticle.Article, error) {

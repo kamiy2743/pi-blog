@@ -3,19 +3,35 @@ package edit
 import (
 	"net/http"
 
+	"blog/internal/domain/article"
+	"blog/internal/handler/handlererror"
 	"blog/internal/handler/handlerresult"
-
-	"github.com/romsar/gonertia/v3"
 )
 
-type Handler struct{}
+type Handler struct {
+	usecase *Usecase
+}
 
-func NewHandler() *Handler {
-	return &Handler{}
+func NewHandler(u *Usecase) *Handler {
+	return &Handler{
+		usecase: u,
+	}
 }
 
 func (h *Handler) Handle(r *http.Request) (handlerresult.PageResult, error) {
-	return handlerresult.Page("admin/EditArticle", gonertia.Props{
-		"articleId": r.PathValue("articleId"),
-	}), nil
+	articleID, parseErr := article.ParseArticleID(r.PathValue("articleId"))
+	if parseErr != nil {
+		return handlerresult.PageResult{}, &handlererror.DisplayableError{
+			StatusCode: 404,
+			Message:    "記事が見つかりません。",
+			Err:        parseErr,
+		}
+	}
+
+	result, err := h.usecase.run(r.Context(), articleID)
+	if err != nil {
+		return handlerresult.PageResult{}, err
+	}
+
+	return handlerresult.Page("admin/EditArticle", format(result)), nil
 }

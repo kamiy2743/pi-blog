@@ -60,9 +60,14 @@ func Title(v string) predicate.Article {
 	return predicate.Article(sql.FieldEQ(FieldTitle, v))
 }
 
-// Body applies equality check predicate on the "body" field. It's identical to BodyEQ.
-func Body(v string) predicate.Article {
-	return predicate.Article(sql.FieldEQ(FieldBody, v))
+// BodyMarkdown applies equality check predicate on the "body_markdown" field. It's identical to BodyMarkdownEQ.
+func BodyMarkdown(v string) predicate.Article {
+	return predicate.Article(sql.FieldEQ(FieldBodyMarkdown, v))
+}
+
+// BodyHTML applies equality check predicate on the "body_html" field. It's identical to BodyHTMLEQ.
+func BodyHTML(v string) predicate.Article {
+	return predicate.Article(sql.FieldEQ(FieldBodyHTML, v))
 }
 
 // IsPublished applies equality check predicate on the "is_published" field. It's identical to IsPublishedEQ.
@@ -155,69 +160,134 @@ func TitleContainsFold(v string) predicate.Article {
 	return predicate.Article(sql.FieldContainsFold(FieldTitle, v))
 }
 
-// BodyEQ applies the EQ predicate on the "body" field.
-func BodyEQ(v string) predicate.Article {
-	return predicate.Article(sql.FieldEQ(FieldBody, v))
+// BodyMarkdownEQ applies the EQ predicate on the "body_markdown" field.
+func BodyMarkdownEQ(v string) predicate.Article {
+	return predicate.Article(sql.FieldEQ(FieldBodyMarkdown, v))
 }
 
-// BodyNEQ applies the NEQ predicate on the "body" field.
-func BodyNEQ(v string) predicate.Article {
-	return predicate.Article(sql.FieldNEQ(FieldBody, v))
+// BodyMarkdownNEQ applies the NEQ predicate on the "body_markdown" field.
+func BodyMarkdownNEQ(v string) predicate.Article {
+	return predicate.Article(sql.FieldNEQ(FieldBodyMarkdown, v))
 }
 
-// BodyIn applies the In predicate on the "body" field.
-func BodyIn(vs ...string) predicate.Article {
-	return predicate.Article(sql.FieldIn(FieldBody, vs...))
+// BodyMarkdownIn applies the In predicate on the "body_markdown" field.
+func BodyMarkdownIn(vs ...string) predicate.Article {
+	return predicate.Article(sql.FieldIn(FieldBodyMarkdown, vs...))
 }
 
-// BodyNotIn applies the NotIn predicate on the "body" field.
-func BodyNotIn(vs ...string) predicate.Article {
-	return predicate.Article(sql.FieldNotIn(FieldBody, vs...))
+// BodyMarkdownNotIn applies the NotIn predicate on the "body_markdown" field.
+func BodyMarkdownNotIn(vs ...string) predicate.Article {
+	return predicate.Article(sql.FieldNotIn(FieldBodyMarkdown, vs...))
 }
 
-// BodyGT applies the GT predicate on the "body" field.
-func BodyGT(v string) predicate.Article {
-	return predicate.Article(sql.FieldGT(FieldBody, v))
+// BodyMarkdownGT applies the GT predicate on the "body_markdown" field.
+func BodyMarkdownGT(v string) predicate.Article {
+	return predicate.Article(sql.FieldGT(FieldBodyMarkdown, v))
 }
 
-// BodyGTE applies the GTE predicate on the "body" field.
-func BodyGTE(v string) predicate.Article {
-	return predicate.Article(sql.FieldGTE(FieldBody, v))
+// BodyMarkdownGTE applies the GTE predicate on the "body_markdown" field.
+func BodyMarkdownGTE(v string) predicate.Article {
+	return predicate.Article(sql.FieldGTE(FieldBodyMarkdown, v))
 }
 
-// BodyLT applies the LT predicate on the "body" field.
-func BodyLT(v string) predicate.Article {
-	return predicate.Article(sql.FieldLT(FieldBody, v))
+// BodyMarkdownLT applies the LT predicate on the "body_markdown" field.
+func BodyMarkdownLT(v string) predicate.Article {
+	return predicate.Article(sql.FieldLT(FieldBodyMarkdown, v))
 }
 
-// BodyLTE applies the LTE predicate on the "body" field.
-func BodyLTE(v string) predicate.Article {
-	return predicate.Article(sql.FieldLTE(FieldBody, v))
+// BodyMarkdownLTE applies the LTE predicate on the "body_markdown" field.
+func BodyMarkdownLTE(v string) predicate.Article {
+	return predicate.Article(sql.FieldLTE(FieldBodyMarkdown, v))
 }
 
-// BodyContains applies the Contains predicate on the "body" field.
-func BodyContains(v string) predicate.Article {
-	return predicate.Article(sql.FieldContains(FieldBody, v))
+// BodyMarkdownContains applies the Contains predicate on the "body_markdown" field.
+func BodyMarkdownContains(v string) predicate.Article {
+	return predicate.Article(sql.FieldContains(FieldBodyMarkdown, v))
 }
 
-// BodyHasPrefix applies the HasPrefix predicate on the "body" field.
-func BodyHasPrefix(v string) predicate.Article {
-	return predicate.Article(sql.FieldHasPrefix(FieldBody, v))
+// BodyMarkdownHasPrefix applies the HasPrefix predicate on the "body_markdown" field.
+func BodyMarkdownHasPrefix(v string) predicate.Article {
+	return predicate.Article(sql.FieldHasPrefix(FieldBodyMarkdown, v))
 }
 
-// BodyHasSuffix applies the HasSuffix predicate on the "body" field.
-func BodyHasSuffix(v string) predicate.Article {
-	return predicate.Article(sql.FieldHasSuffix(FieldBody, v))
+// BodyMarkdownHasSuffix applies the HasSuffix predicate on the "body_markdown" field.
+func BodyMarkdownHasSuffix(v string) predicate.Article {
+	return predicate.Article(sql.FieldHasSuffix(FieldBodyMarkdown, v))
 }
 
-// BodyEqualFold applies the EqualFold predicate on the "body" field.
-func BodyEqualFold(v string) predicate.Article {
-	return predicate.Article(sql.FieldEqualFold(FieldBody, v))
+// BodyMarkdownEqualFold applies the EqualFold predicate on the "body_markdown" field.
+func BodyMarkdownEqualFold(v string) predicate.Article {
+	return predicate.Article(sql.FieldEqualFold(FieldBodyMarkdown, v))
 }
 
-// BodyContainsFold applies the ContainsFold predicate on the "body" field.
-func BodyContainsFold(v string) predicate.Article {
-	return predicate.Article(sql.FieldContainsFold(FieldBody, v))
+// BodyMarkdownContainsFold applies the ContainsFold predicate on the "body_markdown" field.
+func BodyMarkdownContainsFold(v string) predicate.Article {
+	return predicate.Article(sql.FieldContainsFold(FieldBodyMarkdown, v))
+}
+
+// BodyHTMLEQ applies the EQ predicate on the "body_html" field.
+func BodyHTMLEQ(v string) predicate.Article {
+	return predicate.Article(sql.FieldEQ(FieldBodyHTML, v))
+}
+
+// BodyHTMLNEQ applies the NEQ predicate on the "body_html" field.
+func BodyHTMLNEQ(v string) predicate.Article {
+	return predicate.Article(sql.FieldNEQ(FieldBodyHTML, v))
+}
+
+// BodyHTMLIn applies the In predicate on the "body_html" field.
+func BodyHTMLIn(vs ...string) predicate.Article {
+	return predicate.Article(sql.FieldIn(FieldBodyHTML, vs...))
+}
+
+// BodyHTMLNotIn applies the NotIn predicate on the "body_html" field.
+func BodyHTMLNotIn(vs ...string) predicate.Article {
+	return predicate.Article(sql.FieldNotIn(FieldBodyHTML, vs...))
+}
+
+// BodyHTMLGT applies the GT predicate on the "body_html" field.
+func BodyHTMLGT(v string) predicate.Article {
+	return predicate.Article(sql.FieldGT(FieldBodyHTML, v))
+}
+
+// BodyHTMLGTE applies the GTE predicate on the "body_html" field.
+func BodyHTMLGTE(v string) predicate.Article {
+	return predicate.Article(sql.FieldGTE(FieldBodyHTML, v))
+}
+
+// BodyHTMLLT applies the LT predicate on the "body_html" field.
+func BodyHTMLLT(v string) predicate.Article {
+	return predicate.Article(sql.FieldLT(FieldBodyHTML, v))
+}
+
+// BodyHTMLLTE applies the LTE predicate on the "body_html" field.
+func BodyHTMLLTE(v string) predicate.Article {
+	return predicate.Article(sql.FieldLTE(FieldBodyHTML, v))
+}
+
+// BodyHTMLContains applies the Contains predicate on the "body_html" field.
+func BodyHTMLContains(v string) predicate.Article {
+	return predicate.Article(sql.FieldContains(FieldBodyHTML, v))
+}
+
+// BodyHTMLHasPrefix applies the HasPrefix predicate on the "body_html" field.
+func BodyHTMLHasPrefix(v string) predicate.Article {
+	return predicate.Article(sql.FieldHasPrefix(FieldBodyHTML, v))
+}
+
+// BodyHTMLHasSuffix applies the HasSuffix predicate on the "body_html" field.
+func BodyHTMLHasSuffix(v string) predicate.Article {
+	return predicate.Article(sql.FieldHasSuffix(FieldBodyHTML, v))
+}
+
+// BodyHTMLEqualFold applies the EqualFold predicate on the "body_html" field.
+func BodyHTMLEqualFold(v string) predicate.Article {
+	return predicate.Article(sql.FieldEqualFold(FieldBodyHTML, v))
+}
+
+// BodyHTMLContainsFold applies the ContainsFold predicate on the "body_html" field.
+func BodyHTMLContainsFold(v string) predicate.Article {
+	return predicate.Article(sql.FieldContainsFold(FieldBodyHTML, v))
 }
 
 // IsPublishedEQ applies the EQ predicate on the "is_published" field.

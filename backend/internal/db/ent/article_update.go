@@ -44,16 +44,30 @@ func (_u *ArticleUpdate) SetNillableTitle(v *string) *ArticleUpdate {
 	return _u
 }
 
-// SetBody sets the "body" field.
-func (_u *ArticleUpdate) SetBody(v string) *ArticleUpdate {
-	_u.mutation.SetBody(v)
+// SetBodyMarkdown sets the "body_markdown" field.
+func (_u *ArticleUpdate) SetBodyMarkdown(v string) *ArticleUpdate {
+	_u.mutation.SetBodyMarkdown(v)
 	return _u
 }
 
-// SetNillableBody sets the "body" field if the given value is not nil.
-func (_u *ArticleUpdate) SetNillableBody(v *string) *ArticleUpdate {
+// SetNillableBodyMarkdown sets the "body_markdown" field if the given value is not nil.
+func (_u *ArticleUpdate) SetNillableBodyMarkdown(v *string) *ArticleUpdate {
 	if v != nil {
-		_u.SetBody(*v)
+		_u.SetBodyMarkdown(*v)
+	}
+	return _u
+}
+
+// SetBodyHTML sets the "body_html" field.
+func (_u *ArticleUpdate) SetBodyHTML(v string) *ArticleUpdate {
+	_u.mutation.SetBodyHTML(v)
+	return _u
+}
+
+// SetNillableBodyHTML sets the "body_html" field if the given value is not nil.
+func (_u *ArticleUpdate) SetNillableBodyHTML(v *string) *ArticleUpdate {
+	if v != nil {
+		_u.SetBodyHTML(*v)
 	}
 	return _u
 }
@@ -256,8 +270,11 @@ func (_u *ArticleUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	if value, ok := _u.mutation.Title(); ok {
 		_spec.SetField(article.FieldTitle, field.TypeString, value)
 	}
-	if value, ok := _u.mutation.Body(); ok {
-		_spec.SetField(article.FieldBody, field.TypeString, value)
+	if value, ok := _u.mutation.BodyMarkdown(); ok {
+		_spec.SetField(article.FieldBodyMarkdown, field.TypeString, value)
+	}
+	if value, ok := _u.mutation.BodyHTML(); ok {
+		_spec.SetField(article.FieldBodyHTML, field.TypeString, value)
 	}
 	if value, ok := _u.mutation.IsPublished(); ok {
 		_spec.SetField(article.FieldIsPublished, field.TypeBool, value)
@@ -401,16 +418,30 @@ func (_u *ArticleUpdateOne) SetNillableTitle(v *string) *ArticleUpdateOne {
 	return _u
 }
 
-// SetBody sets the "body" field.
-func (_u *ArticleUpdateOne) SetBody(v string) *ArticleUpdateOne {
-	_u.mutation.SetBody(v)
+// SetBodyMarkdown sets the "body_markdown" field.
+func (_u *ArticleUpdateOne) SetBodyMarkdown(v string) *ArticleUpdateOne {
+	_u.mutation.SetBodyMarkdown(v)
 	return _u
 }
 
-// SetNillableBody sets the "body" field if the given value is not nil.
-func (_u *ArticleUpdateOne) SetNillableBody(v *string) *ArticleUpdateOne {
+// SetNillableBodyMarkdown sets the "body_markdown" field if the given value is not nil.
+func (_u *ArticleUpdateOne) SetNillableBodyMarkdown(v *string) *ArticleUpdateOne {
 	if v != nil {
-		_u.SetBody(*v)
+		_u.SetBodyMarkdown(*v)
+	}
+	return _u
+}
+
+// SetBodyHTML sets the "body_html" field.
+func (_u *ArticleUpdateOne) SetBodyHTML(v string) *ArticleUpdateOne {
+	_u.mutation.SetBodyHTML(v)
+	return _u
+}
+
+// SetNillableBodyHTML sets the "body_html" field if the given value is not nil.
+func (_u *ArticleUpdateOne) SetNillableBodyHTML(v *string) *ArticleUpdateOne {
+	if v != nil {
+		_u.SetBodyHTML(*v)
 	}
 	return _u
 }
@@ -643,8 +674,11 @@ func (_u *ArticleUpdateOne) sqlSave(ctx context.Context) (_node *Article, err er
 	if value, ok := _u.mutation.Title(); ok {
 		_spec.SetField(article.FieldTitle, field.TypeString, value)
 	}
-	if value, ok := _u.mutation.Body(); ok {
-		_spec.SetField(article.FieldBody, field.TypeString, value)
+	if value, ok := _u.mutation.BodyMarkdown(); ok {
+		_spec.SetField(article.FieldBodyMarkdown, field.TypeString, value)
+	}
+	if value, ok := _u.mutation.BodyHTML(); ok {
+		_spec.SetField(article.FieldBodyHTML, field.TypeString, value)
 	}
 	if value, ok := _u.mutation.IsPublished(); ok {
 		_spec.SetField(article.FieldIsPublished, field.TypeBool, value)

@@ -233,26 +233,6 @@ func (m *ArticleMutation) ResetBodyMarkdown() {
 	m.body_markdown = nil
 }
 
-// SetBody sets the "body_markdown" field. It exists for generated compatibility.
-func (m *ArticleMutation) SetBody(s string) {
-	m.SetBodyMarkdown(s)
-}
-
-// Body returns the value of the "body_markdown" field in the mutation.
-func (m *ArticleMutation) Body() (r string, exists bool) {
-	return m.BodyMarkdown()
-}
-
-// OldBody returns the old "body_markdown" field's value of the Article entity.
-func (m *ArticleMutation) OldBody(ctx context.Context) (v string, err error) {
-	return m.OldBodyMarkdown(ctx)
-}
-
-// ResetBody resets all changes to the "body_markdown" field.
-func (m *ArticleMutation) ResetBody() {
-	m.ResetBodyMarkdown()
-}
-
 // SetBodyHTML sets the "body_html" field.
 func (m *ArticleMutation) SetBodyHTML(s string) {
 	m.body_html = &s
@@ -637,7 +617,7 @@ func (m *ArticleMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *ArticleMutation) Fields() []string {
-	fields := make([]string, 0, 7)
+	fields := make([]string, 0, 8)
 	if m.title != nil {
 		fields = append(fields, article.FieldTitle)
 	}
