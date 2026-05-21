@@ -112,7 +112,7 @@ services:
   vite-dev:
     image: node:25-bookworm-slim
     working_dir: /app
-    command: ["bash", "-lc", "if [ ! -x node_modules/.bin/vite ]; then npm ci; fi && npm run vite-dev"]
+    command: ["bash", "-lc", "npm ci && npm run vite-dev"]
     env_file: ./frontend/.env
     environment:
       HOME: /tmp/
