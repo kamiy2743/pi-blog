@@ -1,7 +1,7 @@
 package show
 
 import (
-	"time"
+	"blog/internal/handler/formatter"
 
 	"github.com/romsar/gonertia/v3"
 )
@@ -16,7 +16,7 @@ func format(result result) gonertia.Props {
 		latestArticles = append(latestArticles, gonertia.Props{
 			"id":            article.ID,
 			"title":         article.Title,
-			"date":          article.UpdatedAt.Format(time.RFC3339),
+			"date":          formatter.FormatTimeISO8601(&article.UpdatedAt),
 			"categoryNames": categoryNames,
 		})
 	}

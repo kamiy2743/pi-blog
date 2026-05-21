@@ -1,7 +1,7 @@
 package show
 
 import (
-	"time"
+	"blog/internal/handler/formatter"
 
 	"github.com/romsar/gonertia/v3"
 )
@@ -31,7 +31,7 @@ func formatPartialSearch(result partialSearchResult) gonertia.Props {
 		articles = append(articles, gonertia.Props{
 			"id":            article.ID,
 			"title":         article.Title,
-			"date":          article.UpdatedAt.Format(time.RFC3339),
+			"date":          formatter.FormatTimeISO8601(&article.UpdatedAt),
 			"isPublished":   article.IsPublished,
 			"categoryNames": categoryNames,
 		})
