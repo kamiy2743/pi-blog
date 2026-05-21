@@ -28,6 +28,36 @@ run_compose() {
   docker compose -p "blog-${env}" -f "$compose_file" "$@"
 }
 
+go_bin() {
+  if command -v go >/dev/null 2>&1; then
+    command -v go
+    return
+  fi
+
+  if [[ -x /usr/local/go/bin/go ]]; then
+    echo /usr/local/go/bin/go
+    return
+  fi
+
+  echo "go が見つかりません" >&2
+  exit 1
+}
+
+gofmt_bin() {
+  if command -v gofmt >/dev/null 2>&1; then
+    command -v gofmt
+    return
+  fi
+
+  if [[ -x /usr/local/go/bin/gofmt ]]; then
+    echo /usr/local/go/bin/gofmt
+    return
+  fi
+
+  echo "gofmt が見つかりません" >&2
+  exit 1
+}
+
 get_secret_value() {
   local env="$1"
   local secret_name="$2"
@@ -52,7 +82,7 @@ run_ent() {
 
   case "$command" in
     generate)
-      (cd "$SCRIPT_DIR/backend" && /usr/local/go/bin/go generate ./internal/db/ent "$@")
+      (cd "$SCRIPT_DIR/backend" && "$(go_bin)" generate ./internal/db/ent "$@")
       ;;
     *)
       echo "未対応の ent コマンドです: $command" >&2
@@ -87,7 +117,7 @@ run_go() {
         echo "整形対象の Go ファイルがありません" >&2
         return 0
       fi
-      /usr/local/go/bin/gofmt -w "${go_files[@]}"
+      "$(gofmt_bin)" -w "${go_files[@]}"
       ;;
     mod)
       local subcommand="${1:-}"
@@ -110,7 +140,7 @@ run_go() {
           fi
 
           for mod_dir in "${go_mod_dirs[@]}"; do
-            (cd "$mod_dir" && /usr/local/go/bin/go mod tidy "$@")
+            (cd "$mod_dir" && "$(go_bin)" mod tidy "$@")
           done
           ;;
         *)
@@ -147,7 +177,14 @@ run_go() {
         set -euo pipefail
 
         cd /app
-        go_bin=/usr/local/go/bin/go
+        if command -v go >/dev/null 2>&1; then
+          go_bin="$(command -v go)"
+        elif [[ -x /usr/local/go/bin/go ]]; then
+          go_bin=/usr/local/go/bin/go
+        else
+          echo "go が見つかりません" >&2
+          exit 1
+        fi
 
         mapfile -t test_packages < <(
           "$go_bin" list -f '"'"'{{if or (gt (len .TestGoFiles) 0) (gt (len .XTestGoFiles) 0)}}{{.ImportPath}}{{end}}'"'"' "$1" |
