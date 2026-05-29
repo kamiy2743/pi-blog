@@ -32,7 +32,7 @@
           パンダの開発ブログ
         </h1>
         <p class="blog-copy max-w-2xl text-base leading-8 sm:text-lg">
-          Raspberry Pi で自宅サーバーを開発・運用しながら学んだことを発信していきます。
+          自宅サーバーの開発・運用しながら学んだことを発信していきます。
         </p>
       </div>
     </div>
