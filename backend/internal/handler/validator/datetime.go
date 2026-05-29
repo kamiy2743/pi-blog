@@ -1,14 +1,14 @@
 package validator
 
 import (
-	"blog/internal/domain"
+	"blog/internal/datetime"
 
 	goValidator "github.com/go-playground/validator/v10"
 )
 
 func registerDatetime(validator *goValidator.Validate) {
 	validator.RegisterValidation("datetime", func(fieldLevel goValidator.FieldLevel) bool {
-		_, err := domain.ParseDatetime(fieldLevel.Field().String())
+		_, err := datetime.Parse(fieldLevel.Field().String())
 		return err == nil
 	})
 
@@ -19,11 +19,11 @@ func registerDatetime(validator *goValidator.Validate) {
 			return true
 		}
 
-		parsed, err := domain.ParseDatetime(value)
+		parsed, err := datetime.Parse(value)
 		if err != nil {
 			return true
 		}
-		otherParsed, err := domain.ParseDatetime(otherValue)
+		otherParsed, err := datetime.Parse(otherValue)
 		if err != nil {
 			return true
 		}

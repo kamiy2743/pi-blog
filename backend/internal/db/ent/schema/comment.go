@@ -1,7 +1,7 @@
 package schema
 
 import (
-	"time"
+	"blog/internal/datetime"
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/entsql"
@@ -28,8 +28,8 @@ func (Comment) Fields() []ent.Field {
 		field.String("author_name").MaxLen(64),
 		field.Text("body"),
 		field.Bool("is_visible").Default(true),
-		field.Time("created_at").Default(time.Now).Immutable(),
-		field.Time("updated_at").Default(time.Now).UpdateDefault(time.Now),
+		field.Time("created_at").Default(datetime.Now).Immutable(),
+		field.Time("updated_at").Default(datetime.Now).UpdateDefault(datetime.Now),
 	}
 }
 

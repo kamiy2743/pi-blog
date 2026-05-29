@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"time"
 
+	"blog/internal/datetime"
 	"blog/internal/db/ent"
 )
 
@@ -40,7 +41,7 @@ func RunDefault(ctx context.Context, client *ent.Client) error {
 		categoryIDsByName[name] = category.ID
 	}
 
-	publishStartAt := time.Now().Add(-24 * time.Hour)
+	publishStartAt := datetime.Now().Add(-24 * time.Hour)
 	categoryNamesByArticleIndex := map[int][]string{
 		1: {"Go", "Docker", "Cloudflare", "AWS", "Raspberry Pi"},
 		2: {"Cloudflare", "AWS"},

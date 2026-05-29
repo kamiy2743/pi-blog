@@ -1,7 +1,7 @@
 package schema
 
 import (
-	"time"
+	"blog/internal/datetime"
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/entsql"
@@ -29,8 +29,8 @@ func (Article) Fields() []ent.Field {
 		field.Bool("is_published").Default(false),
 		field.Time("publish_start_at").Optional().Nillable(),
 		field.Time("publish_end_at").Optional().Nillable(),
-		field.Time("created_at").Default(time.Now).Immutable(),
-		field.Time("updated_at").Default(time.Now).UpdateDefault(time.Now),
+		field.Time("created_at").Default(datetime.Now).Immutable(),
+		field.Time("updated_at").Default(datetime.Now).UpdateDefault(datetime.Now),
 	}
 }
 

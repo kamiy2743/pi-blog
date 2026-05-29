@@ -5,6 +5,7 @@ import (
 	"strings"
 	"time"
 
+	"blog/internal/datetime"
 	"blog/internal/domain"
 	"blog/internal/domain/category"
 	"blog/internal/handler/handlererror"
@@ -43,8 +44,8 @@ func toInput(r *http.Request) (input, *handlererror.ValidationError) {
 	}
 
 	isPublished, _ := domain.ParseBool(req.IsPublished)
-	publishStartAt, _ := domain.ParseOptionalDatetime(req.PublishStartAt)
-	publishEndAt, _ := domain.ParseOptionalDatetime(req.PublishEndAt)
+	publishStartAt, _ := datetime.ParseOptional(req.PublishStartAt)
+	publishEndAt, _ := datetime.ParseOptional(req.PublishEndAt)
 
 	return input{
 		Title:          req.Title,

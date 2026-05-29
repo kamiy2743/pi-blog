@@ -1,6 +1,8 @@
 <script lang="ts">
   import { Form, Link } from '@inertiajs/svelte'
+  import type { FormDataConvertible } from '@inertiajs/core'
   import { getOldInputString, getOldInputStringList, type OldInput, type ValidationErrors } from '../../types/form'
+  import { fromJstDatetimeLocalValue as fromDatetimeLocalValue, toJstDatetimeLocalValue as toDatetimeLocalValue } from '../../utils/date'
 
   type Category = {
     id: number
@@ -34,9 +36,11 @@
       action="/admin/article/new"
       method="post"
       options={{ preserveScroll: true, preserveState: false }}
-      transform={(data: Record<string, unknown>) => ({
+      transform={(data: Record<string, FormDataConvertible>) => ({
         ...data,
         categoryIds: selectedCategoryIds,
+        publishStartAt: fromDatetimeLocalValue(String(data.publishStartAt ?? '')),
+        publishEndAt: fromDatetimeLocalValue(String(data.publishEndAt ?? '')),
       })}
     >
       <input type="hidden" name="isPublished" value={isPublished ? 'true' : 'false'} />
@@ -91,7 +95,7 @@
               class="mt-2 w-full rounded-lg border px-3 py-2 text-sm"
               name="publishStartAt"
               type="datetime-local"
-              value={getOldInputString(oldInput, 'publishStartAt')}
+              value={toDatetimeLocalValue(getOldInputString(oldInput, 'publishStartAt'))}
             />
             {#if validationErrors.publishStartAt}
               <p class="mt-2 text-sm font-semibold text-red-600">{validationErrors.publishStartAt}</p>
@@ -104,7 +108,7 @@
               class="mt-2 w-full rounded-lg border px-3 py-2 text-sm"
               name="publishEndAt"
               type="datetime-local"
-              value={getOldInputString(oldInput, 'publishEndAt')}
+              value={toDatetimeLocalValue(getOldInputString(oldInput, 'publishEndAt'))}
             />
             {#if validationErrors.publishEndAt}
               <p class="mt-2 text-sm font-semibold text-red-600">{validationErrors.publishEndAt}</p>

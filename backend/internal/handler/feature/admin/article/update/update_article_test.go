@@ -33,8 +33,8 @@ func Test記事を更新できる(t *testing.T) {
 		"title":          "new title",
 		"body":           "## new",
 		"isPublished":    "true",
-		"publishStartAt": "2026-01-02T03:04",
-		"publishEndAt":   "2026-01-03T04:05",
+		"publishStartAt": "2026-01-02T03:04:00Z",
+		"publishEndAt":   "2026-01-03T04:05:00Z",
 		"categoryIds":    []string{categoryIDString(records.CategoryGo.ID)},
 	})
 

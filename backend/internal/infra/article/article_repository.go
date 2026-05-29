@@ -4,6 +4,7 @@ import (
 	"context"
 	"time"
 
+	"blog/internal/datetime"
 	"blog/internal/db/ent"
 	entArticle "blog/internal/db/ent/article"
 	entCategory "blog/internal/db/ent/category"
@@ -89,7 +90,7 @@ func (r *ArticleRepository) Search(ctx context.Context, criteria domainArticle.S
 		return nil, applyCategoryOrderErr
 	}
 
-	if err := applySearchCriteria(query, criteria, time.Now()); err != nil {
+	if err := applySearchCriteria(query, criteria, datetime.Now()); err != nil {
 		return nil, err
 	}
 
@@ -101,7 +102,7 @@ func (r *ArticleRepository) Search(ctx context.Context, criteria domainArticle.S
 }
 
 func (r *ArticleRepository) Paginate(ctx context.Context, criteria domainArticle.PaginateArticleCriteria) (domainArticle.PaginatedArticles, error) {
-	now := time.Now()
+	now := datetime.Now()
 
 	countQuery := r.client.Article.Query()
 	if err := applySearchCriteria(countQuery, criteria.SearchCriteria, now); err != nil {

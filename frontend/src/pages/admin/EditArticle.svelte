@@ -1,7 +1,8 @@
 <script lang="ts">
   import { Form, Link } from '@inertiajs/svelte'
+  import type { FormDataConvertible } from '@inertiajs/core'
   import { getOldInputString, getOldInputStringList, type OldInput, type ValidationErrors } from '../../types/form'
-  import { toDatetimeLocalValue } from '../../utils/date'
+  import { fromJstDatetimeLocalValue, toJstDatetimeLocalValue } from '../../utils/date'
 
   type Article = {
     id: number
@@ -54,9 +55,11 @@
       action={`/admin/article/${article.id}`}
       method="post"
       options={{ preserveScroll: true, preserveState: false }}
-      transform={(data: Record<string, unknown>) => ({
+      transform={(data: Record<string, FormDataConvertible>) => ({
         ...data,
         categoryIds: selectedCategoryIds,
+        publishStartAt: fromJstDatetimeLocalValue(String(data.publishStartAt ?? '')),
+        publishEndAt: fromJstDatetimeLocalValue(String(data.publishEndAt ?? '')),
       })}
     >
       <input type="hidden" name="isPublished" value={isPublished ? 'true' : 'false'} />
@@ -111,7 +114,7 @@
               class="mt-2 w-full rounded-lg border px-3 py-2 text-sm"
               name="publishStartAt"
               type="datetime-local"
-              value={hasOldInput('publishStartAt') ? getOldInputString(oldInput, 'publishStartAt') : toDatetimeLocalValue(article.publishStartAt)}
+              value={toJstDatetimeLocalValue(hasOldInput('publishStartAt') ? getOldInputString(oldInput, 'publishStartAt') : article.publishStartAt)}
             />
             {#if validationErrors.publishStartAt}
               <p class="mt-2 text-sm font-semibold text-red-600">{validationErrors.publishStartAt}</p>
@@ -124,7 +127,7 @@
               class="mt-2 w-full rounded-lg border px-3 py-2 text-sm"
               name="publishEndAt"
               type="datetime-local"
-              value={hasOldInput('publishEndAt') ? getOldInputString(oldInput, 'publishEndAt') : toDatetimeLocalValue(article.publishEndAt)}
+              value={toJstDatetimeLocalValue(hasOldInput('publishEndAt') ? getOldInputString(oldInput, 'publishEndAt') : article.publishEndAt)}
             />
             {#if validationErrors.publishEndAt}
               <p class="mt-2 text-sm font-semibold text-red-600">{validationErrors.publishEndAt}</p>

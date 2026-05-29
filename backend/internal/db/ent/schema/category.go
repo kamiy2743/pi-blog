@@ -1,7 +1,7 @@
 package schema
 
 import (
-	"time"
+	"blog/internal/datetime"
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/entsql"
@@ -24,8 +24,8 @@ func (Category) Fields() []ent.Field {
 	return []ent.Field{
 		field.Uint32("id"),
 		field.String("name").MaxLen(64).Unique(),
-		field.Time("created_at").Default(time.Now).Immutable(),
-		field.Time("updated_at").Default(time.Now).UpdateDefault(time.Now),
+		field.Time("created_at").Default(datetime.Now).Immutable(),
+		field.Time("updated_at").Default(datetime.Now).UpdateDefault(datetime.Now),
 	}
 }
 

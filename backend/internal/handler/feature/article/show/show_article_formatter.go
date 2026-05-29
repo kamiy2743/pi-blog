@@ -1,7 +1,7 @@
 package show
 
 import (
-	"blog/internal/handler/formatter"
+	"blog/internal/datetime"
 
 	"github.com/romsar/gonertia/v3"
 )
@@ -17,7 +17,7 @@ func format(result result) gonertia.Props {
 			"id":            result.Article.ID,
 			"title":         result.Article.Title,
 			"bodyHTML":      result.Article.BodyHTML,
-			"date":          formatter.FormatTimeISO8601(&result.Article.UpdatedAt),
+			"date":          datetime.FormatISO8601(&result.Article.UpdatedAt),
 			"categoryNames": categoryNames,
 		},
 	}

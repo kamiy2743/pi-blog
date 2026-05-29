@@ -2,8 +2,8 @@ package update
 
 import (
 	"context"
-	"time"
 
+	"blog/internal/datetime"
 	"blog/internal/domain/article"
 	"blog/internal/domain/category"
 	"blog/internal/handler/handlererror"
@@ -66,7 +66,7 @@ func (u *Usecase) run(ctx context.Context, articleID article.ArticleID, input in
 		PublishStartAt: input.PublishStartAt,
 		PublishEndAt:   input.PublishEndAt,
 		Categories:     categories,
-		UpdatedAt:      time.Now(),
+		UpdatedAt:      datetime.Now(),
 	}
 	if err := entity.Validate(); err != nil {
 		return &handlererror.DisplayableError{
