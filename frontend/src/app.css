@@ -13,7 +13,7 @@
     /* 見出しや強い本文に使う主文字色。 */
     --color-text-primary: #1e293b;
     /* 通常本文や補助説明に使う文字色。 */
-    --color-text-secondary: #64748b;
+    --color-text-secondary: #38414e;
     /* ラベルや小さな補助情報に使う淡い文字色。 */
     --color-text-muted: #94a3b8;
     /* セクション見出しやメタ情報に使うアクセント色。 */
@@ -263,5 +263,148 @@
 
   .admin-table-row:hover {
     background: var(--admin-surface-muted);
+  }
+}
+
+@layer utilities {
+  .blog-markdown {
+    --tw-prose-body: var(--color-text-secondary);
+    --tw-prose-headings: var(--color-text-primary);
+    --tw-prose-links: var(--color-accent);
+    --tw-prose-bold: var(--color-text-primary);
+    --tw-prose-counters: var(--color-accent);
+    --tw-prose-bullets: var(--color-accent);
+    --tw-prose-hr: var(--color-border);
+    --tw-prose-quotes: var(--color-text-primary);
+    --tw-prose-quote-borders: var(--color-accent);
+    --tw-prose-code: var(--color-text-primary);
+    --tw-prose-pre-code: #e2e8f0;
+    --tw-prose-pre-bg: #111827;
+    --tw-prose-th-borders: var(--color-border);
+    --tw-prose-td-borders: var(--color-border);
+  }
+
+  .blog-markdown :where(h1):not(:where([class~="not-prose"], [class~="not-prose"] *)) {
+    margin-top: 2.5rem;
+    margin-bottom: 1.25rem;
+    padding-bottom: 0.65rem;
+    border-bottom: 3px solid var(--color-accent);
+    font-size: 2.0rem;
+    line-height: 1.2;
+  }
+
+  .blog-markdown :where(h2):not(:where([class~="not-prose"], [class~="not-prose"] *)) {
+    margin-top: 2.25rem;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--color-border);
+    font-size: 1.75rem;
+    line-height: 1.25;
+  }
+
+  .blog-markdown :where(h2)::before {
+    content: "";
+    display: inline-block;
+    width: 0.55rem;
+    height: 1.35rem;
+    margin-right: 0.65rem;
+    border-radius: 9999px;
+    background: var(--color-accent);
+    vertical-align: -0.18rem;
+  }
+
+  .blog-markdown :where(h3):not(:where([class~="not-prose"], [class~="not-prose"] *)) {
+    position: relative;
+    margin-top: 1.9rem;
+    margin-bottom: 0.8rem;
+    padding-left: 0.85rem;
+    color: var(--color-text-primary);
+    font-size: 1.3rem;
+    line-height: 1.35;
+  }
+
+  .blog-markdown :where(h3)::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 50%;
+    width: 4px;
+    height: 0.9em;
+    border-radius: 9999px;
+    background: var(--color-accent);
+    transform: translateY(-50%);
+  }
+
+  .blog-markdown :where(h4):not(:where([class~="not-prose"], [class~="not-prose"] *)) {
+    margin-top: 1.6rem;
+    font-size: 1.05rem;
+  }
+
+  .blog-markdown :where(a):not(:where([class~="not-prose"], [class~="not-prose"] *)) {
+    text-decoration: underline;
+    text-decoration-color: color-mix(in srgb, var(--color-accent) 45%, transparent);
+    text-decoration-thickness: 0.16em;
+    text-underline-offset: 0.18em;
+  }
+
+  .blog-markdown :where(blockquote):not(:where([class~="not-prose"], [class~="not-prose"] *)) {
+    border-left-width: 5px;
+    border-radius: 0 0.75rem 0.75rem 0;
+    background: color-mix(in srgb, var(--color-accent) 8%, white);
+    padding: 0.9rem 1.1rem;
+  }
+
+  .blog-markdown :where(table):not(:where([class~="not-prose"], [class~="not-prose"] *)) {
+    width: 100%;
+    border: 1px solid var(--color-border);
+    border-collapse: separate;
+    border-spacing: 0;
+    border-radius: 0.7rem;
+    table-layout: fixed;
+    overflow: hidden;
+    font-size: 0.95rem;
+    line-height: 1.65;
+  }
+
+  .blog-markdown :where(thead):not(:where([class~="not-prose"], [class~="not-prose"] *)) {
+    background: color-mix(in srgb, var(--color-accent) 10%, white);
+  }
+
+  .blog-markdown :where(th):not(:where([class~="not-prose"], [class~="not-prose"] *)) {
+    padding: 0.7rem 0.9rem;
+    border-bottom: 1px solid var(--color-border);
+    color: var(--color-text-primary);
+    font-weight: 700;
+    text-align: left;
+    overflow-wrap: anywhere;
+  }
+
+  .blog-markdown :where(td):not(:where([class~="not-prose"], [class~="not-prose"] *)) {
+    padding: 0.75rem 0.9rem;
+    border-bottom: 1px solid var(--color-border);
+    color: var(--color-text-secondary);
+    vertical-align: top;
+    overflow-wrap: anywhere;
+  }
+
+  .blog-markdown :where(th + th, td + td):not(:where([class~="not-prose"], [class~="not-prose"] *)) {
+    border-left: 1px solid var(--color-border);
+  }
+
+  .blog-markdown :where(tbody tr:last-child td):not(:where([class~="not-prose"], [class~="not-prose"] *)) {
+    border-bottom: 0;
+  }
+
+  .blog-markdown :where(code):not(:where(pre code, [class~="not-prose"], [class~="not-prose"] *)) {
+    border: 1px solid var(--color-border);
+    border-radius: 0.45rem;
+    background: color-mix(in srgb, var(--color-accent) 8%, white);
+    padding: 0.12rem 0.38rem;
+    font-weight: 700;
+  }
+
+  .blog-markdown :where(code)::before,
+  .blog-markdown :where(code)::after {
+    content: none;
   }
 }

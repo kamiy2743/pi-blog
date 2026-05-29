@@ -44,7 +44,7 @@
       </div>
 
       <div class="mt-8 max-w-3xl">
-        <div class="prose prose-slate max-w-none text-base leading-8">
+        <div class="blog-markdown prose prose-slate max-w-none text-base leading-8">
           {@html article.bodyHTML}
         </div>
       </div>
