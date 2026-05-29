@@ -64,7 +64,7 @@
           <label class="block">
             <span class="text-sm font-semibold">本文</span>
             <textarea
-              class="mt-2 min-h-96 w-full resize-y rounded-lg border px-4 py-3 font-mono text-sm leading-7"
+              class="mt-2 min-h-[32rem] w-full resize-y rounded-lg border px-4 py-3 font-mono text-sm leading-7 lg:min-h-[42rem]"
               name="body"
               value={getOldInputString(oldInput, 'body')}
               placeholder="Markdown"

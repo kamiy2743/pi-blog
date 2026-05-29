@@ -1,5 +1,6 @@
 <script lang="ts">
   import { Form } from '@inertiajs/svelte'
+  import ConfirmModal from '../../components/ConfirmModal.svelte'
   import { getOldInputString, type OldInput, type ValidationErrors } from '../../types/form'
 
   type Category = {
@@ -174,45 +175,13 @@
       </a>
     </div>
     {#if deleteTarget}
-      <div
-        class="fixed inset-0 z-50 bg-black/50"
-        aria-hidden="true"
-      ></div>
-      <div
-        class="fixed inset-0 z-[60] flex items-center justify-center px-6"
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="delete-category-title"
-      >
-        <div class="admin-panel w-full max-w-md rounded-lg border bg-[var(--admin-surface)] px-6 py-6 shadow-2xl">
-          <h2 id="delete-category-title" class="text-xl font-semibold">カテゴリを削除しますか</h2>
-          <p class="admin-copy mt-3 text-sm leading-6">
-            {deleteTarget.name} を削除します。
-          </p>
-
-          <Form
-            class="mt-6 flex flex-wrap gap-3"
-            action={`/admin/category/${deleteTarget.id}/delete`}
-            method="post"
-            options={{ preserveScroll: true, preserveState: false }}
-            onSuccess={closeDeleteModal}
-          >
-            <button
-              class="admin-button rounded-lg px-5 py-3 text-sm font-semibold"
-              type="submit"
-            >
-              削除
-            </button>
-            <button
-              class="admin-secondary-button rounded-lg border px-5 py-3 text-sm font-semibold"
-              type="button"
-              on:click={closeDeleteModal}
-            >
-              キャンセル
-            </button>
-          </Form>
-        </div>
-      </div>
+      <ConfirmModal
+        title="カテゴリを削除しますか"
+        message={`${deleteTarget.name} を削除します。`}
+        action={`/admin/category/${deleteTarget.id}/delete`}
+        confirmLabel="削除"
+        onClose={closeDeleteModal}
+      />
     {/if}
   </div>
 </div>

@@ -1,6 +1,7 @@
 <script lang="ts">
   import { Form, Link } from '@inertiajs/svelte'
   import type { FormDataConvertible } from '@inertiajs/core'
+  import ConfirmModal from '../../components/ConfirmModal.svelte'
   import { getOldInputString, getOldInputStringList, type OldInput, type ValidationErrors } from '../../types/form'
   import { fromJstDatetimeLocalValue, toJstDatetimeLocalValue } from '../../utils/date'
 
@@ -34,6 +35,7 @@
   let selectedCategoryIds = hasOldInput('categoryIds')
     ? getOldInputStringList(oldInput, 'categoryIds')
     : article.categoryIds.map(String)
+  let isDeleteModalOpen = false
 </script>
 
 <svelte:head>
@@ -83,7 +85,7 @@
           <label class="block">
             <span class="text-sm font-semibold">本文</span>
             <textarea
-              class="mt-2 min-h-96 w-full resize-y rounded-lg border px-4 py-3 font-mono text-sm leading-7"
+              class="mt-2 min-h-[32rem] w-full resize-y rounded-lg border px-4 py-3 font-mono text-sm leading-7 lg:min-h-[42rem]"
               name="body"
               value={hasOldInput('body') ? getOldInputString(oldInput, 'body') : article.bodyMarkdown}
               placeholder="Markdown"
@@ -175,8 +177,28 @@
           >
             戻る
           </Link>
+          <button
+            class="mt-3 inline-flex w-full items-center justify-center rounded-lg border border-red-300 px-5 py-3 text-sm font-semibold text-red-700 transition hover:bg-red-50"
+            type="button"
+            on:click={() => {
+              isDeleteModalOpen = true
+            }}
+          >
+            削除
+          </button>
         </section>
       </aside>
     </Form>
+    {#if isDeleteModalOpen}
+      <ConfirmModal
+        title="記事を削除しますか"
+        message={`${article.title} を削除します。`}
+        action={`/admin/article/${article.id}/delete`}
+        confirmLabel="削除"
+        onClose={() => {
+          isDeleteModalOpen = false
+        }}
+      />
+    {/if}
   </div>
 </div>

@@ -37,6 +37,7 @@ func (Article) Fields() []ent.Field {
 func (Article) Edges() []ent.Edge {
 	return []ent.Edge{
 		edge.To("categories", Category.Type),
-		edge.To("comments", Comment.Type),
+		edge.To("comments", Comment.Type).
+			Annotations(entsql.OnDelete(entsql.Cascade)),
 	}
 }

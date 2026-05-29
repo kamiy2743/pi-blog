@@ -9,6 +9,7 @@ import (
 type ArticleRepositoryStub struct {
 	CreateFunc   func(ctx context.Context, input domainArticle.CreateArticleInput) error
 	UpdateFunc   func(ctx context.Context, article domainArticle.Article) error
+	DeleteFunc   func(ctx context.Context, article domainArticle.Article) error
 	SearchFunc   func(ctx context.Context, criteria domainArticle.SearchArticleCriteria) ([]domainArticle.Article, error)
 	PaginateFunc func(ctx context.Context, criteria domainArticle.PaginateArticleCriteria) (domainArticle.PaginatedArticles, error)
 }
@@ -25,6 +26,13 @@ func (s ArticleRepositoryStub) Update(ctx context.Context, article domainArticle
 		return nil
 	}
 	return s.UpdateFunc(ctx, article)
+}
+
+func (s ArticleRepositoryStub) Delete(ctx context.Context, article domainArticle.Article) error {
+	if s.DeleteFunc == nil {
+		return nil
+	}
+	return s.DeleteFunc(ctx, article)
 }
 
 func (s ArticleRepositoryStub) Search(ctx context.Context, criteria domainArticle.SearchArticleCriteria) ([]domainArticle.Article, error) {

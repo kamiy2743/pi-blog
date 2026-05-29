@@ -22,7 +22,7 @@ import (
 
 func Test記事を表示できる(t *testing.T) {
 	initResult := test.Init(t)
-	article := setUpRecord(t, initResult.EntClient, true)
+	article := setUpRecords(t, initResult.EntClient, true)
 
 	res := callEndpoint(t, initResult.Server, article.ID)
 
@@ -59,7 +59,7 @@ func Test記事が見つからない場合は404(t *testing.T) {
 
 func Test非公開記事は404(t *testing.T) {
 	initResult := test.Init(t)
-	article := setUpRecord(t, initResult.EntClient, false)
+	article := setUpRecords(t, initResult.EntClient, false)
 
 	res := callEndpoint(t, initResult.Server, article.ID)
 
@@ -74,14 +74,14 @@ func Test記事の取得に失敗した場合は500(t *testing.T) {
 			},
 		},
 	})
-	setUpRecord(t, initResult.EntClient, true)
+	setUpRecords(t, initResult.EntClient, true)
 
 	res := callEndpoint(t, initResult.Server, 1)
 
 	res.AssertError(t, 500, "記事の読み込みに失敗しました。")
 }
 
-func setUpRecord(t *testing.T, entClient *ent.Client, isPublished bool) *ent.Article {
+func setUpRecords(t *testing.T, entClient *ent.Client, isPublished bool) *ent.Article {
 	t.Helper()
 
 	category := fixtureCategory.CreateCategory(t, entClient, fixtureCategory.CreateCategoryInput{Name: "Go"})

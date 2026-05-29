@@ -5,6 +5,7 @@ import (
 	domainArticle "blog/internal/domain/article"
 	domainCategory "blog/internal/domain/category"
 	createArticleHandler "blog/internal/handler/feature/admin/article/create"
+	destroyArticleHandler "blog/internal/handler/feature/admin/article/destroy"
 	editArticleHandler "blog/internal/handler/feature/admin/article/edit"
 	storeArticleHandler "blog/internal/handler/feature/admin/article/store"
 	updateArticleHandler "blog/internal/handler/feature/admin/article/update"
@@ -22,6 +23,7 @@ import (
 
 type Container struct {
 	CreateArticleHandler   *createArticleHandler.Handler
+	DestroyArticleHandler  *destroyArticleHandler.Handler
 	EditArticleHandler     *editArticleHandler.Handler
 	StoreArticleHandler    *storeArticleHandler.Handler
 	UpdateArticleHandler   *updateArticleHandler.Handler
@@ -60,6 +62,7 @@ func NewContainer(entClient *ent.Client, options *ContainerOptions) *Container {
 	updateCategoryUsecase := updateCategoryHandler.NewUsecase(categoryRepository)
 	destroyCategoryUsecase := destroyCategoryHandler.NewUsecase(categoryRepository)
 	createArticleUsecase := createArticleHandler.NewUsecase(categoryRepository)
+	destroyArticleUsecase := destroyArticleHandler.NewUsecase(articleRepository)
 	editArticleUsecase := editArticleHandler.NewUsecase(articleRepository, categoryRepository)
 	storeArticleUsecase := storeArticleHandler.NewUsecase(articleRepository, categoryRepository)
 	updateArticleUsecase := updateArticleHandler.NewUsecase(articleRepository, categoryRepository)
@@ -70,6 +73,7 @@ func NewContainer(entClient *ent.Client, options *ContainerOptions) *Container {
 
 	return &Container{
 		CreateArticleHandler:   createArticleHandler.NewHandler(createArticleUsecase),
+		DestroyArticleHandler:  destroyArticleHandler.NewHandler(destroyArticleUsecase),
 		EditArticleHandler:     editArticleHandler.NewHandler(editArticleUsecase),
 		StoreArticleHandler:    storeArticleHandler.NewHandler(storeArticleUsecase),
 		UpdateArticleHandler:   updateArticleHandler.NewHandler(updateArticleUsecase),

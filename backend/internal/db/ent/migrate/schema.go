@@ -60,7 +60,7 @@ var (
 				Symbol:     "comments_articles_comments",
 				Columns:    []*schema.Column{CommentsColumns[6]},
 				RefColumns: []*schema.Column{ArticlesColumns[0]},
-				OnDelete:   schema.NoAction,
+				OnDelete:   schema.Cascade,
 			},
 		},
 		Indexes: []*schema.Index{

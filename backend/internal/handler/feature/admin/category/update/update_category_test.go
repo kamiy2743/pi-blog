@@ -22,7 +22,7 @@ import (
 
 func Testカテゴリを更新できる(t *testing.T) {
 	initResult := test.Init(t)
-	category := setUpRecord(t, initResult.EntClient)
+	category := setUpRecords(t, initResult.EntClient)
 
 	res := callEndpoint(t, initResult.Server, category.ID, "Docker")
 	res.AssertRedirectTo(t, "/admin/category")
@@ -34,7 +34,7 @@ func Testカテゴリを更新できる(t *testing.T) {
 
 func Testカテゴリ名が空ならバリデーションエラー(t *testing.T) {
 	initResult := test.Init(t)
-	category := setUpRecord(t, initResult.EntClient)
+	category := setUpRecords(t, initResult.EntClient)
 
 	res := callEndpoint(t, initResult.Server, category.ID, "")
 	res.AssertRedirectTo(t, "/admin/category")
@@ -53,7 +53,7 @@ func Testカテゴリ名が空ならバリデーションエラー(t *testing.T)
 
 func Testカテゴリ名が64文字を超えたらバリデーションエラー(t *testing.T) {
 	initResult := test.Init(t)
-	category := setUpRecord(t, initResult.EntClient)
+	category := setUpRecords(t, initResult.EntClient)
 
 	name := helper.StringOfLength(65)
 	res := callEndpoint(t, initResult.Server, category.ID, name)
@@ -73,7 +73,7 @@ func Testカテゴリ名が64文字を超えたらバリデーションエラー
 
 func Testカテゴリ名が重複した場合はエラー(t *testing.T) {
 	initResult := test.Init(t)
-	setUpRecord(t, initResult.EntClient)
+	setUpRecords(t, initResult.EntClient)
 	category := fixtureCategory.CreateCategory(t, initResult.EntClient, fixtureCategory.CreateCategoryInput{Name: "Docker"})
 
 	res := callEndpoint(t, initResult.Server, category.ID, "Go")
@@ -150,7 +150,7 @@ func callEndpoint(t *testing.T, server *httptest.Server, categoryID uint32, name
 	})
 }
 
-func setUpRecord(t *testing.T, entClient *ent.Client) *ent.Category {
+func setUpRecords(t *testing.T, entClient *ent.Client) *ent.Category {
 	t.Helper()
 
 	return fixtureCategory.CreateCategory(t, entClient, fixtureCategory.CreateCategoryInput{Name: "Go"})

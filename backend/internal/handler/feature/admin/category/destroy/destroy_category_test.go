@@ -21,7 +21,7 @@ import (
 
 func Testカテゴリを削除できる(t *testing.T) {
 	initResult := test.Init(t)
-	category := setUpRecord(t, initResult.EntClient)
+	category := setUpRecords(t, initResult.EntClient)
 
 	res := callEndpoint(t, initResult.Server, category.ID)
 	res.AssertRedirectTo(t, "/admin/category")
@@ -31,7 +31,7 @@ func Testカテゴリを削除できる(t *testing.T) {
 
 func Test記事に紐づくカテゴリを削除できる(t *testing.T) {
 	initResult := test.Init(t)
-	category := setUpRecord(t, initResult.EntClient)
+	category := setUpRecords(t, initResult.EntClient)
 	fixtureArticle.CreateArticle(t, initResult.EntClient, fixtureArticle.CreateArticleInput{
 		Title:        "Go",
 		BodyMarkdown: "本文",
@@ -114,7 +114,7 @@ func callEndpoint(t *testing.T, server *httptest.Server, categoryID uint32) iner
 	})
 }
 
-func setUpRecord(t *testing.T, entClient *ent.Client) *ent.Category {
+func setUpRecords(t *testing.T, entClient *ent.Client) *ent.Category {
 	t.Helper()
 
 	return fixtureCategory.CreateCategory(t, entClient, fixtureCategory.CreateCategoryInput{Name: "Go"})

@@ -81,6 +81,10 @@ func (r *ArticleRepository) Update(ctx context.Context, article domainArticle.Ar
 	return err
 }
 
+func (r *ArticleRepository) Delete(ctx context.Context, article domainArticle.Article) error {
+	return r.client.Article.DeleteOneID(uint32(article.ID)).Exec(ctx)
+}
+
 func (r *ArticleRepository) Search(ctx context.Context, criteria domainArticle.SearchArticleCriteria) ([]domainArticle.Article, error) {
 	var applyCategoryOrderErr error
 	query := r.client.Article.Query().WithCategories(func(categoryQuery *ent.CategoryQuery) {

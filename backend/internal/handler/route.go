@@ -62,6 +62,7 @@ func setUpAdminRoutes(
 
 	handleAdmin("GET /admin/article/{articleId}", InertiaPage(inertiaApp, container.EditArticleHandler.Handle))
 	handleAdmin("POST /admin/article/{articleId}", InertiaAction(inertiaApp, container.UpdateArticleHandler.Handle))
+	handleAdmin("POST /admin/article/{articleId}/delete", InertiaAction(inertiaApp, container.DestroyArticleHandler.Handle))
 
 	handleAdmin("GET /admin/category", InertiaPage(inertiaApp, container.EditCategoryHandler.Handle))
 	handleAdmin("POST /admin/category", InertiaAction(inertiaApp, container.StoreCategoryHandler.Handle))
