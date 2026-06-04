@@ -30,6 +30,10 @@
     <article class="px-6 py-10 sm:px-8 lg:px-10 lg:py-12">
       <div class="max-w-3xl space-y-5">
         <PublicSiteLink />
+        <p class="muted text-sm font-semibold">{formatDate(article.date)}</p>
+        <h1 class="blog-title text-3xl font-semibold tracking-tight sm:text-4xl">
+          {article.title}
+        </h1>
         <div class="flex flex-wrap gap-2">
           {#each article.categoryNames as categoryName}
             <span class="blog-category-pill px-3 py-1 text-sm font-semibold">
@@ -37,10 +41,6 @@
             </span>
           {/each}
         </div>
-        <h1 class="blog-title text-3xl font-semibold tracking-tight sm:text-4xl">
-          {article.title}
-        </h1>
-        <p class="muted text-sm font-semibold">{formatDate(article.date)}</p>
       </div>
 
       <div class="mt-8 max-w-3xl">
