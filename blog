@@ -7,16 +7,16 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 usage() {
   cat <<'EOF'
 使い方:
-  ./blog {dev|prd} {up|down|restart|recreate} [docker compose args...]
-  ./blog {dev|prd} [docker compose args...]
-  ./blog {dev|prd} mysql [mysql args...]
+  ./blog {dev|stg|prd} {up|down|restart|recreate} [docker compose args...]
+  ./blog {dev|stg|prd} [docker compose args...]
+  ./blog {dev|stg|prd} mysql [mysql args...]
   ./blog ent generate
   ./blog back fmt
   ./blog back mod tidy
   ./blog back test [backend path]
   ./blog front install
-  ./blog {dev|prd} migrate {up|down|refresh}
-  ./blog {dev|prd} seed <seed_name>
+  ./blog {dev|stg|prd} migrate {up|down|refresh}
+  ./blog {dev|stg|prd} seed <seed_name>
 EOF
 }
 
@@ -292,7 +292,7 @@ main() {
       fi
       run_front "$@"
       ;;
-    dev|prd)
+    dev|stg|prd)
       local env="$command"
 
       if [[ $# -lt 1 ]]; then

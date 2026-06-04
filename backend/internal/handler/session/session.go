@@ -43,7 +43,7 @@ func NewSessionManager(appEnv app.AppEnv) *SessionManager {
 	manager.IdleTimeout = idleTimeout
 	manager.Cookie.Name = cookieName
 	manager.Cookie.HttpOnly = true
-	manager.Cookie.Secure = appEnv == app.AppEnvPrd
+	manager.Cookie.Secure = appEnv == app.AppEnvStg || appEnv == app.AppEnvPrd
 	manager.Cookie.SameSite = http.SameSiteLaxMode
 
 	return &SessionManager{

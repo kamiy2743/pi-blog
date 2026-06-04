@@ -2,7 +2,7 @@ services:
   nginx:
     build:
       context: ./
-      dockerfile: ./nginx/Dockerfile.prd
+      dockerfile: ./nginx/Dockerfile.stg
     cap_drop:
       - ALL
     security_opt:
@@ -21,7 +21,7 @@ services:
   cloudflared:
     image: cloudflare/cloudflared:2026.2.0
     volumes:
-      - ./cloudflared/config.prd.yml:/etc/cloudflared/config.yml:ro
+      - ./cloudflared/config.stg.yml:/etc/cloudflared/config.yml:ro
     command: tunnel --no-autoupdate --config /etc/cloudflared/config.yml run --token-file /run/secrets/cloudflared_tunnel_token
     secrets:
       - cloudflared_tunnel_token
@@ -41,7 +41,7 @@ services:
     build:
       context: ./backend/
       dockerfile: ./Dockerfile.app
-    env_file: ./backend/.env.prd
+    env_file: ./backend/.env.stg
     secrets:
       - mysql_user
       - mysql_user_password
@@ -102,14 +102,14 @@ volumes:
 
 secrets:
   cloudflared_tunnel_token:
-    file: ./secrets/prd/cloudflared_tunnel_token
+    file: ./secrets/stg/cloudflared_tunnel_token
   admin_basic_auth_user:
-    file: ./secrets/prd/admin_basic_auth_user
+    file: ./secrets/stg/admin_basic_auth_user
   admin_basic_auth_pass:
-    file: ./secrets/prd/admin_basic_auth_pass
+    file: ./secrets/stg/admin_basic_auth_pass
   mysql_root_password:
-    file: ./secrets/prd/mysql_root_password
+    file: ./secrets/stg/mysql_root_password
   mysql_user:
-    file: ./secrets/prd/mysql_user
+    file: ./secrets/stg/mysql_user
   mysql_user_password:
-    file: ./secrets/prd/mysql_user_password
+    file: ./secrets/stg/mysql_user_password
