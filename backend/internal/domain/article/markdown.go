@@ -8,6 +8,7 @@ import (
 	"github.com/yuin/goldmark"
 	"github.com/yuin/goldmark/extension"
 	"golang.org/x/net/html"
+	"golang.org/x/net/html/atom"
 )
 
 func ConvertMarkdownToHTML(markdown string) (string, error) {
@@ -24,7 +25,12 @@ func ConvertMarkdownToHTML(markdown string) (string, error) {
 }
 
 func openLinksInBlankTab(htmlFragment string) (string, error) {
-	nodes, err := html.ParseFragment(strings.NewReader(htmlFragment), nil)
+	contextNode := &html.Node{
+		Type:     html.ElementNode,
+		DataAtom: atom.Body,
+		Data:     "body",
+	}
+	nodes, err := html.ParseFragment(strings.NewReader(htmlFragment), contextNode)
 	if err != nil {
 		return "", err
 	}
