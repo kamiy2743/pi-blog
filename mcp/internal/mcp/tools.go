@@ -14,14 +14,6 @@ type testArgs struct {
 
 func RegisterTools(server *mcp.Server, runner *Runner) {
 	mcp.AddTool(server, &mcp.Tool{
-		Name:        "back_fmt",
-		Description: "ホスト上の blog リポジトリで ./blog back fmt を実行する",
-	}, func(ctx context.Context, _ *mcp.CallToolRequest, _ struct{}) (*mcp.CallToolResult, CommandResult, error) {
-		result, err := runner.RunFmt(ctx)
-		return formatToolResult("back_fmt", result, err), result, nil
-	})
-
-	mcp.AddTool(server, &mcp.Tool{
 		Name:        "back_test",
 		Description: "ホスト上の blog リポジトリで ./blog back test [package] を実行する",
 	}, func(ctx context.Context, _ *mcp.CallToolRequest, args testArgs) (*mcp.CallToolResult, CommandResult, error) {

@@ -32,10 +32,6 @@ func NewRunner(repoRoot string) *Runner {
 	}
 }
 
-func (r *Runner) RunFmt(ctx context.Context) (CommandResult, error) {
-	return r.run(ctx, []string{"back", "fmt"})
-}
-
 func (r *Runner) RunTest(ctx context.Context, packagePath string) (CommandResult, error) {
 	args := []string{"back", "test"}
 	if packagePath != "" {
