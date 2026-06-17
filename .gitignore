@@ -1,3 +1,4 @@
 secrets/*/*
 !.gitkeep
+bin/
 node_modules/
