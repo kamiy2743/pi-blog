@@ -10,7 +10,7 @@ const Text string = `使い方:
   ./blog {stg|prd} image {build|push|build-push|pull}
   ./blog back fmt
   ./blog back mod tidy
-  ./blog back test [backend path]
+  ./blog back test [package path]
   ./blog ent generate
   ./blog front install
   ./blog build
