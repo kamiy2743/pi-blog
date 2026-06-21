@@ -1,8 +1,6 @@
 services:
   nginx:
-    build:
-      context: ./
-      dockerfile: ./nginx/Dockerfile.prd
+    image: ghcr.io/kamiy2743/blog/nginx:prd
     cap_drop:
       - ALL
     security_opt:
@@ -38,9 +36,7 @@ services:
     restart: unless-stopped
 
   go:
-    build:
-      context: ./backend/
-      dockerfile: ./Dockerfile.app
+    image: ghcr.io/kamiy2743/blog/go:prd
     env_file: ./backend/.env.prd
     secrets:
       - mysql_user
@@ -79,9 +75,7 @@ services:
     restart: unless-stopped
 
   ssr:
-    build:
-      context: ./frontend/
-      dockerfile: ./Dockerfile.ssr
+    image: ghcr.io/kamiy2743/blog/ssr:prd
     env_file: ./frontend/.env
     cap_drop:
       - ALL
@@ -102,14 +96,14 @@ volumes:
 
 secrets:
   cloudflared_tunnel_token:
-    file: ./secrets/prd/cloudflared_tunnel_token
+    file: /etc/blog/secrets/cloudflared_tunnel_token
   admin_basic_auth_user:
-    file: ./secrets/prd/admin_basic_auth_user
+    file: /etc/blog/secrets/admin_basic_auth_user
   admin_basic_auth_pass:
-    file: ./secrets/prd/admin_basic_auth_pass
+    file: /etc/blog/secrets/admin_basic_auth_pass
   mysql_root_password:
-    file: ./secrets/prd/mysql_root_password
+    file: /etc/blog/secrets/mysql_root_password
   mysql_user:
-    file: ./secrets/prd/mysql_user
+    file: /etc/blog/secrets/mysql_user
   mysql_user_password:
-    file: ./secrets/prd/mysql_user_password
+    file: /etc/blog/secrets/mysql_user_password

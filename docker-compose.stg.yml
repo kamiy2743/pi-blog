@@ -1,8 +1,6 @@
 services:
   nginx:
-    build:
-      context: ./
-      dockerfile: ./nginx/Dockerfile.stg
+    image: ghcr.io/kamiy2743/blog/nginx:stg
     cap_drop:
       - ALL
     security_opt:
@@ -38,9 +36,7 @@ services:
     restart: unless-stopped
 
   go:
-    build:
-      context: ./backend/
-      dockerfile: ./Dockerfile.app
+    image: ghcr.io/kamiy2743/blog/go:stg
     env_file: ./backend/.env.stg
     secrets:
       - mysql_user
@@ -79,9 +75,7 @@ services:
     restart: unless-stopped
 
   ssr:
-    build:
-      context: ./frontend/
-      dockerfile: ./Dockerfile.ssr
+    image: ghcr.io/kamiy2743/blog/ssr:stg
     env_file: ./frontend/.env
     cap_drop:
       - ALL

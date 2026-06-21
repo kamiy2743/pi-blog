@@ -1,0 +1,15 @@
+services:
+  nginx:
+    build:
+      context: ./
+      dockerfile: ./nginx/Dockerfile.prd
+
+  go:
+    build:
+      context: ./backend/
+      dockerfile: ./Dockerfile.app
+
+  ssr:
+    build:
+      context: ./frontend/
+      dockerfile: ./Dockerfile.ssr

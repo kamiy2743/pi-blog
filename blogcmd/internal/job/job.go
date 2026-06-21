@@ -2,6 +2,7 @@ package job
 
 import (
 	"fmt"
+	"os"
 	"path/filepath"
 
 	"blogcmd/internal/appcontext"
@@ -30,7 +31,7 @@ func RunMigrate(ctx *appcontext.Context, env string, command string) error {
 		ctx, "run", "--rm",
 		"--network", fmt.Sprintf("blog-%s_private", env),
 		"--env-file", ctx.Path(fmt.Sprintf("backend/.env.%s", env)),
-		"--mount", fmt.Sprintf("type=bind,src=%s,dst=/run/secrets,readonly", ctx.Path(filepath.Join("secrets", env))),
+		"--mount", fmt.Sprintf("type=bind,src=%s,dst=/run/secrets,readonly", secretsPath(ctx, env)),
 		image, command,
 	)
 }
@@ -50,7 +51,17 @@ func RunSeed(ctx *appcontext.Context, env string, seed string) error {
 		ctx, "run", "--rm",
 		"--network", fmt.Sprintf("blog-%s_private", env),
 		"--env-file", ctx.Path(fmt.Sprintf("backend/.env.%s", env)),
-		"--mount", fmt.Sprintf("type=bind,src=%s,dst=/run/secrets,readonly", ctx.Path(filepath.Join("secrets", env))),
+		"--mount", fmt.Sprintf("type=bind,src=%s,dst=/run/secrets,readonly", secretsPath(ctx, env)),
 		image, seed,
 	)
+}
+
+func secretsPath(ctx *appcontext.Context, env string) string {
+	if env == "prd" {
+		if path := os.Getenv("BLOG_DEPLOY_SECRETS_ROOT"); path != "" {
+			return path
+		}
+		return "/etc/blog/secrets"
+	}
+	return ctx.Path(filepath.Join("secrets", env))
 }

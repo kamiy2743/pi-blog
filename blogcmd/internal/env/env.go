@@ -6,8 +6,8 @@ import (
 
 	"blogcmd/internal/appcontext"
 	"blogcmd/internal/commandargs"
+	"blogcmd/internal/deploy"
 	"blogcmd/internal/docker"
-	"blogcmd/internal/image"
 	"blogcmd/internal/imageref"
 	"blogcmd/internal/job"
 	"blogcmd/internal/process"
@@ -51,15 +51,7 @@ func Run(ctx *appcontext.Context, env string, args commandargs.Args) error {
 		if !imageref.IsImageEnv(env) {
 			return fmt.Errorf("deploy は stg/prd 専用です")
 		}
-		if err := image.Run(ctx, env, commandargs.Args{"pull"}); err != nil {
-			return err
-		}
-		return docker.Compose(ctx, env, append([]string{"up", "-d", "--no-build"}, rest...)...)
-	case "image":
-		if !imageref.IsImageEnv(env) {
-			return fmt.Errorf("image は stg/prd 専用です")
-		}
-		return image.Run(ctx, env, rest)
+		return deploy.Run(ctx, env, rest)
 	case "mysql":
 		return docker.MySQL(ctx, env, rest)
 	case "migrate":

@@ -22,7 +22,7 @@ func Run(ctx *appcontext.Context, env string, args commandargs.Args) error {
 	}
 
 	command := args.First()
-	runtimeServices := []string{"nginx", "go", "ssr"}
+	runtimeServices := RuntimeServices()
 
 	switch command {
 	case "build":
@@ -61,4 +61,8 @@ func Run(ctx *appcontext.Context, env string, args commandargs.Args) error {
 	default:
 		return fmt.Errorf("未対応の %s image コマンドです: %s", env, command)
 	}
+}
+
+func RuntimeServices() []string {
+	return []string{"nginx", "go", "ssr"}
 }
