@@ -13,5 +13,4 @@ const Text string = `使い方:
   ./blog back test [package path]
   ./blog ent generate
   ./blog front install
-  ./blog build
 `
